@@ -4,6 +4,7 @@ import (
 	"be12/mentutor/features/user"
 	"be12/mentutor/middlewares"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -17,10 +18,63 @@ func New(e *echo.Echo, usecase user.UsecaseInterface) {
 		userUsecase: usecase,
 	}
 	e.POST("/users", handler.PostData, middlewares.JWTMiddleware())
-	// e.PUT("/users", handler.UpdateUser, middlewares.JWTMiddleware())
-	// e.GET("/users", handler.GetByTokenJWT, middlewares.JWTMiddleware())
-	// e.GET("/users/:id", handler.GetByIdWithJWT, middlewares.JWTMiddleware())
-	// e.DELETE("/users", handler.DeleteMyAccount, middlewares.JWTMiddleware())
+	e.PUT("/users", handler.UpdateUser, middlewares.JWTMiddleware())
+	e.GET("/users", handler.GetByTokenJWT, middlewares.JWTMiddleware())
+	e.GET("/users/all", handler.GetUser, middlewares.JWTMiddleware())
+	e.GET("/users/:id", handler.GetByIdWithJWT, middlewares.JWTMiddleware())
+	e.DELETE("/users", handler.DeleteMyAccount, middlewares.JWTMiddleware())
+
+}
+func (delivery *UserDelivery) DeleteMyAccount(c echo.Context) error {
+	idToken, _ := middlewares.ExtractToken(c)
+	row, err := delivery.userUsecase.Delete(idToken)
+	if err != nil || row != 1 {
+		return c.JSON(500, map[string]interface{}{
+			"message": "failed wrong token",
+		})
+	}
+	return c.JSON(200, map[string]interface{}{
+		"message": "success delete account",
+	})
+}
+func (delivery *UserDelivery) UpdateUser(c echo.Context) error {
+
+	var dataUpdate UpdateFormat
+	errBind := c.Bind(&dataUpdate)
+	if errBind != nil {
+		return c.JSON(400, map[string]interface{}{
+			"message": "error Bind data",
+		})
+	}
+
+	var add user.Core
+	if dataUpdate.Email != "" {
+		add.Email = dataUpdate.Email
+	}
+	if dataUpdate.Name != "" {
+		add.Name = dataUpdate.Name
+	}
+	if dataUpdate.Password != "" {
+		add.Password = dataUpdate.Password
+	}
+
+	if dataUpdate.Images != "" {
+		add.Images = dataUpdate.Images
+	}
+
+	idToken, _ := middlewares.ExtractToken(c)
+	add.ID = uint(idToken)
+
+	row, err := delivery.userUsecase.PutDataId(add)
+	if err != nil || row < 1 {
+		return c.JSON(400, map[string]interface{}{
+			"message": "failed not found",
+		})
+	}
+
+	return c.JSON(200, map[string]interface{}{
+		"message": "success update",
+	})
 
 }
 
@@ -52,4 +106,69 @@ func (delivery *UserDelivery) PostData(c echo.Context) error {
 	return c.JSON(http.StatusCreated, map[string]interface{}{
 		"message": "Success Registers",
 	})
+}
+
+func (delivery *UserDelivery) GetByTokenJWT(c echo.Context) error {
+	idToken, _ := middlewares.ExtractToken(c)
+
+	res, err := delivery.userUsecase.GetProfile(idToken)
+	if err != nil {
+		return c.JSON(400, map[string]interface{}{
+			"message": "failed get profile",
+		})
+	}
+
+	respon := FromCore(res)
+
+	return c.JSON(200, map[string]interface{}{
+		"message": "success get my profile",
+		"data":    respon,
+	})
+}
+
+func (delivery *UserDelivery) GetUser(c echo.Context) error {
+	idToken, _ := middlewares.ExtractToken(c)
+	if idToken < 1 {
+		return c.JSON(400, map[string]interface{}{
+			"message": "failed get all user",
+		})
+
+	}
+	res, err := delivery.userUsecase.GetAlluser()
+	if err != nil {
+		return c.JSON(400, map[string]interface{}{
+			"message": "failed get profile",
+		})
+	}
+
+	return c.JSON(200, map[string]interface{}{
+		"message": "success get my profile",
+		"data":    toResponList(res),
+	})
+}
+
+func (delivery *UserDelivery) GetByIdWithJWT(c echo.Context) error {
+
+	idToken, _ := middlewares.ExtractToken(c)
+	id, _ := strconv.Atoi(c.Param("id"))
+	if id == -1 {
+		return c.JSON(400, map[string]interface{}{
+			"message": "failed id not found",
+		})
+	}
+
+	res, err := delivery.userUsecase.GetDataId(id, idToken)
+	if err != nil {
+		return c.JSON(400, map[string]interface{}{
+			"message": "failed get profile",
+		})
+	}
+
+	respon := FromCore(res)
+
+	return c.JSON(200, map[string]interface{}{
+		"message": "success",
+		"data":    respon,
+	})
+
 }

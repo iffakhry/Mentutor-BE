@@ -12,16 +12,12 @@ type UserRequest struct {
 	Saldo    uint   `json:"saldo" form:"saldo"`
 }
 
-// type UpdateFormat struct {
-// 	ID       uint
-// 	Name     string `form:"name" json:"name"`
-// 	Saldo    int    `form:"saldo" json:"saldo"`
-// 	Password string `form:"password" json:"password"`
-// 	Email    string `form:"email" json:"email"`
-// 	Images   string `form:"images" json:"images"`
-// 	Phone    int    `form:"phone" json:"phone"`
-// 	Bio      string `form:"bio" json:"bio"`
-// }
+type UpdateFormat struct {
+	Name     string `form:"name" json:"name"`
+	Password string `form:"password" json:"password"`
+	Email    string `form:"email" json:"email"`
+	Images   string `form:"images" json:"images"`
+}
 
 func toCore(data UserRequest) user.Core {
 	return user.Core{
