@@ -1,0 +1,473 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Mentutor
+  description: Mentutor Open API Capstone Project
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/HERIBUDIYANA/Mentutor/1.0.0
+tags:
+  - name: Registers
+    description: Register New User
+  - name: Login
+    description: Login as users
+  - name: Users
+    description: Management Data User
+  - name: Task
+    description: Task For Meetee
+  
+paths:
+  /registers:
+    post:
+      tags:
+        - "Registers"
+      summary: Register New Users
+      description: User Register
+      security:
+        - JWTAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserBodyRequest'
+            examples:
+              register:
+                description: User 1 Register New Users
+                value:
+                  name: "Herry"
+                  email: "hery@gmail.com"
+                  password: "asdfqwer"
+                  class: back-end
+                  role: Mentee
+      responses:
+        '201':
+           $ref: '#/components/responses/successRegister'
+        '400':
+           $ref: '#/components/responses/failedRespon'
+        '500':
+           $ref: '#/components/responses/failedRespon500'
+  /login:
+    post:
+      tags:
+        - "Login"
+      summary: Login User
+      description: Login User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginReq'
+            example:
+                  email: "hery@gmail.com"
+                  password: "asdfqwer"
+      responses:
+        '200':
+           $ref: '#/components/responses/successLogin'
+        '400':
+           $ref: '#/components/responses/failedRespon'
+        '500':
+           $ref: '#/components/responses/failedRespon500'
+  /users:
+    get:
+      tags:
+        - "Users"
+      summary: Get Profile
+      description: Get My Profile Details
+      security:
+        - JWTAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/getProfileUser'
+        '400':
+          $ref: '#/components/responses/failedRespon'
+        '500':
+          $ref: '#/components/responses/failedRespon500'
+    put:
+      tags:
+        - "Users"
+      summary: Update Users
+      description: Update Users
+      security:
+        - JWTAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+            example:
+              name: Hery
+              images: hery-depok.jpg
+              # bio: "akun buat jajanin ayang"
+              # phone: 08123
+              # address: Green Andara Residence Blok F4 No. 12 samping rumah aa Rafi
+              email: hery@gmail.id
+              password: asdfghjk
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+            example:
+              name: Hery
+              images: hery-depok.jpg
+              # bio: "akun buat jajanin ayang"
+              # phone: 08123
+              # address: Green Andara Residence Blok F4 No. 12 samping rumah aa Rafi
+              email: hery@gmail.id
+              password: asdfghjk
+      responses:
+        '200':
+          $ref: '#/components/responses/successUpdate'
+        '400':
+          $ref: '#/components/responses/failedRespon'
+        '500':
+          $ref: '#/components/responses/failedRespon500'
+    delete:
+      tags:
+        - "Users"
+      summary: Delete My Account
+      description: Endpoint to delete my Account
+      security:
+        - JWTAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/successDelete'
+        '400':
+          $ref: '#/components/responses/failedRespon'
+        '500':
+          $ref: '#/components/responses/failedRespon500'     
+  /users/{id}:
+    get:
+      tags:
+        - "Users"
+      summary: Get Profile Other User
+      description: Get Profile User
+      security:
+        - JWTAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/getProfileUser'
+        '400':
+          $ref: '#/components/responses/failedRespon'
+        '500':
+          $ref: '#/components/responses/failedRespon500'
+  /tasks:
+    post:
+      tags:
+        - "Task"
+      summary: Task For Mentee (mentor only posts)
+      description: Task For Mentee 
+      security:
+        - JWTAuth: []
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/taskBodyReq'
+              example:
+                title: bilangan prima
+                description: tentukan bilangan prima dari a ke z apa bila a 12 z 222 tentukan hasil bilangannya
+                images: task-bil-prima.jpg
+                file: bilangan-prima.pdf
+                due_date: "2022/11/05"
+      responses:
+        '201':
+          $ref: '#/components/responses/responses201'
+        '400':
+           $ref: '#/components/responses/failedRespon'
+        '500':
+           $ref: '#/components/responses/failedRespon500'
+    # get:
+    #   tags:
+    #     - "Task"
+    #   summary: Get All My Tasks
+    #   description: Get all tasks
+
+  /tasks/{id}:
+    put:
+      tags:
+        - "Task"
+      summary: Update Tasks
+      description: update my task by id
+      security:
+        - JWTAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/taskBodyReq'
+              example:
+                title: bilangan prima
+                description: tentukan bilangan prima berbentuk segi empat
+                images: task-bil-prima.jpg
+                file: bilangan-prima.pdf
+                due_date: "2022/11/15"
+      responses:
+        '200':
+          $ref: '#/components/responses/successRespon'
+        '400':
+           $ref: '#/components/responses/failedRespon'
+        '500':
+           $ref: '#/components/responses/failedRespon500'
+    delete:
+      tags:
+        - "Task"
+      summary: Delete Task
+      description: delete task by id
+      security:
+        - JWTAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/successDelete'
+        '400':
+           $ref: '#/components/responses/failedRespon'
+        '500':
+           $ref: '#/components/responses/failedRespon500'
+
+
+      
+
+
+
+
+components:
+  securitySchemes:
+    JWTAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    UserLoginReq:
+      type: object
+      properties:
+        "email":
+          type: string
+          minLength: 1
+        "password":
+          type: string
+          format: password
+    UserUpdateRequest:
+      type: object
+      properties:
+        "name":
+          type: string
+          minLength: 3
+        # "phone":
+        #   type: string
+        #   minLength: 3
+        "email":
+          type: string
+          minLength: 3
+        "password":
+          type: string
+          format: password
+          minLength: 3
+        "images":
+          type: string
+    taskBodyReq:
+      type: object
+      properties:
+        "title":
+          type: string
+          minLength: 1
+        "description":
+          type: string
+          minLength: 1
+        "image":
+          type:  string
+        "file":
+          type: string
+          minLength: 1
+        "due_date":
+          type: string
+          format: date
+    UserBodyRequest:
+      type: object
+      properties:
+        "name":
+          type: string
+          minLength: 1
+        "email":
+          type: string
+          minLength: 1
+        "password":
+          type: string
+          minLength: 1
+          format: password
+        "role":
+          type: string
+          minLength: 1
+        "class":
+          type: string
+          minLength: 1
+  responses:
+    successRegister:
+      description: Success Register New Users
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Register Success
+              data:
+                type: object
+                example:
+                  "id": 1
+                  "name": "Hery"
+                  "role": "Mentee"
+                  "class": "back-end"
+    successDelete:
+      description: Success Delete
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Delete Success
+    failedRespon:
+      description: Status Response Failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Failed
+    failedRespon500:
+      description: Status Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Failed Status Internal Server Error
+    successRespon:
+      description: Status Response Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Success
+    responses201:
+      description: Status Created Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Success Created
+    successLogin:
+      description: Success Login
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Success Login User
+              data:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: Hery
+                  role:
+                    type: string
+                    example: Mentee
+                  class:
+                    type: string
+                    example: Back-end
+                  token:
+                    type: string
+                    example: eyJjlcmnjen.jiyYdjoLjsjbcnejg$bvklsd.LSDmcuvuvdbk
+    successUpdate:
+      description: Success Update
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Update Success
+    respon201:
+      description: Success create
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: success create
+    getProfileUser: 
+      description: Success Get profile
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              data:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  images:
+                    type: string
+                  name:
+                    type: string
+                  class: 
+                    type: string
+                  role:
+                    type: string
+          example:
+            message: Success Get Profile
+            data:
+              id: 1
+              name: "Hery"
+              images: "images.jpg"
+              class: "Back-end"
+              role: "mentee"
+                
+                      
+                  
