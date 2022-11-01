@@ -40,6 +40,18 @@ func fromCore(dataCore user.Core) User {
 
 }
 
+func updateCore(dataCore user.Core) User {
+	dataModel := User{
+		// ID:     dataCore.ID,
+		Name:     dataCore.Name,
+		Images:   dataCore.Images,
+		Email:    dataCore.Email,
+		Password: dataCore.Password,
+	}
+	return dataModel
+
+}
+
 func (data *User) toCore() user.Core {
 	return user.Core{
 		ID:       data.ID,
@@ -63,10 +75,13 @@ func ToDomain(u User) user.Core {
 		Role:     u.Role,
 	}
 }
+
 func ToCoreList(data []User) []user.Core {
 	var dataCore []user.Core
 	for key := range data {
+
 		dataCore = append(dataCore, data[key].toCore())
+
 	}
 	return dataCore
 }
