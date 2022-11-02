@@ -18,16 +18,28 @@ func New(e *echo.Echo, usecase user.UsecaseInterface) {
 		userUsecase: usecase,
 	}
 	e.POST("/users", handler.PostData, middlewares.JWTMiddleware())
-	e.PUT("/users", handler.UpdateUser, middlewares.JWTMiddleware())
-	e.GET("/users", handler.GetByTokenJWT, middlewares.JWTMiddleware())
-	e.GET("/users/all", handler.GetUser, middlewares.JWTMiddleware())
+	e.PUT("/users/:id", handler.UpdateUser, middlewares.JWTMiddleware())
+	e.GET("/profile", handler.GetByTokenJWT, middlewares.JWTMiddleware())
+	e.GET("/users", handler.GetUser, middlewares.JWTMiddleware())
 	e.GET("/users/:id", handler.GetByIdWithJWT, middlewares.JWTMiddleware())
-	e.DELETE("/users", handler.DeleteMyAccount, middlewares.JWTMiddleware())
+	e.DELETE("/users/:id", handler.DeleteMyAccount, middlewares.JWTMiddleware())
 
 }
 func (delivery *UserDelivery) DeleteMyAccount(c echo.Context) error {
-	idToken, _ := middlewares.ExtractToken(c)
-	row, err := delivery.userUsecase.Delete(idToken)
+	_, role := middlewares.ExtractToken(c)
+	param := c.Param("id")
+	id, err := strconv.Atoi(param)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "param must be number",
+		})
+	}
+	if role != "admin" {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "you dont have access",
+		})
+	}
+	row, err := delivery.userUsecase.Delete(id)
 	if err != nil || row != 1 {
 		return c.JSON(500, map[string]interface{}{
 			"message": "failed wrong token",
@@ -61,9 +73,21 @@ func (delivery *UserDelivery) UpdateUser(c echo.Context) error {
 	if dataUpdate.Images != "" {
 		add.Images = dataUpdate.Images
 	}
+	id, _ := strconv.Atoi(c.Param("id"))
 
-	idToken, _ := middlewares.ExtractToken(c)
-	add.ID = uint(idToken)
+	token, role := middlewares.ExtractToken(c)
+	add.ID = uint(id)
+	if id == -1 {
+		return c.JSON(400, map[string]interface{}{
+			"message": "failed id not found",
+		})
+	}
+
+	if role != "admin" && id != token {
+		return c.JSON(400, map[string]interface{}{
+			"message": "dont have access",
+		})
+	}
 
 	row, err := delivery.userUsecase.PutDataId(add)
 	if err != nil || row < 1 {

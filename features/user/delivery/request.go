@@ -13,6 +13,7 @@ type UserRequest struct {
 }
 
 type UpdateFormat struct {
+	ID       uint   `json:"id" form:"id"`
 	Name     string `form:"name" json:"name"`
 	Password string `form:"password" json:"password"`
 	Email    string `form:"email" json:"email"`
