@@ -17,7 +17,7 @@ func New(e *echo.Echo, usecase user.UsecaseInterface) {
 	handler := &UserDelivery{
 		userUsecase: usecase,
 	}
-	e.POST("/users", handler.PostData, middlewares.JWTMiddleware())
+	e.POST("/users", handler.PostData) //, middlewares.JWTMiddleware())
 	e.PUT("/users/:id", handler.UpdateUser, middlewares.JWTMiddleware())
 	e.GET("/profile", handler.GetByTokenJWT, middlewares.JWTMiddleware())
 	e.GET("/users", handler.GetUser, middlewares.JWTMiddleware())
@@ -110,12 +110,12 @@ func (delivery *UserDelivery) PostData(c echo.Context) error {
 			"message": "Failed To Bind",
 		})
 	}
-	_, role := middlewares.ExtractToken(c)
-	if role != "Admin" && role != "admin" {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"message": "you not have access",
-		})
-	}
+	// _, role := middlewares.ExtractToken(c)
+	// if role != "Admin" && role != "admin" {
+	// 	return c.JSON(http.StatusBadRequest, map[string]interface{}{
+	// 		"message": "you not have access",
+	// 	})
+	// }
 	row, err := delivery.userUsecase.InsertData(toCore(dataRequest))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
@@ -161,12 +161,12 @@ func (delivery *UserDelivery) GetUser(c echo.Context) error {
 	res, err := delivery.userUsecase.GetAlluser()
 	if err != nil {
 		return c.JSON(400, map[string]interface{}{
-			"message": "failed get profile",
+			"message": "failed get all users",
 		})
 	}
 
 	return c.JSON(200, map[string]interface{}{
-		"message": "success get my profile",
+		"message": "success all users",
 		"data":    toResponList(res),
 	})
 }

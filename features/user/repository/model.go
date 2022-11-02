@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
+type Mentor struct {
 	gorm.Model
 	Name     string
 	Images   string
@@ -16,8 +16,8 @@ type User struct {
 	Class    string
 }
 
-func FromDomain(du user.Core) User {
-	return User{
+func FromDomain(du user.Core) Mentor {
+	return Mentor{
 		Model:    gorm.Model{ID: du.ID},
 		Name:     du.Name,
 		Email:    du.Email,
@@ -26,8 +26,8 @@ func FromDomain(du user.Core) User {
 	}
 }
 
-func fromCore(dataCore user.Core) User {
-	dataModel := User{
+func fromCore(dataCore user.Core) Mentor {
+	dataModel := Mentor{
 		// ID:     dataCore.ID,
 		Name:     dataCore.Name,
 		Images:   dataCore.Images,
@@ -40,8 +40,8 @@ func fromCore(dataCore user.Core) User {
 
 }
 
-func updateCore(dataCore user.Core) User {
-	dataModel := User{
+func updateCore(dataCore user.Core) Mentor {
+	dataModel := Mentor{
 		// ID:     dataCore.ID,
 		Name:     dataCore.Name,
 		Images:   dataCore.Images,
@@ -52,7 +52,7 @@ func updateCore(dataCore user.Core) User {
 
 }
 
-func (data *User) toCore() user.Core {
+func (data *Mentor) toCore() user.Core {
 	return user.Core{
 		ID:       data.ID,
 		Name:     data.Name,
@@ -65,7 +65,7 @@ func (data *User) toCore() user.Core {
 
 }
 
-func ToDomain(u User) user.Core {
+func ToDomain(u Mentor) user.Core {
 	return user.Core{
 		ID:       u.ID,
 		Name:     u.Name,
@@ -76,7 +76,7 @@ func ToDomain(u User) user.Core {
 	}
 }
 
-func ToCoreList(data []User) []user.Core {
+func ToCoreList(data []Mentor) []user.Core {
 	var dataCore []user.Core
 	for key := range data {
 

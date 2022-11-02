@@ -7,6 +7,6 @@ import (
 )
 
 func InitMigrate(db *gorm.DB) {
-	db.AutoMigrate(&userModel.User{})
+	db.AutoMigrate(&userModel.Mentor{})
 
 }

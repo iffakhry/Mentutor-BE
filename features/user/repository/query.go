@@ -29,7 +29,7 @@ func (repo *userData) PostData(data user.Core) (int, error) {
 
 func (repo *userData) MyProfile(token int) (user.Core, error) {
 
-	var data User
+	var data Mentor
 
 	tx := repo.db.First(&data, token)
 	if tx.Error != nil {
@@ -41,7 +41,7 @@ func (repo *userData) MyProfile(token int) (user.Core, error) {
 
 }
 func (repo *userData) GetAll() ([]user.Core, error) {
-	var data []User
+	var data []Mentor
 	tx := repo.db.Find(&data)
 	if tx.Error != nil {
 		return []user.Core{}, tx.Error
@@ -51,7 +51,7 @@ func (repo *userData) GetAll() ([]user.Core, error) {
 }
 
 func (repo *userData) UpdateData(data user.Core) (row int, err error) {
-	tx := repo.db.Model(&User{}).Where("id = ?", data.ID).Updates(updateCore(data))
+	tx := repo.db.Model(&Mentor{}).Where("id = ?", data.ID).Updates(updateCore(data))
 	if tx.Error != nil {
 		return -1, tx.Error
 	}
@@ -63,7 +63,7 @@ func (repo *userData) UpdateData(data user.Core) (row int, err error) {
 }
 
 func (repo *userData) SelectDataId(param, token int) (user.Core, error) {
-	var datacheck User
+	var datacheck Mentor
 	txcheck := repo.db.Where("ID=?", token).First(&datacheck)
 	if txcheck.Error != nil {
 		return user.Core{}, errors.New("error tx")
@@ -73,7 +73,7 @@ func (repo *userData) SelectDataId(param, token int) (user.Core, error) {
 		return user.Core{}, errors.New("not have access")
 	}
 
-	var data User
+	var data Mentor
 	tx := repo.db.First(&data, param)
 	if tx.Error != nil {
 		return user.Core{}, tx.Error
@@ -85,7 +85,7 @@ func (repo *userData) SelectDataId(param, token int) (user.Core, error) {
 
 func (repo *userData) DeleteData(token int) (int, error) {
 
-	tx := repo.db.Unscoped().Where("id = ?", token).Delete(&User{})
+	tx := repo.db.Unscoped().Where("id = ?", token).Delete(&Mentor{})
 	if tx.Error != nil {
 		return -1, tx.Error
 	}
