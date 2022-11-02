@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
+type Mentor struct {
 	gorm.Model
 	Name     string `json:"name" form:"name"`
 	Email    string `json:"email" form:"email"`
@@ -15,7 +15,7 @@ type User struct {
 	Class    string `json:"class" form:"class"`
 }
 
-func ToDomain(u User) login.Core {
+func ToDomain(u Mentor) login.Core {
 	return login.Core{
 		ID:       u.ID,
 		Name:     u.Name,
@@ -25,8 +25,8 @@ func ToDomain(u User) login.Core {
 	}
 }
 
-func FromDomain(du login.Core) User {
-	return User{
+func FromDomain(du login.Core) Mentor {
+	return Mentor{
 		Model:    gorm.Model{ID: du.ID},
 		Name:     du.Name,
 		Email:    du.Email,
