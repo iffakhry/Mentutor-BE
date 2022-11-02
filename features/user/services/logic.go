@@ -50,8 +50,23 @@ func (service *userUsecase) GetProfile(token int) (user.Core, error) {
 	return dataId, nil
 }
 func (usecase *userUsecase) PutDataId(data user.Core) (int, error) {
-	row, err := usecase.userData.UpdateData(data)
-	return row, err
+	// row, err := usecase.userData.UpdateData(data)
+	// return row, err
+	if data.Password != "" {
+		hash, _ := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
+		data.Password = string(hash)
+	}
+
+	if data.Role == "admin" {
+		data.Role = "Admin"
+	}
+
+	row, _ := usecase.userData.UpdateData(data)
+	if row == -1 {
+		return -1, errors.New("not found")
+	}
+
+	return row, nil
 }
 func (service *userUsecase) GetAlluser() ([]user.Core, error) {
 	row, err := service.userData.GetAll()
