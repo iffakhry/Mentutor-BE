@@ -6,22 +6,50 @@ info:
 servers:
   # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/HERIBUDIYANA/Mentutor/1.0.0
+    url: https://virtserver.swaggerhub.com/NURFATUROHMAN28/Mentutor/1.0.0
 tags:
-  - name: Registers
-    description: Register New User
   - name: Login
     description: Login as users
-  - name: Users
-    description: Management Data User
-  - name: Task
-    description: Task For Meetee
-  
+  - name: Admin
+    description: Management users & class
+  - name : Mentor
+    description: Mentor Features
+  - name : Mentee
+    description: Mentee Feature
+  - name : Class
+  - name : Task
+  - name : Forum
+    description: For discussion in class
 paths:
-  /registers:
+
+# FITUR ADMIN
+
+  /login:
     post:
       tags:
-        - "Registers"
+        - "Login"
+      summary: Login User
+      description: Login User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginReq'
+            example:
+                  email: "hery@gmail.com"
+                  password: "asdfqwer"
+      responses:
+        '200':
+            $ref: '#/components/responses/successLogin'
+        '400':
+            $ref: '#/components/responses/failedRespon'
+        '500':
+            $ref: '#/components/responses/failedRespon500'
+  /users:
+    post:
+      tags:
+        - "Admin"
       summary: Register New Users
       description: User Register
       security:
@@ -43,53 +71,62 @@ paths:
                   role: Mentee
       responses:
         '201':
-           $ref: '#/components/responses/successRegister'
+          $ref: '#/components/responses/getProfileUser'
         '400':
-           $ref: '#/components/responses/failedRespon'
+            $ref: '#/components/responses/failedRespon'
         '500':
-           $ref: '#/components/responses/failedRespon500'
-  /login:
-    post:
-      tags:
-        - "Login"
-      summary: Login User
-      description: Login User
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserLoginReq'
-            example:
-                  email: "hery@gmail.com"
-                  password: "asdfqwer"
-      responses:
-        '200':
-           $ref: '#/components/responses/successLogin'
-        '400':
-           $ref: '#/components/responses/failedRespon'
-        '500':
-           $ref: '#/components/responses/failedRespon500'
-  /users:
+            $ref: '#/components/responses/failedRespon500'  
     get:
       tags:
-        - "Users"
-      summary: Get Profile
-      description: Get My Profile Details
+        - "Admin"
+      summary: Get All User
+      description: Get all profile mentee & mentor
       security:
         - JWTAuth: []
       responses:
         '200':
-          $ref: '#/components/responses/getProfileUser'
+          description: Success get all users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  "message":
+                    type: string
+                  "data":
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        role:
+                          type: string
+                        class:
+                          type: string
+                example:
+                  message: success get all users
+                  data:
+                    - id : 1
+                      name : Budi
+                      role : Mentor
+                      class : Back End
+                    - id : 2
+                      name : John
+                      role : Mentee
+                      class : Front End
         '400':
           $ref: '#/components/responses/failedRespon'
         '500':
           $ref: '#/components/responses/failedRespon500'
-    put:
+  /classes:
+    post:
       tags:
-        - "Users"
-      summary: Update Users
-      description: Update Users
+        - "Class"
+      summary: Register New Class
+      description: Menambahkan kelas baru dari fitur admin
       security:
         - JWTAuth: []
       requestBody:
@@ -97,26 +134,43 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserUpdateRequest'
+              $ref: '#/components/schemas/AddNewClass'
             example:
-              name: Hery
-              images: hery-depok.jpg
-              # bio: "akun buat jajanin ayang"
-              # phone: 08123
-              # address: Green Andara Residence Blok F4 No. 12 samping rumah aa Rafi
-              email: hery@gmail.id
-              password: asdfghjk
+              class: Back End
+      responses:
+        '201':
+          $ref: '#/components/responses/responses201'
+        '400':
+          $ref: '#/components/responses/failedRespon'
+        '500':
+          $ref: '#/components/responses/failedRespon500'
+  /users/{id_user}:
+    put:
+      tags:
+        - "Admin"
+      summary: Update Users
+      description: Update Users
+      security:
+        - JWTAuth: []
+      parameters: 
+        - in: path
+          name: id_user
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UserUpdateRequest'
+              $ref: '#/components/schemas/AdminUpdateRequest'
             example:
               name: Hery
               images: hery-depok.jpg
-              # bio: "akun buat jajanin ayang"
-              # phone: 08123
-              # address: Green Andara Residence Blok F4 No. 12 samping rumah aa Rafi
               email: hery@gmail.id
               password: asdfghjk
+              role: mentee
+              class: Back End
       responses:
         '200':
           $ref: '#/components/responses/successUpdate'
@@ -126,11 +180,17 @@ paths:
           $ref: '#/components/responses/failedRespon500'
     delete:
       tags:
-        - "Users"
-      summary: Delete My Account
-      description: Endpoint to delete my Account
+        - "Admin"
+      summary: Delete User Account
+      description: Menghapus akun user oleh admin
       security:
         - JWTAuth: []
+      parameters:
+      - in: path
+        required: true
+        name: id_user
+        schema:
+          type: integer
       responses:
         '200':
           $ref: '#/components/responses/successDelete'
@@ -138,17 +198,16 @@ paths:
           $ref: '#/components/responses/failedRespon'
         '500':
           $ref: '#/components/responses/failedRespon500'     
-  /users/{id}:
     get:
       tags:
-        - "Users"
+        - "Admin"
       summary: Get Profile Other User
       description: Get Profile User
       security:
         - JWTAuth: []
       parameters:
         - in: path
-          name: id
+          name: id_user
           schema:
             type: integer
           required: true
@@ -159,12 +218,83 @@ paths:
           $ref: '#/components/responses/failedRespon'
         '500':
           $ref: '#/components/responses/failedRespon500'
-  /tasks:
+  /classes/{id_class}:
+    put:
+      tags:
+        - "Class"
+      summary: Update class name or Status
+      description: Ubah status kelas menjadi aktif/nonaktif atau mengganti nama kelas
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id_class
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateClass' 
+            example:
+              class: Front End
+              status: active
+      responses:
+        '200':
+          $ref: '#/components/responses/successRespon'
+        '400':
+          $ref: '#/components/responses/failedRespon'
+        '500':
+          $ref: '#/components/responses/failedRespon500'
+    delete:
+      tags:
+        - "Class"
+      summary: Delete exiting class
+      description: Menghapus kelas yang non aktif
+      security:
+        - JWTAuth: []
+      parameters:
+        - name: id_class
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          $ref: '#/components/responses/successDelete'
+
+# FITUR MENTOR
+  
+  /users/update:
+    put:
+      tags:
+      - "Mentor"
+      - "Mentee"
+      summary: Update profile user
+      description: Update profile mentor by id mentor dari token
+      security:
+        - JWTAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserUpdateProfile'
+      responses:
+        '200':
+          $ref: '#/components/responses/AdminUpdateProfile'
+        '400':
+           $ref: '#/components/responses/failedRespon'
+        '500':
+           $ref: '#/components/responses/failedRespon500'
+  /mentors/tasks:
     post:
       tags:
-        - "Task"
-      summary: Task For Mentee (mentor only posts)
-      description: Task For Mentee 
+        - "Mentor"
+      summary: Add task by mentor
+      description: Menambahkan tugas yang diberikan oleh mentor untuk mentee pada kelas 
       security:
         - JWTAuth: []
       requestBody:
@@ -181,76 +311,213 @@ paths:
                 due_date: "2022/11/05"
       responses:
         '201':
-          $ref: '#/components/responses/responses201'
+          $ref: '#/components/responses/successTask'
         '400':
-           $ref: '#/components/responses/failedRespon'
+            $ref: '#/components/responses/failedRespon'
+        '500':
+            $ref: '#/components/responses/failedRespon500'
+    get:
+      tags: 
+      - "Mentor"
+      summary: Get all task by id mentor
+      description: Mengambil data seluruh tugas yang telah dibuat oleh mentor 
+      security: 
+      - JWTAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/successGetTask'
+        '400':
+          $ref: '#/components/responses/failedRespon'
         '500':
            $ref: '#/components/responses/failedRespon500'
-    # get:
-    #   tags:
-    #     - "Task"
-    #   summary: Get All My Tasks
-    #   description: Get all tasks
-
-  /tasks/{id}:
-    put:
-      tags:
-        - "Task"
-      summary: Update Tasks
-      description: update my task by id
+  /mentors/tasks/{id_task}:
+    get:
+      tags: 
+        - "Mentor"
+      summary: Get detail task
+      description: Mengambil detail tugas dengan data array assignment mentee
       security:
         - JWTAuth: []
-      parameters:
+      parameters: 
         - in: path
-          name: id
+          name: id_task
+          required: true
           schema:
             type: integer
-          required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/successGetSingleTask'
+    put:
+      tags: 
+      - "Mentor"
+      summary: Update task by mentor
+      description: Update tugas oleh mentor jika ada perubahan
+      parameters: 
+      - in: path
+        name: id_task
+        required: true
+        schema:
+          type: integer
+      security: 
+        - JWTAuth: []
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/taskBodyReq'
-              example:
-                title: bilangan prima
-                description: tentukan bilangan prima berbentuk segi empat
-                images: task-bil-prima.jpg
-                file: bilangan-prima.pdf
-                due_date: "2022/11/15"
+          aplication/json:
+            schema:
+               $ref: '#/components/schemas/taskBodyReq'
       responses:
-        '200':
-          $ref: '#/components/responses/successRespon'
+        '201':
+          $ref: '#/components/responses/successTask'
         '400':
-           $ref: '#/components/responses/failedRespon'
+          $ref: '#/components/responses/failedRespon'
         '500':
-           $ref: '#/components/responses/failedRespon500'
+          $ref: '#/components/responses/failedRespon500'
     delete:
-      tags:
-        - "Task"
-      summary: Delete Task
-      description: delete task by id
-      security:
+      tags: 
+      - "Mentor"
+      summary: Delete task by mentor
+      description: Delete tugas oleh mentor jika tugas ingin dihapus
+      parameters: 
+      - in: path
+        name: id_task
+        required: true
+        schema:
+          type: integer
+      security: 
         - JWTAuth: []
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
       responses:
         '200':
           $ref: '#/components/responses/successDelete'
         '400':
            $ref: '#/components/responses/failedRespon'
         '500':
+          $ref: '#/components/responses/failedRespon500'
+  
+# FITUR MENTEE
+
+  /mentees/tasks:
+    get:
+      tags:
+      - "Mentee"
+      summary: Get all task by mentee class
+      description: Mengambil semua tugas yang ada pada kelas mentee tersebut
+      security:
+      - JWTAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/getAllTaskMentee'
+        '400':
+           $ref: '#/components/responses/failedRespon'
+        '500':
            $ref: '#/components/responses/failedRespon500'
 
-
+# FITUR TASK
+  /mentees/submission/{id_task}:
+    post:
+      tags:
+      - "Task"
+      summary: Assign task by mentee
+      description: Mentee mengumpulkan tugas dari daftar tugas yang ada
+      parameters:
+        - in: path
+          name: id_task
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddSubmission'
+      responses:
+        '200':
+            $ref: '#/components/responses/successAddAssignment'
+        '400':
+           $ref: '#/components/responses/failedRespon'
+        '500':
+           $ref: '#/components/responses/failedRespon500'
+  /mentors/submisson/{id_submission}:
+    post:
+      tags:
+      - "Task"
+      summary: Submit score by mentor
+      description: Mentor memberikan nilat terhadap tugas yang di submit mentee
+      parameters:
+      - in: path
+        name: id_submission
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          aplication/json:
+            schema:
+              type: object
+              properties:
+                  "score":
+                    type: integer
+                    example: 90
+      responses:
+        '200':
+          $ref: '#/components/responses/successSubmitScore'
+        '400':
+           $ref: '#/components/responses/failedRespon'
+        '500':
+           $ref: '#/components/responses/failedRespon500'
+            
+# FITUR FORUM
+  /users/forum:
+    get:
+      tags:
+      - "Forum"
+      security:
+      - JWTAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/GetStatus'
+        '400':
+           $ref: '#/components/responses/failedRespon'
+        '500':
+           $ref: '#/components/responses/failedRespon500'
+    post:
+      tags:
+      - "Forum"
+      security:
+      - JWTAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                "caption":
+                  type: string
+                "images":
+                  type: string
+      responses:
+        '201':
+          description: success add status
+          content:
+            aplication/json:
+              schema:
+                type: object
+                properties:
+                  "id_status":
+                    type: integer
+                  "caption":
+                    type: string
+                  "images":
+                    type: string
+                example:
+                  id_status: 1
+                  caption: Untuk soal Persamaan point 2 maksudnya gimana ya?
+                  images: persamaan.jpg
+        '400':
+           $ref: '#/components/responses/failedRespon'
+        '500':
+           $ref: '#/components/responses/failedRespon500'
       
-
-
-
 
 components:
   securitySchemes:
@@ -259,6 +526,19 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    UpdateClass:
+      type: object
+      properties:
+        "class":
+          type: string
+        "status":
+          type: string
+    AddNewClass:
+      type: object
+      properties:
+        "class":
+          type: string
+          minLength: 1
     UserLoginReq:
       type: object
       properties:
@@ -268,15 +548,12 @@ components:
         "password":
           type: string
           format: password
-    UserUpdateRequest:
+    AdminUpdateRequest:
       type: object
       properties:
         "name":
           type: string
           minLength: 3
-        # "phone":
-        #   type: string
-        #   minLength: 3
         "email":
           type: string
           minLength: 3
@@ -285,6 +562,10 @@ components:
           format: password
           minLength: 3
         "images":
+          type: string
+        "role":
+          type: string
+        "class":
           type: string
     taskBodyReq:
       type: object
@@ -322,6 +603,27 @@ components:
         "class":
           type: string
           minLength: 1
+    UserUpdateProfile:
+      type: object
+      properties:
+        "name":
+          type: string
+          minLength: 3
+        "email":
+          type: string
+          minLength: 3
+        "password":
+          type: string
+          format: password
+          minLength: 3
+        "images":
+          type: string
+    AddSubmission:
+      type: object
+      properties:
+        "file":
+          type: string
+
   responses:
     successRegister:
       description: Success Register New Users
@@ -338,6 +640,7 @@ components:
                 example:
                   "id": 1
                   "name": "Hery"
+                  "email" : "hery@gmail.com"
                   "role": "Mentee"
                   "class": "back-end"
     successDelete:
@@ -359,7 +662,7 @@ components:
             properties:
               message:
                 type: string
-                example: Failed
+                example: invalid input from client
     failedRespon500:
       description: Status Server Error
       content:
@@ -369,7 +672,7 @@ components:
             properties:
               message:
                 type: string
-                example: Failed Status Internal Server Error
+                example: Internal Server Error
     successRespon:
       description: Status Response Success
       content:
@@ -403,7 +706,7 @@ components:
               data:
                 type: object
                 properties:
-                  id:
+                  id_user:
                     type: integer
                     example: 1
                   name:
@@ -412,6 +715,9 @@ components:
                   role:
                     type: string
                     example: Mentee
+                  id_class:
+                    type: integer
+                    example: 1
                   class:
                     type: string
                     example: Back-end
@@ -450,7 +756,7 @@ components:
               data:
                 type: object
                 properties:
-                  id:
+                  id_user:
                     type: integer
                   images:
                     type: string
@@ -463,11 +769,307 @@ components:
           example:
             message: Success Get Profile
             data:
-              id: 1
-              name: "Hery"
+              id_user: 1
+              name: "Herry"
               images: "images.jpg"
               class: "Back-end"
               role: "mentee"
-                
-                      
-                  
+    AdminUpdateProfile: 
+      description: Success Update profile
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              data:
+                type: object
+                properties:
+                  id_user:
+                    type: integer
+                  email:
+                    type: string
+                  name:
+                    type: string
+                  images:
+                    type: string
+          example:
+            message: success update profile
+            data:
+              id_user: 1
+              name: "Hery"
+              email: "hery@gmail.com"
+              images: "images.jpg"
+    successTask:
+      description: Success add task from mentor
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              data: 
+                type: object
+                properties:
+                  id_task:
+                    type: string
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  images:
+                    type: string
+                  file:
+                    type: string
+                  due_date:
+                    type: string
+            example:
+              message: Success insert task
+              data:
+                id_task: 1
+                title: bilangan prima
+                description: tentukan bilangan prima dari a ke z apa bila a 12 z 222 tentukan hasil bilangannya
+                images: task-bil-prima.jpg
+                file: bilangan-prima.pdf
+                due_date: 2022/11/05
+    successGetTask:
+      description: Success get all task by id mentor
+      content:
+        multipart/form-dat:
+          schema:
+            type: object
+            properties:
+              "message":
+                type: string
+              "data":
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_task:
+                      type: string
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    images:
+                      type: string
+                    file:
+                      type: string
+                    due_date:
+                      type: string
+          example: 
+            message: Success insert task
+            data:
+              - id_task: 1
+                title: bilangan prima
+                description: tentukan bilangan prima dari a ke z apa bila a 12 z 222 tentukan hasil bilangannya
+                images: task-bil-prima.jpg
+                file: bilangan-prima.pdf
+                due_date: 2022/11/05
+              - id_task: 2
+                title: bilangan ganjil
+                description: tentukan bilangan ganjil dari 1 sampai 10
+                images: task-bil-ganjil.jpg
+                file: bilangan-ganjil.pdf
+                due_date: 2022/11/05
+              - id_task: 3
+                title: bilangan fibonacci
+                description: tentukan bilangan fibonnaci ke 10
+                images: task-bil-fibo.jpg
+                file: bilangan-fibo.pdf
+                due_date: 2022/11/05
+    successGetSingleTask:
+      description: Success get all task by id mentor
+      content:
+        multipart/form-dat:
+          schema:
+            type: object
+            properties:
+              "message":
+                type: string
+              "data":
+                type: object
+                properties:
+                  id_task:
+                    type: integer
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  images:
+                    type: string
+                  file:
+                    type: string
+                  due_date:
+                    type: string
+                  assignment:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        "id_submission":
+                          type: string
+                        "score":
+                          type: integer
+          example: 
+            message: success get single task
+            data:
+              id_task: 1
+              title: Persamaan
+              description: Persamaan dari 2x+2y=3 adalah?
+              images: persamaan.jpg
+              file: persamaan.pdf
+              due_date: 2022/11/22
+              assignment:
+                - id_submission: 1
+                  name: Surya
+                  score: 0
+                - id_submission: 2
+                  name: Peter
+                  score: 0
+    getAllTaskMentee:
+      description: Success get all task
+      content:
+        aplication/json:
+          schema:
+            type: object
+            properties:
+              "message":
+                type: string
+              "data":
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_task:
+                      type: integer
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    images: 
+                      type: string
+                    file:
+                      type: string
+                    score:
+                      type: integer
+                    due_date:
+                      type: string
+          example: 
+            message: success get all task
+            data:
+              - id_task: 1
+                title: bilangan prima
+                description: tentukan bilangan prima dari a ke z apa bila a 12 z 222 tentukan hasil bilangannya
+                images: task-bil-prima.jpg
+                file: bilangan-prima.pdf
+                score: 0
+                due_date: 2022/11/05
+              - id_task: 2
+                title: bilangan ganjil
+                description: tentukan bilangan ganjil dari 1 sampai 10
+                images: task-bil-ganjil.jpg
+                file: bilangan-ganjil.pdf
+                due_date: 2022/11/05
+                score: 70
+              - id_task: 3
+                title: bilangan fibonacci
+                description: tentukan bilangan fibonnaci ke 10
+                images: task-bil-fibo.jpg
+                file: bilangan-fibo.pdf
+                score: 90
+                due_date: 2022/11/05
+    successAddAssignment:
+      description: success insert assignment
+      content:
+        aplication/json:
+          schema:
+            type: object
+            properties:
+              "message":
+                type: string
+              "data":
+                type: object
+                properties:
+                  id_task: 
+                    type: integer
+                  file:
+                    type: string
+          example:
+            message: success insert assignment
+            data:
+              id_submission: 1
+              title: persamaan
+              file: tugas.pdf
+    successSubmitScore:
+      description: success insert score
+      content:
+        aplication/json:
+          schema:
+            type: object
+            properties:
+              "message":
+                type: string
+              "data":
+                type: object
+                properties:
+                  "id_submission": 
+                    type: integer
+                  "title":
+                    type: string
+                  "file":
+                    type: string
+                  "score":
+                    type: integer
+          example:
+            message: success insert assignment
+            data:
+              id_submission: 1
+              title: Tugas Persamaan
+              file: tugas.pdf
+              score: 90
+    GetStatus:
+      description: success get all status by id class
+      content:
+        aplication/json:
+          schema:
+            type: object
+            properties:
+              "message":
+                type: string
+              "data":
+                type: object
+                properties:
+                  "id_status":
+                    type: integer
+                  "name":
+                    type: string
+                  "caption":
+                    type: string
+                  "comments":
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        "id_comments":
+                          type: integer
+                        "caption":
+                          type: string
+          example:
+            message: success get all status
+            data:
+              id_status: 1
+              name: Budi
+              caption: Untuk soal Persamaan point 2 maksudnya gimana ya?
+              comments:
+                - id_comment: 1
+                  nama: Robert
+                  role: mentor
+                  caption: itu yang tanda lebih darinya kebalik
+                - id_comment: 2
+                  nama: Stephen
+                  role: mentee
+                  caption: iya aku juga bingung banget
