@@ -11,6 +11,10 @@ import (
 	loginDelivery "be12/mentutor/features/login/delivery"
 	loginData "be12/mentutor/features/login/repository"
 	loginUsecase "be12/mentutor/features/login/services"
+
+	menteeDelivery "be12/mentutor/features/mentee/delivery"
+	menteeData "be12/mentutor/features/mentee/repository"
+	menteeUsecase "be12/mentutor/features/mentee/services"
 )
 
 func InitFactory(e *echo.Echo, db *gorm.DB) {
@@ -21,4 +25,8 @@ func InitFactory(e *echo.Echo, db *gorm.DB) {
 	loginDataFactory := loginData.New(db)
 	loginUsecaseFactory := loginUsecase.New(loginDataFactory)
 	loginDelivery.New(e, loginUsecaseFactory)
+
+	menteeDataFactory := menteeData.New(db)
+	menteeUsecaseFactory := menteeUsecase.New(menteeDataFactory)
+	menteeDelivery.New(e, menteeUsecaseFactory)
 }

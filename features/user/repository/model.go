@@ -8,11 +8,11 @@ import (
 
 type Mentor struct {
 	gorm.Model
-	Name     string
-	Images   string
-	Email    string
-	Password string
-	Role     string
+	Name     string `gorm:"type:varchar(255);not null"`
+	Images   string `gorm:"type:varchar(255);not null"`
+	Email    string `gorm:"type:varchar(255);unique;not null"`
+	Password string `gorm:"type:varchar(255);not null"`
+	Role     string `gorm:"type:enum('admin', 'mentor');not null"`
 	Class    string
 }
 
