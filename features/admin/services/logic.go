@@ -4,6 +4,9 @@ import (
 	"be12/mentutor/features/admin"
 	"be12/mentutor/middlewares"
 	"errors"
+	"log"
+
+	// "log"
 	"strings"
 	"unicode"
 
@@ -25,6 +28,7 @@ func (au *adminUsecase) AddUser(input admin.UserCore, c echo.Context) (admin.Use
 	// CEK ROLE USER
 	_, _, role := middlewares.ExtractToken(c)
 	if role != "admin" {
+		log.Print("user not admin")
 		return admin.UserCore{}, errors.New("user not admin")
 	}
 
@@ -81,6 +85,7 @@ func (au *adminUsecase) AddUser(input admin.UserCore, c echo.Context) (admin.Use
 	} else {
 		res, err := au.adminRepo.InsertMentor(input)
 		if err != nil {
+			log.Print("error add mentor")
 			return admin.UserCore{}, errors.New("error add user")
 		} else {
 			return res, nil
@@ -126,4 +131,53 @@ func (au *adminUsecase) GetAllClass(c echo.Context) ([]admin.ClassCore, error) {
 	}
 
 	return res, nil
+}
+
+func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, c echo.Context) (admin.UserCore, error) {
+	_, _, role := middlewares.ExtractToken(c)
+	if role != "admin" {
+		return admin.UserCore{}, errors.New("user not admin")
+	}
+
+	if input.Role == "mentor"{
+		res, err := au.adminRepo.EditUserMentor(input)
+		if err != nil {
+			return admin.UserCore{}, errors.New("error in database")
+		}
+		return res, nil
+	} else if input.Role == "mentee" {
+		res, err := au.adminRepo.EditUserMentee(input)
+		if err != nil {
+			return admin.UserCore{}, errors.New("error in database")
+		}
+		return res, nil
+	}
+	return admin.UserCore{}, nil
+}
+
+func (au *adminUsecase) DeleteUserMentee(id uint, c echo.Context) (error) {
+	_, _, role := middlewares.ExtractToken(c)
+	if role != "admin" {
+		return errors.New("user not admin")
+	}
+
+	err := au.adminRepo.DeleteUserMentee(id)
+	if err != nil {
+		log.Print("eror in database")
+		return errors.New("error in database")
+	}
+	return nil
+}
+
+func (au *adminUsecase) DeleteUserMentor(id uint, c echo.Context) (error) {
+	_, _, role := middlewares.ExtractToken(c)
+	if role != "admin" {
+		return errors.New("user not admin")
+	}
+
+	err := au.adminRepo.DeleteUserMentor(id)
+	if err != nil {
+		return errors.New("error in database")
+	}
+	return nil
 }

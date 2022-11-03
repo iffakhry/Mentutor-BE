@@ -42,6 +42,7 @@ func initConfig() *AppConfig {
 	// if err := godotenv.Load("config.env"); err != nil {
 	// 	log.Fatal(err)
 	// }
+
 	serverPortConv, errConv1 := strconv.Atoi(os.Getenv("SERVER_PORT"))
 	if errConv1 != nil {
 		log.Fatal("error parse SERVER PORT")
