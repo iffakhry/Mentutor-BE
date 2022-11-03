@@ -2,8 +2,8 @@ package delivery
 
 import (
 	"be12/mentutor/features/mentee"
+	"be12/mentutor/middlewares"
 	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -18,27 +18,17 @@ func New(e *echo.Echo, usecase mentee.UseCaseInterface) {
 		MenteeUsecase: usecase,
 	}
 
-	e.POST("/users/update", handler.UpdateProfile())
+	e.PUT("/update/:id_user", handler.UpdateProfile()) // UPDATE PROFILE USER
 }
 
 func (md *MenteeDelivery) UpdateProfile() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var input UpdateFormat
-		var id uint
 
-		if err := c.Bind(&input); err != nil {
-			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
-		}
-
-		idCnv, err := strconv.Atoi(c.Param("id_user"))
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
-		}
-		id = uint(idCnv)
-
+		id, _ := middlewares.ExtractToken(c)
 		cnvInput := ToEntity(input)
-
-		res, err := md.MenteeUsecase.UpdateProfile(id, cnvInput)
+		
+		res, err := md.MenteeUsecase.UpdateProfile(uint(id), cnvInput)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, FailedResponse("Something Error In Server"))
 		}

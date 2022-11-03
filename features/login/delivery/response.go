@@ -10,13 +10,6 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
-func SuccessResponseWithData(msg string, data interface{}) map[string]interface{} {
-	return map[string]interface{}{
-		"message": msg,
-		"data":    data,
-	}
-}
-
 func ToResponse(core interface{}, code string) interface{} {
 	var res interface{}
 	switch code {

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"be12/mentutor/features/mentee"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -20,7 +21,8 @@ func (md *menteeData) EditProfile(id uint, data mentee.MenteeCore) (mentee.Mente
 	var res Mentee
 	
 	res = FromEntity(data)
-	if err := md.db.Where("id = ", id).Updates(&res).Error; err != nil {
+	if err := md.db.Where("id = ?", id).Updates(&res).Error; err != nil {
+		log.Print(err.Error(), "ERROR INSERT TO DATBASE")
 		return mentee.MenteeCore{}, err
 	}
 	

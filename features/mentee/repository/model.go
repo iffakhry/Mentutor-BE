@@ -8,11 +8,11 @@ import (
 
 type Mentee struct {
 	gorm.Model
-	Name     string `gorm:"type:varchar(255);not null"`
-	Email    string `gorm:"type:varchar(255);not null;unique"`
-	Password string `gorm:"type:varchar(255);not null"`
-	Images   string `gorm:"type:varchar(255);not null"`
-	IdClass  uint `gorm:"type:uint();not null"`
+	Name        string `gorm:"type:varchar(255);not null"`
+	Email       string `gorm:"type:varchar(255);not null;unique"`
+	Password    string `gorm:"type:varchar(255);not null"`
+	Images      string `gorm:"type:varchar(255);not null"`
+	IdClass     uint
 }
 
 func FromEntity(data mentee.MenteeCore) Mentee {
