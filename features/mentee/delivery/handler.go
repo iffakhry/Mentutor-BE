@@ -25,10 +25,10 @@ func (md *MenteeDelivery) UpdateProfile() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var input UpdateFormat
 
-		id, _ := middlewares.ExtractToken(c)
+		IdUser, _, _  := middlewares.ExtractToken(c)
 		cnvInput := ToEntity(input)
 		
-		res, err := md.MenteeUsecase.UpdateProfile(uint(id), cnvInput)
+		res, err := md.MenteeUsecase.UpdateProfile(uint(IdUser), cnvInput)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, FailedResponse("Something Error In Server"))
 		}
