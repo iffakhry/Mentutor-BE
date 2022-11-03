@@ -42,3 +42,22 @@ func (ar *adminRepo) GetAllClass(id uint) (admin.ClassCore, error) {
 	cnv := ToDomainClass(res)
 	return cnv, nil
 }
+
+func (ar *adminRepo) GetAllUser() ([]admin.UserCore, []admin.UserCore, error) {
+	var mentees []Mentee
+	var mentors []Mentor
+	
+	if err := ar.db.Find(&mentees).Error; err != nil {
+		return []admin.UserCore{}, []admin.UserCore{}, err
+	}
+
+	if err := ar.db.Where("role != ?", "admin").Find(&mentors).Error; err != nil {
+		return []admin.UserCore{}, []admin.UserCore{}, err
+	}
+
+	cnvMentees := ToDomainMenteeArray(mentees)
+	cnvMentors := ToDomainMentorArray(mentors)
+
+	return cnvMentees, cnvMentors, nil
+
+}

@@ -79,3 +79,31 @@ func ToDomainClass(data Class) admin.ClassCore {
 		ClassName: data.ClassName,
 	}
 }
+
+func ToDomainMenteeArray(data []Mentee) []admin.UserCore{
+	var res []admin.UserCore
+	
+	for _, val := range data {
+		res = append(res, admin.UserCore{
+			IdUser: val.ID,
+			Name: val.Name,
+			Role: val.Role,
+			Class: val.Role,
+		})
+	}
+	return res
+}
+
+func ToDomainMentorArray(data []Mentor) []admin.UserCore{
+	var res []admin.UserCore
+	
+	for _, val := range data {
+		res = append(res, admin.UserCore{
+			IdUser: val.ID,
+			Name: val.Name,
+			Role: val.Role,
+			Class: val.Role,
+		})
+	}
+	return res
+}

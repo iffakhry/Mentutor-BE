@@ -86,5 +86,17 @@ func (au *adminUsecase) AddUser(input admin.UserCore, c echo.Context) (admin.Use
 			return res, nil
 		}
 	}
+}
 
+func (au *adminUsecase) GetAllUser(c echo.Context) ([]admin.UserCore, []admin.UserCore, error) {
+	_, _, role := middlewares.ExtractToken(c)
+	if role != "admin" {
+		return []admin.UserCore{}, []admin.UserCore{},errors.New("user not admin")
+	}
+
+	resMentee, resMentor, err := au.adminRepo.GetAllUser()
+	if err != nil {
+		return []admin.UserCore{}, []admin.UserCore{}, errors.New("query error")
+	}
+	return resMentee, resMentor, nil
 }
