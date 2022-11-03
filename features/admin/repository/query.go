@@ -2,6 +2,7 @@ package repository
 
 import (
 	"be12/mentutor/features/admin"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -90,3 +91,47 @@ func (ar *adminRepo) GetAllClass() ([]admin.ClassCore, error) {
 	cnv := ToDomainClassArray(res)
 	return cnv, nil
 }
+
+func (ar *adminRepo) EditUserMentee(input admin.UserCore) (admin.UserCore, error) {
+	data := FromDomainUpdateMentee(input)
+
+	log.Print(data.ID)
+
+	if err := ar.db.Where("id = ?", data.ID).Updates(&data).Error; err != nil {
+		return admin.UserCore{}, err
+	}
+	return input, nil
+}
+
+func (ar *adminRepo) EditUserMentor(input admin.UserCore) (admin.UserCore, error) {
+	data := FromDomainUpdateMentor(input)
+	
+	if err := ar.db.Where("id = ?", data.ID).Updates(&data).Error; err != nil {
+		return admin.UserCore{}, err
+	}
+	return input, nil
+}
+
+func (ar *adminRepo) DeleteUserMentor(id uint) (error) {
+	var mentor Mentor
+
+	if err := ar.db.Where("id = ?", id).Delete(&mentor).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ar *adminRepo) DeleteUserMentee(id uint) (error) {
+	var mentee Mentee
+	mentee.ID = id
+
+	log.Print(mentee)
+
+	if err := ar.db.Delete(&mentee).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+
+

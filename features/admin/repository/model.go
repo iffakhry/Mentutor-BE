@@ -2,7 +2,6 @@ package repository
 
 import (
 	"be12/mentutor/features/admin"
-
 	"gorm.io/gorm"
 )
 
@@ -68,6 +67,29 @@ func FromDomainClass(data admin.ClassCore) Class {
 	}
 }
 
+func FromDomainUpdateMentee(data admin.UserCore) Mentee {
+	return Mentee{
+		Model: gorm.Model{ID: data.IdUser},
+		Name: data.Name,
+		Email: data.Email,
+		Password: data.Password,
+		Images: data.Images,
+		Role: data.Role,
+		IdClass: data.IdClass,
+	}
+}
+
+func FromDomainUpdateMentor(data admin.UserCore) Mentor {
+	return Mentor{
+		Model: gorm.Model{ID: data.IdUser},
+		Name: data.Name,
+		Email: data.Email,
+		Password: data.Password,
+		Images: data.Images,
+		Role: data.Role,
+		IdClass: data.IdClass,
+	}
+}
 // TO DOMAIN
 
 func ToDomainMentee(data Mentee) admin.UserCore {
