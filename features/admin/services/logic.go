@@ -65,7 +65,7 @@ func (au *adminUsecase) AddUser(input admin.UserCore, c echo.Context) (admin.Use
 
 	// CEK KELAS TERSEDIA
 	idClass := uint(input.IdClass)
-	_, err := au.adminRepo.GetAllClass(idClass)
+	_, err := au.adminRepo.GetClass(idClass)
 	if err != nil {
 		return admin.UserCore{}, errors.New("input not valid")
 	}
@@ -99,4 +99,31 @@ func (au *adminUsecase) GetAllUser(c echo.Context) ([]admin.UserCore, []admin.Us
 		return []admin.UserCore{}, []admin.UserCore{}, errors.New("query error")
 	}
 	return resMentee, resMentor, nil
+}
+
+func (au *adminUsecase) AddNewClass(input admin.ClassCore, c echo.Context) error {
+	_, _, role := middlewares.ExtractToken(c)
+	if role != "admin" {
+		return errors.New("user not admin")
+	}
+
+	err := au.adminRepo.InsertNewClass(input)
+	if err != nil {
+		return errors.New("input not valid")
+	}
+	return nil
+}
+
+func (au *adminUsecase) GetAllClass(c echo.Context) ([]admin.ClassCore, error) {
+	_, _, role := middlewares.ExtractToken(c)
+	if role != "admin" {
+		return []admin.ClassCore{}, errors.New("user not admin")
+	}
+
+	res, err := au.adminRepo.GetAllClass()
+	if err != nil {
+		return []admin.ClassCore{}, errors.New("error in database")
+	}
+
+	return res, nil
 }

@@ -30,8 +30,16 @@ type Class struct {
 	gorm.Model
 	ClassName string 
 	Status    string 
-	IdMentor  uint
 }
+
+type GetClass struct {
+	gorm.Model
+	ClassName string 
+	Status    string 
+	TotalStudent int
+}
+
+// FROM DOMAIN
 
 func FromDomainMentee(data admin.UserCore) Mentee {
 	return Mentee{
@@ -52,6 +60,15 @@ func FromDomainMentor(data admin.UserCore) Mentor {
 		Role: data.Role,
 	}
 }
+
+func FromDomainClass(data admin.ClassCore) Class {
+	return Class{
+		ClassName: data.ClassName,
+		Status: "active",
+	}
+}
+
+// TO DOMAIN
 
 func ToDomainMentee(data Mentee) admin.UserCore {
 	return admin.UserCore{
@@ -78,6 +95,20 @@ func ToDomainClass(data Class) admin.ClassCore {
 		IdClass: data.ID,
 		ClassName: data.ClassName,
 	}
+}
+
+func ToDomainClassArray(data []GetClass) []admin.ClassCore {
+	var res []admin.ClassCore
+
+	for _, val := range data {
+		res = append(res, admin.ClassCore{
+			IdClass: val.ID,
+			ClassName: val.ClassName,
+			Status: val.Status,
+			TotalStudent: val.TotalStudent,
+		})
+	}
+	return res
 }
 
 func ToDomainMenteeArray(data []Mentee) []admin.UserCore{
