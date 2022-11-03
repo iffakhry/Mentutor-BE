@@ -10,6 +10,9 @@ type RegisterFormat struct {
 	Role string `json:"role" form:"role"`
 }
 
+type AddClassFormat struct {
+	Class string `json:"class_name" form:"class_name"`
+}
 
 func ToDomain(data RegisterFormat) admin.UserCore {
 	return admin.UserCore{
@@ -18,5 +21,11 @@ func ToDomain(data RegisterFormat) admin.UserCore {
 		Password: data.Password,
 		IdClass: data.IdClass,
 		Role: data.Role,
+	}
+}
+
+func ToDomainClass(data AddClassFormat) admin.ClassCore {
+	return admin.ClassCore{
+		ClassName: data.Class,
 	}
 }

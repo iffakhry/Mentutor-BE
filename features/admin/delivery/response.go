@@ -16,6 +16,13 @@ type GetUserResponse struct {
 	Class string `json:"class"`
 }
 
+type GetAllClassResponse struct {
+	IdClass uint `json:"id_class"`
+	Class string `json:"class_name"`
+	Status string `json:"status"`
+	TotalStudent int `json:"total_student"`
+}
+
 func ToResponse(data admin.UserCore) RegisterResponse {
 	return RegisterResponse{
 		Name: data.Name,
@@ -41,6 +48,20 @@ func ToResponseUserArray(mentee []admin.UserCore, mentor []admin.UserCore) []Get
 			Name: val.Name,
 			Role: val.Role,
 			Class: val.Class,
+		})
+	}
+	return res
+}
+
+func ToResponseClassArray(data []admin.ClassCore) []GetAllClassResponse {
+	var res []GetAllClassResponse
+
+	for _, val := range data {
+		res = append(res, GetAllClassResponse{
+			IdClass: val.IdClass,
+			Class: val.ClassName,
+			Status: val.Status,
+			TotalStudent: val.TotalStudent,
 		})
 	}
 	return res
