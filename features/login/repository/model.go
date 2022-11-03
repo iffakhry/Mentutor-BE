@@ -8,11 +8,13 @@ import (
 
 type Mentor struct {
 	gorm.Model
-	Name     string `json:"name" form:"name"`
-	Email    string `json:"email" form:"email"`
-	Password string `json:"password" form:"password"`
-	Role     string `json:"role" form:"role"`
-	Class    string `json:"class" form:"class"`
+	Name     string `gorm:"type:varchar(255);not null"`
+	Images   string `gorm:"type:varchar(255);not null"`
+	Email    string `gorm:"type:varchar(255);unique;not null"`
+	Password string `gorm:"type:varchar(255);not null"`
+	Role     string `gorm:"type:enum('admin','mentor');not null"`
+	IdClass  uint
+	Class string
 }
 
 func ToDomain(u Mentor) login.Core {
@@ -21,14 +23,13 @@ func ToDomain(u Mentor) login.Core {
 		Name:     u.Name,
 		Password: u.Password,
 		Role:     u.Role,
-		Class:    u.Class,
+		IdClass: u.IdClass,
+		Class: u.Class,
 	}
 }
 
 func FromDomain(du login.Core) Mentor {
 	return Mentor{
-		Model:    gorm.Model{ID: du.ID},
-		Name:     du.Name,
 		Email:    du.Email,
 		Password: du.Password,
 	}
