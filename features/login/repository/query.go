@@ -19,10 +19,19 @@ func New(db *gorm.DB) login.DataInterface {
 func (repo *authData) Login(input login.Core) (login.Core, error) {
 
 	cnv := FromDomain(input)
-	if err := repo.db.Where("email = ?", cnv.Email).Find(&cnv).Error; err != nil {
-		log.Fatal("error get data")
-		return login.Core{}, err
+	var mentee Mentee
+	// Get data mentor
+	if err := repo.db.Where("email = ?", cnv.Email).First(&cnv).Error; err != nil {
+		// Get data mentee
+		if err := repo.db.Where("email = ?", cnv.Email).Model(&Mentee{}).Scan(&mentee).Error; err == nil {
+			res := ToDomainMentee(mentee)
+			return res, nil
+		} else {
+			log.Print("error get data mentee")
+			return login.Core{}, err
+		}
+		
 	}
-	input = ToDomain(cnv)
+	input = ToDomainMentor(cnv)
 	return input, nil
 }

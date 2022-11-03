@@ -6,8 +6,10 @@ type Core struct {
 	Email    string
 	Password string
 	Role     string
-	Class    string
+	Images   string
+	IdClass  uint
 	Token    string
+	Class    string
 }
 
 type UsecaseInterface interface {

@@ -3,6 +3,7 @@ package delivery
 import (
 	"be12/mentutor/features/login"
 	"be12/mentutor/utils/helper"
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -32,7 +33,8 @@ func (h *AuthDelivery) Login() echo.HandlerFunc {
 		cnv := ToDomain(input)
 		res, token, err := h.authUsecase.Login(cnv)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, helper.FailedResponse(err))
+			log.Print(err)
+			return c.JSON(http.StatusBadRequest, helper.FailedResponse(err.Error()))
 		}
 		res.Token = token
 		return c.JSON(http.StatusOK, helper.SuccessResponse("login successful", ToResponse(res, "login")))
