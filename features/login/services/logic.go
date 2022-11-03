@@ -96,3 +96,5 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 
 	return res, token, err
 }
+
+

@@ -19,11 +19,13 @@ type ClassCore struct {
 
 type UsecaseInterface interface {
 	AddUser(input UserCore, c echo.Context) (UserCore, error)
+	GetAllUser( c echo.Context) ([]UserCore, []UserCore, error)
 }
 
 type RepoInterface interface {
 	InsertMentee(input UserCore) (UserCore, error)
 	InsertMentor(input UserCore) (UserCore, error)
 	GetAllClass(id uint) (ClassCore, error)
+	GetAllUser() ([]UserCore, []UserCore,error)
 }
 
