@@ -52,7 +52,13 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 		}
 	}
 
-	if upper < 1 || lower < 1 || number < 1 || sChar < 1 {
+	if upper < 1  { 
+		return login.Core{}, "", errors.New("string not as expected")
+	} else if lower < 1 {
+		return login.Core{}, "", errors.New("string not as expected")
+	} else if number < 1 {
+		return login.Core{}, "", errors.New("string not as expected")
+	} else if sChar < 1 {
 		return login.Core{}, "", errors.New("string not as expected")
 	} else if len(input.Password) < 8 || len(input.Password) > 30 {
 		return login.Core{}, "", errors.New("string too short or too long")
@@ -70,13 +76,22 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 		check := bcrypt.CompareHashAndPassword([]byte(pass.Password), []byte(input.Password))
 		if check != nil {
 			log.Error(check, " wrong password")
-			return login.Core{}, "", errors.New("password not equal")
+			return login.Core{}, "", errors.New("wrong username or password")
 		}
 	}
-	// if res.Password != input.Password {
-	// 	log.Error(errors.New("password not equal"))
-	// 	return login.Core{}, "", errors.New("wrong username or password")
-	// }
+
+	// CEK ID = 0 
+	if res.ID < 1 {
+		return login.Core{}, "", errors.New("wrong username or password")
+	}
+
+	if strings.Contains(input.Email, "admin") == true {
+		if res.Password != input.Password {
+			log.Error(errors.New("password not equal"))
+			return login.Core{}, "", errors.New("wrong username or password")
+		}
+	}
+	
 	token, err := middlewares.CreateToken(int(res.ID), int(res.IdClass), res.Role)
 
 	return res, token, err

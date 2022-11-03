@@ -3,6 +3,7 @@ package delivery
 import (
 	"be12/mentutor/features/login"
 	"be12/mentutor/utils/helper"
+	"errors"
 	"log"
 	"net/http"
 
@@ -34,7 +35,8 @@ func (h *AuthDelivery) Login() echo.HandlerFunc {
 		res, token, err := h.authUsecase.Login(cnv)
 		if err != nil {
 			log.Print(err)
-			return c.JSON(http.StatusBadRequest, helper.FailedResponse(err.Error()))
+			errx := errors.New("Invalid Input From Client")
+			return c.JSON(http.StatusBadRequest, helper.FailedResponse(errx.Error()))
 		}
 		res.Token = token
 		return c.JSON(http.StatusOK, helper.SuccessResponse("login successful", ToResponse(res, "login")))
