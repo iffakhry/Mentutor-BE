@@ -8,23 +8,49 @@ import (
 
 type Mentor struct {
 	gorm.Model
-	Name     string `gorm:"type:varchar(255);not null"`
-	Images   string `gorm:"type:varchar(255);not null"`
-	Email    string `gorm:"type:varchar(255);unique;not null"`
-	Password string `gorm:"type:varchar(255);not null"`
-	Role     string `gorm:"type:enum('admin','mentor');not null"`
+	Name     string
+	Images   string
+	Email    string
+	Password string
+	Role     string
 	IdClass  uint
-	Class string
+	Class    string
 }
 
-func ToDomain(u Mentor) login.Core {
+type Mentee struct {
+	gorm.Model
+	Name     string
+	Email    string
+	Password string
+	Images   string
+	Role     string
+	IdClass  uint
+	Class    string
+}
+
+func ToDomainMentor(u Mentor) login.Core {
 	return login.Core{
 		ID:       u.ID,
 		Name:     u.Name,
+		Email:    u.Email,
 		Password: u.Password,
+		Images:   u.Images,
 		Role:     u.Role,
-		IdClass: u.IdClass,
-		Class: u.Class,
+		IdClass:  u.IdClass,
+		Class:    u.Class,
+	}
+}
+
+func ToDomainMentee(u Mentee) login.Core {
+	return login.Core{
+		ID:       u.ID,
+		Name:     u.Name,
+		Email:    u.Email,
+		Password: u.Password,
+		Images:   u.Images,
+		Role:     u.Role,
+		IdClass:  u.IdClass,
+		Class:    u.Class,
 	}
 }
 

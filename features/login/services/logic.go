@@ -61,8 +61,8 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 	// Check Username di database
 	res, err := usecase.authData.Login(input)
 	if err != nil {
-		log.Error(err.Error(), "username not found")
-		return login.Core{}, "", errors.New("username not found")
+		log.Error(errors.New("email not found"))
+		return login.Core{}, "", errors.New("wrong username or password")
 	}
 	//  Check password adalah sama
 	if res.Role == "mentor" || res.Role == "mentee" {
@@ -73,6 +73,10 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 			return login.Core{}, "", errors.New("password not equal")
 		}
 	}
+	// if res.Password != input.Password {
+	// 	log.Error(errors.New("password not equal"))
+	// 	return login.Core{}, "", errors.New("wrong username or password")
+	// }
 	token, err := middlewares.CreateToken(int(res.ID), int(res.IdClass), res.Role)
 
 	return res, token, err

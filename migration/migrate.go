@@ -14,6 +14,7 @@ type Mentee struct {
 	Email       string `gorm:"type:varchar(255);not null;unique"`
 	Password    string `gorm:"type:varchar(255);not null"`
 	Images      string `gorm:"type:varchar(255);not null"`
+	Role        string `gorm:"type:enum('mentee');not null"`
 	IdClass     uint
 	Submissions []Submission `gorm:"foreignKey:IdMentee"`
 	Statuses    []Status     `gorm:"foreignKey:IdMentee"`
@@ -28,16 +29,17 @@ type Mentor struct {
 	Password string `gorm:"type:varchar(255);not null"`
 	Role     string `gorm:"type:enum('admin','mentor');not null"`
 	IdClass  uint
+	Class    []Class   `gorm:"foreignKey:IdMentor"`
 	Comments []Comment `gorm:"foreignKey:IdUser"`
 	Tasks    []Task    `gorm:"foreignKey:IdMentor"`
 }
 
 type Class struct {
 	gorm.Model
-	ClassName string   `gorm:"type:varchar(255);not null"`
-	Status    string   `gorm:"type:enum('aktif','non_aktif');not null"`
+	ClassName string `gorm:"type:varchar(255);not null"`
+	Status    string `gorm:"type:enum('aktif','non_aktif');not null"`
+	IdMentor  uint
 	Mentees   []Mentee `gorm:"foreignKey:IdClass"`
-	Mentors   Mentor   `gorm:"foreignKey:IdClass"`
 	Tasks     []Task   `gorm:"foreignKey:IdClass"`
 }
 
@@ -45,9 +47,9 @@ type Task struct {
 	gorm.Model
 	IdClass     uint
 	IdMentor    uint
-	Description string `gorm:"type:varchar(255);not null"`
-	File        string `gorm:"type:varchar(255);not null"`
-	DueDate     time.Time `gorm:"not null"`
+	Description string       `gorm:"type:varchar(255);not null"`
+	File        string       `gorm:"type:varchar(255);not null"`
+	DueDate     time.Time    `gorm:"not null"`
 	Submissions []Submission `gorm:"foreignKey:IdTask"`
 }
 
