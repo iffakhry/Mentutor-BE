@@ -34,8 +34,7 @@ func (repo *authData) Login(input login.Core) (login.Core, error) {
 		input = ToDomainMentee(mentee)
 		return input, nil
 	} 
-	
 	input = ToDomainMentor(cnv)
 	return input, nil
-	
+
 }

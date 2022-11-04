@@ -3,6 +3,7 @@ package repository
 import (
 	"be12/mentutor/features/admin"
 	"log"
+	// "log"
 
 	"gorm.io/gorm"
 )
@@ -93,13 +94,18 @@ func (ar *adminRepo) GetAllClass() ([]admin.ClassCore, error) {
 }
 
 func (ar *adminRepo) EditUserMentee(input admin.UserCore) (admin.UserCore, error) {
+	var class Class
+	
 	data := FromDomainUpdateMentee(input)
+	
 
-	log.Print(data.ID)
-
+	log.Print(data)
 	if err := ar.db.Where("id = ?", data.ID).Updates(&data).Error; err != nil {
 		return admin.UserCore{}, err
 	}
+
+	ar.db.Where("id = ?", input.IdClass).Select("*"). First(&class)
+	input.Class = class.ClassName
 	return input, nil
 }
 
@@ -172,3 +178,10 @@ func (ar *adminRepo) EditClass(input admin.ClassCore) (admin.ClassCore, error) {
 	return input, nil
 }
 
+func (ar *adminRepo) DeleteClass(id uint) error {
+	var class Class
+	if err := ar.db.Where("id = ?", id).Delete(&class).Error; err != nil {
+		return err
+	}
+	return nil
+}

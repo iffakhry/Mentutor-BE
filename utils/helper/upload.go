@@ -48,39 +48,35 @@ func UploadFotoProfile(c echo.Context) (string, error) {
 		log.Print(err)
 		return "", err
 	}
-
-	fileExtension := filepath.Ext(fileheader.Filename)
-	if fileExtension != ".jpeg" {
-		return "", errors.New("file not an image")
-	} else if fileExtension != ".jpg" {
-		return "", errors.New("file not an image")
-	} else if fileExtension != ".png" {
-		return "", errors.New("file not an image")
-	}
 	
-	randomStr := String(20)
+	fileExtension := filepath.Ext(fileheader.Filename)
 
-	godotenv.Load("config.env")
+	if fileExtension == ".jpeg" || fileExtension == ".jpg" || fileExtension == ".png" {
+		randomStr := String(20)
 
-	s3Config := &aws.Config{
-		Region:      aws.String("ap-southeast-1"),
-		Credentials: credentials.NewStaticCredentials(os.Getenv("AWS_KEY"), os.Getenv("AWS_SECRET"), ""),
+		godotenv.Load("config.env")
+	
+		s3Config := &aws.Config{
+			Region:      aws.String("ap-southeast-1"),
+			Credentials: credentials.NewStaticCredentials(os.Getenv("AWS_KEY"), os.Getenv("AWS_SECRET"), ""),
+		}
+	
+		s3Session := session.New(s3Config)
+	
+		uploader := s3manager.NewUploader(s3Session)
+	
+		input := &s3manager.UploadInput{
+			Bucket:      aws.String("mentutor"),                                   // bucket's name
+			Key:         aws.String("profile/" + randomStr + "-" + fileheader.Filename), // files destination location
+			Body:        file,                                                           // content of the file
+			ContentType: aws.String("image/jpg"),                                        // content type
+		}
+		res, err := uploader.UploadWithContext(context.Background(), input)
+	
+		// RETURN URL LOCATION IN AWS
+		return res.Location, err
 	}
-
-	s3Session := session.New(s3Config)
-
-	uploader := s3manager.NewUploader(s3Session)
-
-	input := &s3manager.UploadInput{
-		Bucket:      aws.String("mentutor"),                                   // bucket's name
-		Key:         aws.String("profile/" + randomStr + "-" + fileheader.Filename), // files destination location
-		Body:        file,                                                           // content of the file
-		ContentType: aws.String("image/jpg"),                                        // content type
-	}
-	res, err := uploader.UploadWithContext(context.Background(), input)
-
-	// RETURN URL LOCATION IN AWS
-	return res.Location, err
+	return "", errors.New("file not an image")
 }
 
 func UploadProfileProduct(c echo.Context) (string, error) {

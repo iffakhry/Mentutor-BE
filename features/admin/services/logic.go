@@ -148,19 +148,20 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, c echo.Context) (a
 		if file != nil {
 			res, err := helper.UploadFotoProfile(c)
 			if err != nil {
+				log.Print(err)
 				return admin.UserCore{}, err
 			}
 			log.Print(res)
 			input.Images = res
 		}
 
-	if input.Role == "mentor"{
+	if input.IdUser >= 1000{
 		res, err := au.adminRepo.EditUserMentor(input)
 		if err != nil {
 			return admin.UserCore{}, errors.New("error in database")
 		}
 		return res, nil
-	} else if input.Role == "mentee" {
+	} else if input.IdUser < 1000 {
 		res, err := au.adminRepo.EditUserMentee(input)
 		if err != nil {
 			return admin.UserCore{}, errors.New("error in database")
@@ -240,4 +241,17 @@ func (au *adminUsecase) UpdateClass(input admin.ClassCore, c echo.Context) (admi
 		return admin.ClassCore{}, errors.New("error in database")
 	}
 	return res, nil
+}
+
+func (au *adminUsecase) DeleteClass(id uint, c echo.Context) error {
+	_, _, role := middlewares.ExtractToken(c)
+	if role != "admin" {
+		return errors.New("user not admin")
+	}
+
+	err := au.adminRepo.DeleteClass(id) 
+	if err != nil {
+		return errors.New("error in databse")
+	}
+	return nil
 }
