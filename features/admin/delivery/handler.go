@@ -29,7 +29,8 @@ func New(e *echo.Echo, usecase admin.UsecaseInterface) {
 	e.PUT("/admin/users/:id_user", handler.UpdateUserAdmin(), middleware.JWT([]byte(config.SECRET_JWT))) // UPDATE DATA USER BY ADMIN
 	e.GET("/admin/users/:id_user", handler.GetSingleUser(), middleware.JWT([]byte(config.SECRET_JWT)))   // GET SINGLE PROFILE OTHER USER
 	e.DELETE("/admin/mentee/:id_user", handler.DeleteUser(), middleware.JWT([]byte(config.SECRET_JWT)))  // DELETE USER ACCOUNT
-	e.PUT("/admin/classes/:id_class", handler.UpdateClass(), middleware.JWT([]byte(config.SECRET_JWT)))
+	e.PUT("/admin/classes/:id_class", handler.UpdateClass(), middleware.JWT([]byte(config.SECRET_JWT)))	// UPDATE CLASS
+	e.DELETE("/admin/classes/:id_class", handler.DeleteClass(), middleware.JWT([]byte(config.SECRET_JWT)))
 }
 
 func (ad *AdminDelivery) AddUser() echo.HandlerFunc {
@@ -101,10 +102,13 @@ func (ad *AdminDelivery) UpdateUserAdmin() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
 
+		
+
 		cnv := ToDomainUpdateUser(input)
 		id := c.Param("id_user")
 		cnvId, _ := strconv.Atoi(id)
 		cnv.IdUser = uint(cnvId)
+		
 		res, err := ad.adminUsecase.UpdateUserAdmin(cnv, c)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
@@ -161,5 +165,18 @@ func (ad *AdminDelivery) UpdateClass() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
 		return c.JSON(http.StatusOK, helper.SuccessResponse("Update Class Successful", ToResponseUpdateClass(res)))
+	}
+}
+
+func (ad *AdminDelivery) DeleteClass() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := c.Param("id_class")
+		cnv, _ := strconv.Atoi(id)
+
+		err := ad.adminUsecase.DeleteClass(uint(cnv), c)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
+		}
+			return c.JSON(http.StatusOK, helper.SuccessResponseNoData("Delete Success"))
 	}
 }

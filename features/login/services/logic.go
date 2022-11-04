@@ -84,6 +84,8 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 		if check != nil {
 			log.Error(check, " wrong password")
 			return login.Core{}, "", errors.New("wrong username or password")
+		} else {
+			log.Print("PASSWORD BENAR")
 		}
 	}
 

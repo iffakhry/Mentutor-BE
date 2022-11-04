@@ -29,6 +29,7 @@ type UsecaseInterface interface {
 	DeleteUser(id uint, c echo.Context) error
 	GetSingleUser(id uint, c echo.Context) (UserCore, error)
 	UpdateClass(input ClassCore, c echo.Context) (ClassCore, error)
+	DeleteClass(id uint, c echo.Context) (error)
 }
 
 type RepoInterface interface {
@@ -45,4 +46,5 @@ type RepoInterface interface {
 	GetSingleMentee(id uint) (UserCore, error)
 	GetSingleMentor(id uint) (UserCore, error)
 	EditClass(input ClassCore) (ClassCore, error)
+	DeleteClass(id uint) (error)
 }
