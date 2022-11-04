@@ -154,6 +154,9 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, c echo.Context) (a
 			log.Print(res)
 			input.Images = res
 		}
+	
+		generate , _:= bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+		input.Password = string(generate)
 
 	if input.IdUser >= 1000{
 		res, err := au.adminRepo.EditUserMentor(input)

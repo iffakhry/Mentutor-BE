@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"math/rand"
+
 	"os"
 	"path/filepath"
 
@@ -45,10 +46,16 @@ func UploadFotoProfile(c echo.Context) (string, error) {
 
 	file, fileheader, err := c.Request().FormFile("images")
 	if err != nil {
-		log.Print(err)
+		log.Print("INI ERROR ",err)
 		return "", err
 	}
-	
+
+	size := fileheader.Size  
+	if size > 5 * 1024 * 1024 {
+		log.Print("INI ERROR  size")
+		return "", errors.New("file size is too large")
+	}
+
 	fileExtension := filepath.Ext(fileheader.Filename)
 
 	if fileExtension == ".jpeg" || fileExtension == ".jpg" || fileExtension == ".png" {
@@ -79,34 +86,34 @@ func UploadFotoProfile(c echo.Context) (string, error) {
 	return "", errors.New("file not an image")
 }
 
-func UploadProfileProduct(c echo.Context) (string, error) {
+// func UploadProfileProduct(c echo.Context) (string, error) {
 
-	file, fileheader, err := c.Request().FormFile("product_picture")
-	if err != nil {
-		log.Print(err)
-		return "", err
-	}
+// 	file, fileheader, err := c.Request().FormFile("product_picture")
+// 	if err != nil {
+// 		log.Print(err)
+// 		return "", err
+// 	}
 
-	randomStr := String(20)
+// 	randomStr := String(20)
 
-	// godotenv.Load(".env")
+// 	// godotenv.Load(".env")
 
-	s3Config := &aws.Config{
-		Region:      aws.String("ap-southeast-1"),
-		Credentials: credentials.NewStaticCredentials(os.Getenv("AWS_KEY"), os.Getenv("AWS_SECRET"), ""),
-	}
-	s3Session := session.New(s3Config)
+// 	s3Config := &aws.Config{
+// 		Region:      aws.String("ap-southeast-1"),
+// 		Credentials: credentials.NewStaticCredentials(os.Getenv("AWS_KEY"), os.Getenv("AWS_SECRET"), ""),
+// 	}
+// 	s3Session := session.New(s3Config)
 
-	uploader := s3manager.NewUploader(s3Session)
+// 	uploader := s3manager.NewUploader(s3Session)
 
-	input := &s3manager.UploadInput{
-		Bucket:      aws.String("mentutor"),                                   // bucket's name
-		Key:         aws.String("product/" + randomStr + "-" + fileheader.Filename), // files destination location
-		Body:        file,                                                           // content of the file
-		ContentType: aws.String("image/jpg"),                                        // content type
-	}
-	res, err := uploader.UploadWithContext(context.Background(), input)
+// 	input := &s3manager.UploadInput{
+// 		Bucket:      aws.String("mentutor"),                                   // bucket's name
+// 		Key:         aws.String("product/" + randomStr + "-" + fileheader.Filename), // files destination location
+// 		Body:        file,                                                           // content of the file
+// 		ContentType: aws.String("image/jpg"),                                        // content type
+// 	}
+// 	res, err := uploader.UploadWithContext(context.Background(), input)
 
-	// RETURN URL LOCATION IN AWS
-	return res.Location, err
-}
+// 	// RETURN URL LOCATION IN AWS
+// 	return res.Location, err
+// }
