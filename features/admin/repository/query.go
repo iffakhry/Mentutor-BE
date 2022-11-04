@@ -125,13 +125,50 @@ func (ar *adminRepo) DeleteUserMentee(id uint) (error) {
 	var mentee Mentee
 	mentee.ID = id
 
-	log.Print(mentee)
-
 	if err := ar.db.Delete(&mentee).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
+func (ar *adminRepo) GetSingleMentee(id uint) (admin.UserCore, error) {
 
+	var mentee MenteeSingle
+	mentee.ID = id
+
+	if err := ar.db.Model(&Mentee{}).
+	Select("mentees.id, mentees.id_class, mentees.role, mentees.email, mentees.name, mentees.images, classes.class_name").
+	Joins("left join classes on classes.id = mentees.id_class").
+	Where("mentees.id = ?", id).Scan(&mentee).Error; err != nil {
+		return admin.UserCore{}, err
+	}
+	cnv := ToDomainSingleMentee(mentee)
+	return cnv, nil
+} 
+
+func (ar *adminRepo) GetSingleMentor(id uint) (admin.UserCore, error) {
+	var mentor MentorSingle
+	mentor.ID = id
+
+	if err := ar.db.Model(&Mentor{}).
+	Select("mentors.id, mentors.id_class, mentors.role, mentors.email, mentors.name, mentors.images, classes.class_name").
+	Joins("left join classes on classes.id = mentors.id_class").
+	Where("mentors.id = ?", id).Scan(&mentor).Error; err != nil {
+		return admin.UserCore{}, err
+	}
+	cnv := ToDomainSingleMentor(mentor)
+	return cnv, nil
+	
+}
+
+func (ar *adminRepo) EditClass(input admin.ClassCore) (admin.ClassCore, error) {
+	class := FromDomainUpdateClass(input)	
+
+	// log.Print(input)
+	if err := ar.db.Model(&class).Updates(&class).Error; err != nil {
+		return admin.ClassCore{}, nil
+	}
+	
+	return input, nil
+}
 

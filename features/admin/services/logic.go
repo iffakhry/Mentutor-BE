@@ -3,6 +3,7 @@ package services
 import (
 	"be12/mentutor/features/admin"
 	"be12/mentutor/middlewares"
+	"be12/mentutor/utils/helper"
 	"errors"
 	"log"
 
@@ -11,6 +12,7 @@ import (
 	"unicode"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type adminUsecase struct {
@@ -74,6 +76,9 @@ func (au *adminUsecase) AddUser(input admin.UserCore, c echo.Context) (admin.Use
 		return admin.UserCore{}, errors.New("input not valid")
 	}
 
+	// ENKRIPSI PASSWORD
+	generate, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+	input.Password = string(generate)
 
 	if input.Role == "mentee" {
 		res, err := au.adminRepo.InsertMentee(input)
@@ -139,6 +144,16 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, c echo.Context) (a
 		return admin.UserCore{}, errors.New("user not admin")
 	}
 
+	file, _ := c.FormFile("images")
+		if file != nil {
+			res, err := helper.UploadFotoProfile(c)
+			if err != nil {
+				return admin.UserCore{}, err
+			}
+			log.Print(res)
+			input.Images = res
+		}
+
 	if input.Role == "mentor"{
 		res, err := au.adminRepo.EditUserMentor(input)
 		if err != nil {
@@ -169,15 +184,60 @@ func (au *adminUsecase) DeleteUserMentee(id uint, c echo.Context) (error) {
 	return nil
 }
 
-func (au *adminUsecase) DeleteUserMentor(id uint, c echo.Context) (error) {
+func (au *adminUsecase) DeleteUser(id uint, c echo.Context) (error) {
 	_, _, role := middlewares.ExtractToken(c)
 	if role != "admin" {
 		return errors.New("user not admin")
 	}
 
-	err := au.adminRepo.DeleteUserMentor(id)
-	if err != nil {
-		return errors.New("error in database")
+	if id < 1000 {
+		err := au.adminRepo.DeleteUserMentee(id)
+		if err != nil {
+			log.Print("eror in database")
+			return errors.New("error in database")
+		}
+		return nil
+	} else if id >= 1000 {
+		err := au.adminRepo.DeleteUserMentor(id)
+		if err != nil {
+			return errors.New("error in database")
+		}
+		return nil
 	}
-	return nil
+	return errors.New("error in database")
+}
+
+func (au *adminUsecase) GetSingleUser(id uint, c echo.Context) (admin.UserCore, error) {
+	_, _, role := middlewares.ExtractToken(c)
+	if role != "admin" {
+		return admin.UserCore{}, errors.New("user not admin")
+	}
+
+	if id < 1000 {
+		res, err := au.adminRepo.GetSingleMentee(id)
+		if err != nil {
+			return admin.UserCore{}, errors.New("error in database")
+		}
+		return res, nil
+	} else if id >= 1000 {
+		res, err := au.adminRepo.GetSingleMentor(id)
+		if err != nil {
+			return admin.UserCore{}, errors.New("error in database")
+		}
+		return res, nil
+	}
+	return admin.UserCore{}, errors.New("error in database")
+}
+
+func (au *adminUsecase) UpdateClass(input admin.ClassCore, c echo.Context) (admin.ClassCore, error) {
+	_, _, role := middlewares.ExtractToken(c)
+	if role != "admin" {
+		return admin.ClassCore{}, errors.New("user not admin")
+	}
+
+	res, err := au.adminRepo.EditClass(input)
+	if err != nil {
+		return admin.ClassCore{}, errors.New("error in database")
+	}
+	return res, nil
 }
