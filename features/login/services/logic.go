@@ -28,6 +28,7 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 	// Cek email mengandung spasi
 	for _, v := range input.Email {
 		if unicode.IsSpace(v) {
+			log.Print("contain space")
 			return login.Core{}, "", errors.New("contain space")
 		}
 	}
@@ -71,8 +72,13 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 		return login.Core{}, "", errors.New("wrong username or password")
 	}
 
+	// // CEK ID = 0
+	// if res == (login.Core{}) {
+	// 	return login.Core{}, "", errors.New("wrong username or password")
+	// }
+
 	// Check password admin
-	if strings.Contains(input.Email, "admin") == true {
+	if res.Role == "admin"{
 		if res.Password != input.Password {
 			log.Error(errors.New("password not equal"))
 			return login.Core{}, "", errors.New("wrong username or password")
@@ -84,25 +90,9 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 		if check != nil {
 			log.Error(check, " wrong password")
 			return login.Core{}, "", errors.New("wrong username or password")
-		} else {
-			log.Print("PASSWORD BENAR")
 		}
+		
 	}
-
-	// CEK ID = 0
-	if res.ID < 1 {
-		return login.Core{}, "", errors.New("wrong username or password")
-	}
-
-
-	if strings.Contains(input.Email, "admin") == true {
-		if res.Password != input.Password {
-			log.Error(errors.New("password not equal"))
-			return login.Core{}, "", errors.New("wrong username or password")
-		}
-	}
-
-
 
 	token, err := middlewares.CreateToken(int(res.ID), int(res.IdClass), res.Role)
 

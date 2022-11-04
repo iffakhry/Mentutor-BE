@@ -27,7 +27,6 @@ type UpdateUserResponse struct {
 	Name   string `json:"name"`
 	Email  string `json:"email"`
 	Class  string `json:"class_name"`
-	Role   string `json:"role"`
 	Images string `json:"images"`
 }
 
@@ -95,7 +94,6 @@ func ToResponseUpdateUser(data admin.UserCore) UpdateUserResponse {
 		Name:   data.Name,
 		Email:  data.Email,
 		Class:  data.Class,
-		Role:   data.Role,
 		Images: data.Images,
 	}
 }
