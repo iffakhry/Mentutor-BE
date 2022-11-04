@@ -26,8 +26,9 @@ type UsecaseInterface interface {
 	AddNewClass(input ClassCore, c echo.Context) error
 	GetAllClass(c echo.Context) ([]ClassCore, error)
 	UpdateUserAdmin(input UserCore, c echo.Context) (UserCore, error)
-	DeleteUserMentee(id uint, c echo.Context) (error)
-	DeleteUserMentor(id uint, c echo.Context) (error)
+	DeleteUser(id uint, c echo.Context) error
+	GetSingleUser(id uint, c echo.Context) (UserCore, error)
+	UpdateClass(input ClassCore, c echo.Context) (ClassCore, error)
 }
 
 type RepoInterface interface {
@@ -39,6 +40,9 @@ type RepoInterface interface {
 	GetAllClass() ([]ClassCore, error)
 	EditUserMentee(input UserCore) (UserCore, error)
 	EditUserMentor(input UserCore) (UserCore, error)
-	DeleteUserMentee(id uint) (error)
-	DeleteUserMentor(id uint) (error)
+	DeleteUserMentee(id uint) error
+	DeleteUserMentor(id uint) error
+	GetSingleMentee(id uint) (UserCore, error)
+	GetSingleMentor(id uint) (UserCore, error)
+	EditClass(input ClassCore) (ClassCore, error)
 }

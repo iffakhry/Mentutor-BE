@@ -25,6 +25,29 @@ type Mentor struct {
 	IdClass  uint
 }
 
+type MenteeSingle struct {
+	gorm.Model
+	Name        string `gorm:"type:varchar(255);not null"`
+	Email       string `gorm:"type:varchar(255);not null;unique"`
+	Password    string `gorm:"type:varchar(255);not null"`
+	Images      string `gorm:"type:varchar(255);not null"`
+	Role        string `gorm:"type:enum('mentee');not null"`
+	ClassName string
+	IdClass     uint
+}
+
+type MentorSingle struct {
+	gorm.Model
+	Name     string `gorm:"type:varchar(255);not null"`
+	Images   string `gorm:"type:varchar(255);not null"`
+	Email    string `gorm:"type:varchar(255);unique;not null"`
+	Password string `gorm:"type:varchar(255);not null"`
+	Role     string `gorm:"type:enum('admin','mentor');not null"`
+	ClassName string
+	IdClass  uint
+}
+
+
 type Class struct {
 	gorm.Model
 	ClassName string 
@@ -67,6 +90,14 @@ func FromDomainClass(data admin.ClassCore) Class {
 	}
 }
 
+func FromDomainUpdateClass(data admin.ClassCore) Class {
+	return Class{
+		Model: gorm.Model{ID: data.IdClass},
+		ClassName: data.ClassName,
+		Status: data.Status,
+	}
+}
+
 func FromDomainUpdateMentee(data admin.UserCore) Mentee {
 	return Mentee{
 		Model: gorm.Model{ID: data.IdUser},
@@ -97,6 +128,7 @@ func ToDomainMentee(data Mentee) admin.UserCore {
 		IdUser: data.ID,
 		Name: data.Name,
 		Email: data.Email,
+		Images: data.Images,
 		IdClass: data.IdClass,
 		Role: data.Role,
 	}
@@ -107,7 +139,32 @@ func ToDomainMentor(data Mentor) admin.UserCore {
 		IdUser: data.ID,
 		Name: data.Name,
 		Email: data.Email,
+		Images: data.Images,
 		IdClass: data.IdClass,
+		Role: data.Role,
+	}
+}
+
+func ToDomainSingleMentee(data MenteeSingle) admin.UserCore {
+	return admin.UserCore{
+		IdUser: data.ID,
+		Name: data.Name,
+		Email: data.Email,
+		Images: data.Images,
+		IdClass: data.IdClass,
+		Class: data.ClassName,
+		Role: data.Role,
+	}
+}
+
+func ToDomainSingleMentor(data MentorSingle) admin.UserCore {
+	return admin.UserCore{
+		IdUser: data.ID,
+		Name: data.Name,
+		Email: data.Email,
+		Images: data.Images,
+		IdClass: data.IdClass,
+		Class: data.ClassName,
 		Role: data.Role,
 	}
 }

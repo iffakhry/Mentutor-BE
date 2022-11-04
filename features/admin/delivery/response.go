@@ -24,12 +24,26 @@ type GetAllClassResponse struct {
 }
 
 type UpdateUserResponse struct {
-	Name     string `json:"name" form:"name"`
-	Email    string `json:"email" form:"email"`
-	Password string `json:"password" form:"password"`
-	Class    string   `json:"class" form:"class"`
-	Role     string `json:"role" form:"role"`
-	Images   string `json:"images" form:"images"`
+	Name   string `json:"name"`
+	Email  string `json:"email"`
+	Class  string `json:"class_name"`
+	Role   string `json:"role"`
+	Images string `json:"images"`
+}
+
+type GetSingleUserResponse struct {
+	IdUser uint `json:"id_user"`
+	Name   string `json:"name"`
+	Email  string `json:"email"`
+	Class  string `json:"class_name"`
+	Role   string `json:"role"`
+	Images string `json:"images"`
+}
+
+type UpdateClassResponse struct {
+	IdClass      uint   `json:"id_class"`
+	Class        string `json:"class_name"`
+	Status       string `json:"status"`
 }
 
 func ToResponse(data admin.UserCore) RegisterResponse {
@@ -78,10 +92,28 @@ func ToResponseClassArray(data []admin.ClassCore) []GetAllClassResponse {
 
 func ToResponseUpdateUser(data admin.UserCore) UpdateUserResponse {
 	return UpdateUserResponse{
-		Name:  data.Name,
-		Email: data.Email,
-		Class: data.Class,
-		Role: data.Role,
+		Name:   data.Name,
+		Email:  data.Email,
+		Class:  data.Class,
+		Role:   data.Role,
 		Images: data.Images,
+	}
+}
+
+func ToResponseGetUser(data admin.UserCore) GetSingleUserResponse {
+	return GetSingleUserResponse{
+		IdUser: data.IdUser,
+		Name:    data.Name,
+		Email:   data.Email,
+		Class: data.Class,
+		Role:    data.Role,
+	}
+}
+
+func ToResponseUpdateClass(data admin.ClassCore) UpdateClassResponse {
+	return UpdateClassResponse{
+		IdClass: data.IdClass,
+		Class: data.ClassName,
+		Status: data.Status,
 	}
 }

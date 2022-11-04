@@ -24,11 +24,12 @@ func New(e *echo.Echo, usecase admin.UsecaseInterface) {
 
 	e.POST("/admin/users", handler.AddUser(), middleware.JWT([]byte(config.SECRET_JWT)))                 // ADD NEW USER
 	e.GET("/admin/users", handler.GetAllUser(), middleware.JWT([]byte(config.SECRET_JWT)))               // GET ALL USER
-	e.POST("/admin/classes", handler.AddNewClass(), middleware.JWT([]byte(config.SECRET_JWT)))           //ADD NEW CLASS
-	e.GET("/admin/classes", handler.GetAllClass(), middleware.JWT([]byte(config.SECRET_JWT)))            //GET ALL CLASS
+	e.POST("/admin/classes", handler.AddNewClass(), middleware.JWT([]byte(config.SECRET_JWT)))           // ADD NEW CLASS
+	e.GET("/admin/classes", handler.GetAllClass(), middleware.JWT([]byte(config.SECRET_JWT)))            // GET ALL CLASS
 	e.PUT("/admin/users/:id_user", handler.UpdateUserAdmin(), middleware.JWT([]byte(config.SECRET_JWT))) // UPDATE DATA USER BY ADMIN
-	e.DELETE("/admin/mentee/:id_user", handler.DeleteUserMentee(), middleware.JWT([]byte(config.SECRET_JWT)))
-	e.DELETE("/admin/mentor/:id_user", handler.DeleteUserMentor(), middleware.JWT([]byte(config.SECRET_JWT)))
+	e.GET("/admin/users/:id_user", handler.GetSingleUser(), middleware.JWT([]byte(config.SECRET_JWT)))   // GET SINGLE PROFILE OTHER USER
+	e.DELETE("/admin/mentee/:id_user", handler.DeleteUser(), middleware.JWT([]byte(config.SECRET_JWT)))  // DELETE USER ACCOUNT
+	e.PUT("/admin/classes/:id_class", handler.UpdateClass(), middleware.JWT([]byte(config.SECRET_JWT)))
 }
 
 func (ad *AdminDelivery) AddUser() echo.HandlerFunc {
@@ -112,13 +113,13 @@ func (ad *AdminDelivery) UpdateUserAdmin() echo.HandlerFunc {
 	}
 }
 
-func (ad *AdminDelivery) DeleteUserMentee() echo.HandlerFunc {
+func (ad *AdminDelivery) DeleteUser() echo.HandlerFunc {
 	return func(c echo.Context) error {
 
-		id:= c.Param("id_user")
+		id := c.Param("id_user")
 		cnv, _ := strconv.Atoi(id)
 
-		err := ad.adminUsecase.DeleteUserMentee(uint(cnv), c)
+		err := ad.adminUsecase.DeleteUser(uint(cnv), c)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
@@ -126,17 +127,39 @@ func (ad *AdminDelivery) DeleteUserMentee() echo.HandlerFunc {
 	}
 }
 
-func (ad *AdminDelivery) DeleteUserMentor() echo.HandlerFunc {
+func (ad *AdminDelivery) GetSingleUser() echo.HandlerFunc {
 	return func(c echo.Context) error {
 
-		id:= c.Param("id_user")
+		id := c.Param("id_user")
 		cnv, _ := strconv.Atoi(id)
 
-		err := ad.adminUsecase.DeleteUserMentor(uint(cnv), c)
+		res, err := ad.adminUsecase.GetSingleUser(uint(cnv), c)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
-		return c.JSON(http.StatusOK, helper.SuccessResponseNoData("Delete Success"))
+		return c.JSON(http.StatusOK, helper.SuccessResponse("Success Get Profile", ToResponseGetUser(res)))
 	}
 }
 
+func (ad *AdminDelivery) UpdateClass() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var input UpdateClassFormat
+
+		err := c.Bind(&input)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
+		}
+		id := c.Param("id_class")
+		cnvId, _ := strconv.Atoi(id)
+
+		log.Print(input)
+		cnvData := ToDomainUpdateClass(input)
+		cnvData.IdClass = uint(cnvId)
+		log.Print(cnvData)
+		res, err := ad.adminUsecase.UpdateClass(cnvData, c)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
+		}
+		return c.JSON(http.StatusOK, helper.SuccessResponse("Update Class Successful", ToResponseUpdateClass(res)))
+	}
+}

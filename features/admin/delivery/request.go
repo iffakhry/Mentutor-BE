@@ -23,6 +23,12 @@ type AddClassFormat struct {
 	Class string `json:"class_name" form:"class_name"`
 }
 
+type UpdateClassFormat struct {
+	IdClass uint 
+	Class string `json:"class_name" form:"class_name"`
+	Status string `json:"status" form:"status"`
+}
+
 func ToDomain(data RegisterFormat) admin.UserCore {
 	return admin.UserCore{
 		Name:     data.Name,
@@ -47,5 +53,13 @@ func ToDomainUpdateUser(data UpdateUserFormat) admin.UserCore {
 		IdClass:  data.IdClass,
 		Role:     data.Role,
 		Images:   data.Images,
+	}
+}
+
+func ToDomainUpdateClass(data UpdateClassFormat) admin.ClassCore {
+	return admin.ClassCore{
+		IdClass: data.IdClass,
+		ClassName: data.Class,
+		Status: data.Status,
 	}
 }
