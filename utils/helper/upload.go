@@ -97,7 +97,7 @@ func UploadProfileProduct(c echo.Context) (string, error) {
 
 	s3Config := &aws.Config{
 		Region:      aws.String("ap-southeast-1"),
-		Credentials: credentials.NewStaticCredentials("AKIATMRW76KPVGWL6COQ", "l4bJPSj+OnXuQX1AlGb/TEiyTnfyHhoG5nDS1wKu", ""),
+		Credentials: credentials.NewStaticCredentials(os.Getenv("AWS_KEY"), os.Getenv("AWS_SECRET"), ""),
 	}
 	s3Session := session.New(s3Config)
 
