@@ -61,3 +61,10 @@ func FromDomain(du login.Core) Mentor {
 	}
 }
 
+func FromDomainMentee(du login.Core) Mentee {
+	return Mentee{
+		Email:    du.Email,
+		Password: du.Password,
+	}
+}
+

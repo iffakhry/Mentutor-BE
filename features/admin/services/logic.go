@@ -3,6 +3,7 @@ package services
 import (
 	"be12/mentutor/features/admin"
 	"be12/mentutor/middlewares"
+	"be12/mentutor/utils/helper"
 	"errors"
 	"log"
 
@@ -11,6 +12,7 @@ import (
 	"unicode"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type adminUsecase struct {
@@ -74,6 +76,9 @@ func (au *adminUsecase) AddUser(input admin.UserCore, c echo.Context) (admin.Use
 		return admin.UserCore{}, errors.New("input not valid")
 	}
 
+	// ENKRIPSI PASSWORD
+	generate, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+	input.Password = string(generate)
 
 	if input.Role == "mentee" {
 		res, err := au.adminRepo.InsertMentee(input)
@@ -138,6 +143,16 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, c echo.Context) (a
 	if role != "admin" {
 		return admin.UserCore{}, errors.New("user not admin")
 	}
+
+	file, _ := c.FormFile("images")
+		if file != nil {
+			res, err := helper.UploadFotoProfile(c)
+			if err != nil {
+				return admin.UserCore{}, err
+			}
+			log.Print(res)
+			input.Images = res
+		}
 
 	if input.Role == "mentor"{
 		res, err := au.adminRepo.EditUserMentor(input)
