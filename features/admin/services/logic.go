@@ -2,8 +2,6 @@ package services
 
 import (
 	"be12/mentutor/features/admin"
-	"be12/mentutor/middlewares"
-	"be12/mentutor/utils/helper"
 	"errors"
 	"log"
 
@@ -11,7 +9,6 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -25,25 +22,30 @@ func New(data admin.RepoInterface) admin.UsecaseInterface {
 	}
 }
 
-func (au *adminUsecase) AddUser(input admin.UserCore, c echo.Context) (admin.UserCore, error) {
+func (au *adminUsecase) AddUser(input admin.UserCore, role string) (admin.UserCore, error) {
 
-	// CEK ROLE USER
-	_, _, role := middlewares.ExtractToken(c)
+	// CEK ROLE USE(c)
 	if role != "admin" {
 		log.Print("user not admin")
 		return admin.UserCore{}, errors.New("user not admin")
 	}
 
 	// CEK KONDISI EMAIL
+	for _, v := range input.Email {
+		if unicode.IsSpace(v) {
+			log.Print("contain space")
+			return admin.UserCore{}, errors.New("contain space")
+		}
+	}
 	if len(input.Email) < 8 || len(input.Email) > 40  {
-		return admin.UserCore{}, errors.New("input not valid")
+		return admin.UserCore{}, errors.New("length email not valid")
 	} else if strings.Contains(input.Email, "@") == false && strings.Contains(input.Email, ".") == false {
-		return admin.UserCore{}, errors.New("input not valid")
+		return admin.UserCore{}, errors.New("not contain (@) and (.)")
 	} 
 
 	// CEK KONDISI NAMA
 	if len(input.Name) < 5 || len(input.Name) > 50{
-		return admin.UserCore{}, errors.New("input not valid")
+		return admin.UserCore{}, errors.New("length name not valid")
 	}
 	var upper, lower, number, sChar int
 	for _, v := range input.Name {
@@ -61,19 +63,48 @@ func (au *adminUsecase) AddUser(input admin.UserCore, c echo.Context) (admin.Use
 	if upper < 1 {
 		return admin.UserCore{}, errors.New("input name not valid")
 	} else if lower < 1 {
-		return admin.UserCore{}, errors.New("input not valid")
+		return admin.UserCore{}, errors.New("input name not valid")
 	} else if number > 1 {
-		return admin.UserCore{}, errors.New("input not valid")
+		return admin.UserCore{}, errors.New("input name not valid")
 	} else if sChar > 1 {
-		return admin.UserCore{}, errors.New("input not valid")
+		return admin.UserCore{}, errors.New("input name not valid")
 	}
 
+
+	// CEK KONDISI PASSOWRD
+	var sCharString = "@#$%^&*<>:;'[]{}|`~!"
+	var passUpper, passLower, passNumber, specialChar int
+	for _, v := range input.Password {
+		if unicode.IsUpper(v) == true {
+			passUpper += 1
+		} else if unicode.IsLower(v) == true {
+			passLower += 1
+		} else if unicode.IsNumber(v) == true {
+			passNumber += 1
+		} else if unicode.IsPunct(v) == true {
+			specialChar += 1
+		} else if strings.Contains(sCharString, string(v)) == true {
+			specialChar += 1
+		}
+	}
+	if passUpper < 1 {
+		return admin.UserCore{}, errors.New("string not as expected")
+	} else if passLower < 1 {
+		return admin.UserCore{}, errors.New("string not as expected")
+	} else if passNumber < 1 {
+		return admin.UserCore{}, errors.New("string not as expected")
+	} 
+	if specialChar == 0 {
+		return admin.UserCore{}, errors.New("string not as expected")
+	} else if len(input.Password) < 8 || len(input.Password) > 30 {
+		return admin.UserCore{}, errors.New("string too short or too long")
+	}
 
 	// CEK KELAS TERSEDIA
 	idClass := uint(input.IdClass)
 	_, err := au.adminRepo.GetClass(idClass)
 	if err != nil {
-		return admin.UserCore{}, errors.New("input not valid")
+		return admin.UserCore{}, errors.New("input class not valid")
 	}
 
 	// ENKRIPSI PASSWORD
@@ -98,8 +129,8 @@ func (au *adminUsecase) AddUser(input admin.UserCore, c echo.Context) (admin.Use
 	}
 }
 
-func (au *adminUsecase) GetAllUser(c echo.Context) ([]admin.UserCore, []admin.UserCore, error) {
-	_, _, role := middlewares.ExtractToken(c)
+func (au *adminUsecase) GetAllUser(role string) ([]admin.UserCore, []admin.UserCore, error) {
+	
 	if role != "admin" {
 		return []admin.UserCore{}, []admin.UserCore{},errors.New("user not admin")
 	}
@@ -111,8 +142,8 @@ func (au *adminUsecase) GetAllUser(c echo.Context) ([]admin.UserCore, []admin.Us
 	return resMentee, resMentor, nil
 }
 
-func (au *adminUsecase) AddNewClass(input admin.ClassCore, c echo.Context) error {
-	_, _, role := middlewares.ExtractToken(c)
+func (au *adminUsecase) AddNewClass(input admin.ClassCore, role string) error {
+	
 	if role != "admin" {
 		return errors.New("user not admin")
 	}
@@ -124,8 +155,8 @@ func (au *adminUsecase) AddNewClass(input admin.ClassCore, c echo.Context) error
 	return nil
 }
 
-func (au *adminUsecase) GetAllClass(c echo.Context) ([]admin.ClassCore, error) {
-	_, _, role := middlewares.ExtractToken(c)
+func (au *adminUsecase) GetAllClass(role string) ([]admin.ClassCore, error) {
+	
 	if role != "admin" {
 		return []admin.ClassCore{}, errors.New("user not admin")
 	}
@@ -138,25 +169,103 @@ func (au *adminUsecase) GetAllClass(c echo.Context) ([]admin.ClassCore, error) {
 	return res, nil
 }
 
-func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, c echo.Context) (admin.UserCore, error) {
-	_, _, role := middlewares.ExtractToken(c)
+func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admin.UserCore, error) {
+	
 	if role != "admin" {
 		return admin.UserCore{}, errors.New("user not admin")
 	}
-
-	file, _ := c.FormFile("images")
-		if file != nil {
-			res, err := helper.UploadFotoProfile(c)
-			if err != nil {
-				log.Print(err)
-				return admin.UserCore{}, err
-			}
-			log.Print(res)
-			input.Images = res
-		}
 	
+	// CEK KONDISI NAMA
+	if input.Name != "" {
+		if len(input.Name) < 5 || len(input.Name) > 50{
+			return admin.UserCore{}, errors.New("length name not valid")
+		}
+		var upper, lower, number, sChar, space int
+		for _, v := range input.Name {
+			if unicode.IsUpper(v) == true {
+				upper+=1
+			} else if unicode.IsLower(v) ==  true {
+				lower += 1
+			} else if unicode.IsNumber(v) == true {
+				number+=1
+			} else if unicode.IsPunct(v){
+				sChar+=1
+			} else if unicode.IsSpace(v){
+				space+=1
+			}
+		}
+		if upper < 1 {
+			return admin.UserCore{}, errors.New("input name not valid")
+		} else if lower < 1 {
+			return admin.UserCore{}, errors.New("input name not valid")
+		} else if number > 0 {
+			return admin.UserCore{}, errors.New("input name not valid")
+		} else if sChar > 0 {
+			return admin.UserCore{}, errors.New("input name not valid")
+		} else if space < 1 {
+			return admin.UserCore{}, errors.New("input name not valid")
+		}
+	}
+	
+	// CEK KONDISI EMAIL
+	if input.Email != "" {
+		for _, v := range input.Email {
+			if unicode.IsSpace(v) {
+				log.Print("contain space")
+				return admin.UserCore{}, errors.New("contain space")
+			}
+		}
+		if len(input.Email) < 8 || len(input.Email) > 40  {
+			return admin.UserCore{}, errors.New("length email not valid")
+		} else if strings.Contains(input.Email, "@") == false && strings.Contains(input.Email, ".") == false {
+			return admin.UserCore{}, errors.New("not contain (@) and (.)")
+		} 
+	}
+	
+
+	// CEK KONDISI PASSWORD
+	if input.Password != ""{
+		var sChar = "@#$%^&*<>:;'[]{}|`~!"
+		var passUpper, passLower, passNumber, specialChar int
+		for _, v := range input.Password {
+			if unicode.IsUpper(v) == true {
+				passUpper += 1
+			} else if unicode.IsLower(v) == true {
+				passLower += 1
+			} else if unicode.IsNumber(v) == true {
+				passNumber += 1
+			} else if unicode.IsPunct(v) == true {
+				specialChar += 1
+			} else if strings.Contains(sChar, string(v)) == true {
+				specialChar += 1
+			}
+		}
+		if passUpper < 1 {
+			return admin.UserCore{}, errors.New("string not as expected")
+		} else if passLower < 1 {
+			return admin.UserCore{}, errors.New("string not as expected")
+		} else if passNumber < 1 {
+			return admin.UserCore{}, errors.New("string not as expected")
+		} 
+		if specialChar == 0 {
+			return admin.UserCore{}, errors.New("string not as expected")
+		} else if len(input.Password) < 8 || len(input.Password) > 30 {
+			return admin.UserCore{}, errors.New("string too short or too long")
+		}
+
 		generate , _:= bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 		input.Password = string(generate)
+	}
+
+	// CEK KELAS TERSEDIA
+	if input.IdClass < 1 {
+		idClass := uint(input.IdClass)
+		_, err := au.adminRepo.GetClass(idClass)
+		if err != nil {
+			return admin.UserCore{}, errors.New("input class not valid")
+		}
+	}
+	
 
 	if input.IdUser >= 1000{
 		res, err := au.adminRepo.EditUserMentor(input)
@@ -174,22 +283,8 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, c echo.Context) (a
 	return admin.UserCore{}, nil
 }
 
-func (au *adminUsecase) DeleteUserMentee(id uint, c echo.Context) (error) {
-	_, _, role := middlewares.ExtractToken(c)
-	if role != "admin" {
-		return errors.New("user not admin")
-	}
-
-	err := au.adminRepo.DeleteUserMentee(id)
-	if err != nil {
-		log.Print("eror in database")
-		return errors.New("error in database")
-	}
-	return nil
-}
-
-func (au *adminUsecase) DeleteUser(id uint, c echo.Context) (error) {
-	_, _, role := middlewares.ExtractToken(c)
+func (au *adminUsecase) DeleteUser(id uint, role string) (error) {
+	
 	if role != "admin" {
 		return errors.New("user not admin")
 	}
@@ -211,8 +306,8 @@ func (au *adminUsecase) DeleteUser(id uint, c echo.Context) (error) {
 	return errors.New("error in database")
 }
 
-func (au *adminUsecase) GetSingleUser(id uint, c echo.Context) (admin.UserCore, error) {
-	_, _, role := middlewares.ExtractToken(c)
+func (au *adminUsecase) GetSingleUser(id uint, role string) (admin.UserCore, error) {
+	
 	if role != "admin" {
 		return admin.UserCore{}, errors.New("user not admin")
 	}
@@ -233,8 +328,8 @@ func (au *adminUsecase) GetSingleUser(id uint, c echo.Context) (admin.UserCore, 
 	return admin.UserCore{}, errors.New("error in database")
 }
 
-func (au *adminUsecase) UpdateClass(input admin.ClassCore, c echo.Context) (admin.ClassCore, error) {
-	_, _, role := middlewares.ExtractToken(c)
+func (au *adminUsecase) UpdateClass(input admin.ClassCore, role string) (admin.ClassCore, error) {
+	
 	if role != "admin" {
 		return admin.ClassCore{}, errors.New("user not admin")
 	}
@@ -246,8 +341,8 @@ func (au *adminUsecase) UpdateClass(input admin.ClassCore, c echo.Context) (admi
 	return res, nil
 }
 
-func (au *adminUsecase) DeleteClass(id uint, c echo.Context) error {
-	_, _, role := middlewares.ExtractToken(c)
+func (au *adminUsecase) DeleteClass(id uint, role string) error {
+	
 	if role != "admin" {
 		return errors.New("user not admin")
 	}
