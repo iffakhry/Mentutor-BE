@@ -31,9 +31,11 @@ func (repo *authData) Login(input login.Core) (login.Core, error) {
 			log.Print("error get data mentee")
 			return login.Core{}, err
 		}
+		repo.db.Model(&Class{}).Where("id = ?", mentee.IdClass).Select("classes.class_name").Scan(&mentee)
 		input = ToDomainMentee(mentee)
 		return input, nil
 	} 
+	repo.db.Model(&Class{}).Where("id = ?", cnv.IdClass).Select("classes.class_name").Scan(&cnv)
 	input = ToDomainMentor(cnv)
 	return input, nil
 

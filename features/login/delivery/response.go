@@ -6,7 +6,7 @@ type LoginResponse struct {
 	ID      uint   `json:"id_user"`
 	Name    string `json:"name"`
 	IdClass uint   `json:"id_class"`
-	Class   string `json:"class"`
+	Class   string `json:"class_name"`
 	Role    string `json:"role"`
 	Images  string `json:"images"`
 	Token   string `json:"token"`
