@@ -8,24 +8,28 @@ import (
 
 type Mentor struct {
 	gorm.Model
-	Name     string
-	Images   string
-	Email    string
-	Password string
-	Role     string
-	IdClass  uint
-	Class    string
+	Name      string
+	Images    string
+	Email     string
+	Password  string
+	Role      string
+	IdClass   uint
+	ClassName string
 }
 
 type Mentee struct {
 	gorm.Model
-	Name     string
-	Email    string
-	Password string
-	Images   string
-	Role     string
-	IdClass  uint
-	Class    string
+	Name      string
+	Email     string
+	Password  string
+	Images    string
+	Role      string
+	IdClass   uint
+	ClassName string
+}
+
+type Class struct {
+	ClassName string
 }
 
 func ToDomainMentor(u Mentor) login.Core {
@@ -37,7 +41,7 @@ func ToDomainMentor(u Mentor) login.Core {
 		Images:   u.Images,
 		Role:     u.Role,
 		IdClass:  u.IdClass,
-		Class:    u.Class,
+		Class:    u.ClassName,
 	}
 }
 
@@ -50,7 +54,7 @@ func ToDomainMentee(u Mentee) login.Core {
 		Images:   u.Images,
 		Role:     u.Role,
 		IdClass:  u.IdClass,
-		Class:    u.Class,
+		Class:    u.ClassName,
 	}
 }
 
@@ -67,4 +71,3 @@ func FromDomainMentee(du login.Core) Mentee {
 		Password: du.Password,
 	}
 }
-

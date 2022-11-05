@@ -1,7 +1,5 @@
 package admin
 
-import "github.com/labstack/echo/v4"
-
 type UserCore struct {
 	IdUser   uint
 	Name     string
@@ -21,15 +19,15 @@ type ClassCore struct {
 }
 
 type UsecaseInterface interface {
-	AddUser(input UserCore, c echo.Context) (UserCore, error)
-	GetAllUser(c echo.Context) ([]UserCore, []UserCore, error)
-	AddNewClass(input ClassCore, c echo.Context) error
-	GetAllClass(c echo.Context) ([]ClassCore, error)
-	UpdateUserAdmin(input UserCore, c echo.Context) (UserCore, error)
-	DeleteUser(id uint, c echo.Context) error
-	GetSingleUser(id uint, c echo.Context) (UserCore, error)
-	UpdateClass(input ClassCore, c echo.Context) (ClassCore, error)
-	DeleteClass(id uint, c echo.Context) (error)
+	AddUser(input UserCore, role string) (UserCore, error)
+	GetAllUser(role string) ([]UserCore, []UserCore, error)
+	AddNewClass(input ClassCore, role string) error
+	GetAllClass(role string) ([]ClassCore, error)
+	UpdateUserAdmin(input UserCore, role string,) (UserCore, error)
+	DeleteUser(id uint, role string) error
+	GetSingleUser(id uint, role string) (UserCore, error)
+	UpdateClass(input ClassCore, role string) (ClassCore, error)
+	DeleteClass(id uint, role string) (error)
 }
 
 type RepoInterface interface {

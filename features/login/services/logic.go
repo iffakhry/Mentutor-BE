@@ -65,23 +65,20 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 		return login.Core{}, "", errors.New("string too short or too long")
 	}
 
-	// Check Username di database
-	res, err := usecase.authData.Login(input)
-	if err != nil {
-		log.Error(errors.New("email not found"))
-		return login.Core{}, "", errors.New("wrong username or password")
-	}
+	// Check email di database
+	res, _ := usecase.authData.Login(input)
+
 
 	// // CEK ID = 0
-	// if res == (login.Core{}) {
-	// 	return login.Core{}, "", errors.New("wrong username or password")
-	// }
+	if res.ID == 0  {
+		return login.Core{}, "", errors.New("wrong email or password")
+	}
 
 	// Check password admin
 	if res.Role == "admin"{
 		if res.Password != input.Password {
 			log.Error(errors.New("password not equal"))
-			return login.Core{}, "", errors.New("wrong username or password")
+			return login.Core{}, "", errors.New("wrong email or password")
 		}
 	} else if res.Role == "mentor" || res.Role == "mentee" {
 		// Check password mentee / mentor
@@ -89,7 +86,7 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 		check := bcrypt.CompareHashAndPassword([]byte(pass.Password), []byte(input.Password))
 		if check != nil {
 			log.Error(check, " wrong password")
-			return login.Core{}, "", errors.New("wrong username or password")
+			return login.Core{}, "", errors.New("wrong email or password")
 		}
 		
 	}

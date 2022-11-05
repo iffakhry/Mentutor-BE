@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"math/rand"
+	"mime/multipart"
 
 	"os"
 	"path/filepath"
@@ -17,7 +18,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/joho/godotenv"
-	"github.com/labstack/echo/v4"
 )
 
 // CREATE RANDOM STRING
@@ -42,13 +42,7 @@ func String(length int) string {
 
 // UPLOAD FOTO PROFILE TO AWS S3
 
-func UploadFotoProfile(c echo.Context) (string, error) {
-
-	file, fileheader, err := c.Request().FormFile("images")
-	if err != nil {
-		log.Print("INI ERROR ",err)
-		return "", err
-	}
+func UploadFotoProfile(file multipart.File, fileheader *multipart.FileHeader) (string, error) {
 
 	size := fileheader.Size  
 	if size > 5 * 1024 * 1024 {
