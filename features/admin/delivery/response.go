@@ -12,8 +12,9 @@ type RegisterResponse struct {
 type GetUserResponse struct {
 	IdUser uint   `json:"id_user"`
 	Name   string `json:"name"`
+	Email string `json:"email"`
 	Role   string `json:"role"`
-	Class  string `json:"class"`
+	Class  string `json:"class_name"`
 }
 
 type GetAllClassResponse struct {
@@ -60,6 +61,7 @@ func ToResponseUserArray(mentee []admin.UserCore, mentor []admin.UserCore) []Get
 		res = append(res, GetUserResponse{
 			IdUser: val.IdUser,
 			Name:   val.Name,
+			Email:  val.Email,
 			Role:   val.Role,
 			Class:  val.Class,
 		})
@@ -68,6 +70,7 @@ func ToResponseUserArray(mentee []admin.UserCore, mentor []admin.UserCore) []Get
 		res = append(res, GetUserResponse{
 			IdUser: val.IdUser,
 			Name:   val.Name,
+			Email: val.Email,
 			Role:   val.Role,
 			Class:  val.Class,
 		})

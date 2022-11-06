@@ -80,34 +80,78 @@ func UploadFotoProfile(file multipart.File, fileheader *multipart.FileHeader) (s
 	return "", errors.New("file not an image")
 }
 
-// func UploadProfileProduct(c echo.Context) (string, error) {
+func UploadFileTugas(file multipart.File, fileheader *multipart.FileHeader) (string, error) {
 
-// 	file, fileheader, err := c.Request().FormFile("product_picture")
-// 	if err != nil {
-// 		log.Print(err)
-// 		return "", err
-// 	}
+	size := fileheader.Size  
+	if size > 5 * 1024 * 1024 {
+		log.Print("INI ERROR  size")
+		return "", errors.New("file size is too large")
+	}
 
-// 	randomStr := String(20)
+	fileExtension := filepath.Ext(fileheader.Filename)
 
-// 	// godotenv.Load(".env")
+	if fileExtension == ".pdf" || fileExtension == ".wordx" {
+		randomStr := String(20)
 
-// 	s3Config := &aws.Config{
-// 		Region:      aws.String("ap-southeast-1"),
-// 		Credentials: credentials.NewStaticCredentials(os.Getenv("AWS_KEY"), os.Getenv("AWS_SECRET"), ""),
-// 	}
-// 	s3Session := session.New(s3Config)
+		godotenv.Load("config.env")
+	
+		s3Config := &aws.Config{
+			Region:      aws.String("ap-southeast-1"),
+			Credentials: credentials.NewStaticCredentials(os.Getenv("AWS_KEY"), os.Getenv("AWS_SECRET"), ""),
+		}
+	
+		s3Session := session.New(s3Config)
+	
+		uploader := s3manager.NewUploader(s3Session)
+	
+		input := &s3manager.UploadInput{
+			Bucket:      aws.String("mentutor"),                                   // bucket's name
+			Key:         aws.String("task-file/" + randomStr + "-" + fileheader.Filename), // files destination location
+			Body:        file,                                                           // content of the file                                   // content type
+		}
+		res, err := uploader.UploadWithContext(context.Background(), input)
+	
+		// RETURN URL LOCATION IN AWS
+		return res.Location, err
+	}
+	return "", errors.New("file not an image")
+}
 
-// 	uploader := s3manager.NewUploader(s3Session)
+func UploadGambarTugas(file multipart.File, fileheader *multipart.FileHeader) (string, error) {
 
-// 	input := &s3manager.UploadInput{
-// 		Bucket:      aws.String("mentutor"),                                   // bucket's name
-// 		Key:         aws.String("product/" + randomStr + "-" + fileheader.Filename), // files destination location
-// 		Body:        file,                                                           // content of the file
-// 		ContentType: aws.String("image/jpg"),                                        // content type
-// 	}
-// 	res, err := uploader.UploadWithContext(context.Background(), input)
+	size := fileheader.Size  
+	if size > 5 * 1024 * 1024 {
+		log.Print("INI ERROR  size")
+		return "", errors.New("file size is too large")
+	}
 
-// 	// RETURN URL LOCATION IN AWS
-// 	return res.Location, err
-// }
+	fileExtension := filepath.Ext(fileheader.Filename)
+
+	if fileExtension == ".jpeg" || fileExtension == ".jpg" || fileExtension == ".png" {
+		randomStr := String(20)
+
+		godotenv.Load("config.env")
+	
+		s3Config := &aws.Config{
+			Region:      aws.String("ap-southeast-1"),
+			Credentials: credentials.NewStaticCredentials(os.Getenv("AWS_KEY"), os.Getenv("AWS_SECRET"), ""),
+		}
+	
+		s3Session := session.New(s3Config)
+	
+		uploader := s3manager.NewUploader(s3Session)
+	
+		input := &s3manager.UploadInput{
+			Bucket:      aws.String("mentutor"),                                   // bucket's name
+			Key:         aws.String("task-images/" + randomStr + "-" + fileheader.Filename), // files destination location
+			Body:        file,                                                           // content of the file
+			ContentType: aws.String("images/jpg"),                                        // content type
+		}
+		res, err := uploader.UploadWithContext(context.Background(), input)
+	
+		// RETURN URL LOCATION IN AWS
+		return res.Location, err
+	}
+	return "", errors.New("file not an image")
+}
+

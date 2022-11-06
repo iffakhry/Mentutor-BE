@@ -197,6 +197,7 @@ func ToDomainMenteeArray(data []Mentee) []admin.UserCore{
 		res = append(res, admin.UserCore{
 			IdUser: val.ID,
 			Name: val.Name,
+			Email: val.Email,
 			Role: val.Role,
 			Class: val.Role,
 		})
@@ -211,6 +212,7 @@ func ToDomainMentorArray(data []Mentor) []admin.UserCore{
 		res = append(res, admin.UserCore{
 			IdUser: val.ID,
 			Name: val.Name,
+			Email: val.Email,
 			Role: val.Role,
 			Class: val.Role,
 		})
