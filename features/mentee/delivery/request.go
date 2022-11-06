@@ -33,3 +33,28 @@ func ToEntity(data UpdateFormat) mentee.MenteeCore {
 		Images:   data.Password,
 	}
 }
+
+// comments
+
+type CommentFormat struct {
+	IdStatus uint
+	ID_User  uint
+	Role     string
+	Name     string
+	Caption  string `json:"caption" form:"caption"`
+}
+type SubFormat struct {
+	ID_Tasks  uint
+	ID_Mentee uint
+	File      string `json:"file" form:"file"`
+}
+
+func ToDomainComments(i CommentFormat) mentee.CommentsCore {
+	// var cnv CommentFormat
+	return mentee.CommentsCore{IdStatus: i.IdStatus, ID_User: i.ID_User, Caption: i.Caption}
+}
+
+func ToDomainSub(i SubFormat) mentee.Submission {
+	// var cnv CommentFormat
+	return mentee.Submission{ID_Mentee: i.ID_Mentee, ID_Tasks: i.ID_Tasks, File: i.File}
+}

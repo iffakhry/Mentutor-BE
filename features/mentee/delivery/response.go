@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"be12/mentutor/features/mentee"
+	"log"
 )
 
 type UpdateResponse struct {
@@ -12,11 +13,22 @@ type UpdateResponse struct {
 }
 
 type StatusRespon struct {
-	ID      uint   `json:"id"`
-	Images  string `json:"images"`
+	ID       uint            `json:"id_status"`
+	Images   string          `json:"images"`
+	Caption  string          `json:"caption"`
+	Comments []CommentRespon `json:"comments"`
+}
+type CommentRespon struct {
+	ID      uint   `json:"id_comment"`
 	Caption string `json:"caption"`
-	// Created_At time.Time `json:"created_at"`
-	// Updated_At time.Time `json:"updated_at"`
+	Role    string `json:"role"`
+	Name    string `json:"name"`
+}
+
+type SubResponse struct {
+	ID    uint   `json:"id_submission"`
+	Title string `json:"title"`
+	File  string `json:"file"`
 }
 
 func ToResponse(data mentee.Status) StatusRespon {
@@ -24,19 +36,48 @@ func ToResponse(data mentee.Status) StatusRespon {
 		ID:      data.ID,
 		Caption: data.Caption,
 		Images:  data.Images,
-		// Created_At: data.CreatedAt,
 	}
 }
 
-func ToCoreArray(pa []mentee.Status) []StatusRespon {
-	var res []StatusRespon
-	for _, val := range pa {
-		res = append(res, StatusRespon{
-			ID:      val.ID,
-			Images:  val.Images,
-			Caption: val.Caption,
-		})
+func ToResponseComments(data mentee.CommentsCore) CommentRespon {
+	return CommentRespon{
+
+		Caption: data.Caption,
 	}
+}
+
+func ToResponseSub(data mentee.Submission) SubResponse {
+	log.Print(data.ID, " INI ID RESPONSE")
+	return SubResponse{
+
+		ID:    data.ID,
+		Title: data.Title,
+		File:  data.File,
+	}
+}
+
+func ToCoreArray(status []mentee.Status, coment []mentee.CommentsCore) []StatusRespon {
+	var res []StatusRespon
+
+	for i, val := range status {
+		var comres []CommentRespon
+		for j, v := range coment {
+			if status[i].ID == coment[j].IdStatus {
+				comres = append(comres, CommentRespon{ID: v.ID, Caption: v.Caption, Role: v.Role, Name: v.Name})
+
+			}
+
+		}
+
+		res = append(res, StatusRespon{
+			ID:       val.ID,
+			Images:   val.Images,
+			Caption:  val.Caption,
+			Comments: comres,
+		})
+
+	}
+
 	return res
 }
 func SuccessResponse(msg string, data interface{}) map[string]interface{} {

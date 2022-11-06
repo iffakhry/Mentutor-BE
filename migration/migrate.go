@@ -58,8 +58,9 @@ type Submission struct {
 	gorm.Model
 	IdMentee uint
 	IdTask   uint
-	File     string `gorm:"type:varchar(255);not null"`
-	Score    int    `gorm:"type:int(3);not null"`
+	// Title    string `gorm:"type:varchar(255);not null"`
+	File  string `gorm:"type:varchar(255);not null"`
+	Score int    `gorm:"type:int(3);not null"`
 }
 
 type Status struct {
@@ -67,6 +68,7 @@ type Status struct {
 	IdMentee uint
 	Caption  string `gorm:"type:varchar(255);not null"`
 	Images   string `gorm:"type:varchar(255);not null"`
+	// Comment  []Comment
 }
 
 type Comment struct {
