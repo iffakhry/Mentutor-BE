@@ -13,30 +13,33 @@ type UserCore struct {
 	Images   string
 }
 
-type Class struct {
+type ClassCore struct {
 	ID        uint
 	ClassName string
 	Status    string
 }
 
-type Task struct {
+type TaskCore struct {
 	ID          uint
 	IdClass     uint
 	IdMentor    uint
+	Title       string
 	Description string
 	File        string
+	Images      string
 	DueDate     time.Time
 }
 
-type Comment struct {
+type CommentCore struct {
 	ID       uint
 	IdUser   uint
 	IdStatus uint
-	Caption  string 
+	Caption  string
 }
 
 type UsecaseInterface interface {
 	UpdateProfile(input UserCore, role string) (UserCore, error)
+	AddTask(input TaskCore, role string) (TaskCore, error)
 }
 
 type RepoInterface interface {
@@ -44,4 +47,5 @@ type RepoInterface interface {
 	EditProfileMentor(input UserCore) (UserCore, error)
 	GetSingleMentee(id uint) (UserCore, error)
 	GetSingleMentor(id uint) (UserCore, error)
+	InsertTask(input TaskCore) (TaskCore, error)
 }

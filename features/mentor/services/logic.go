@@ -147,3 +147,15 @@ func (mu *mentorUsecase) UpdateProfile(input mentor.UserCore, role string) (ment
 	}
 	return mentor.UserCore{}, errors.New("error update user")
 }
+
+func (mu *mentorUsecase) AddTask(input mentor.TaskCore, role string) (mentor.TaskCore, error) {
+	if err := roleCheck(role); err != true {
+		return mentor.TaskCore{}, errors.New("user not mentor")
+	}
+
+	res, err := mu.mentorRepo.InsertTask(input)
+	if err != nil {
+		return mentor.TaskCore{}, errors.New("error insert task")
+	}
+	return res, nil
+}

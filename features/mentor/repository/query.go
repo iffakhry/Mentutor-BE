@@ -62,3 +62,14 @@ func (mr *mentorRepo) EditProfileMentor(input mentor.UserCore) (mentor.UserCore,
 	}
 	return input, nil
 }
+
+func (mr *mentorRepo) InsertTask(input mentor.TaskCore) (mentor.TaskCore, error ) {
+	data := FromDomainTask(input)
+
+	if err := mr.db.Create(&data).Last(&data).Error; err != nil {
+		return mentor.TaskCore{}, err
+	}
+
+	cnv := ToDomainTask(data)
+	return cnv, nil
+}

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"be12/mentutor/features/mentor"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -37,10 +38,13 @@ type Class struct {
 
 type Task struct {
 	gorm.Model
+	Title       string `gorm:"type:varchar(255);not null"`
 	IdClass     uint
 	IdMentor    uint
 	Description string `gorm:"type:varchar(255);not null"`
 	File        string `gorm:"type:varchar(255);not null"`
+	Images      string `gorm:"type:varchar(255);not null"`
+	DueDate     time.Time
 }
 
 type Comment struct {
@@ -74,6 +78,16 @@ func FromDomainMentor(data mentor.UserCore) Mentor {
 	}
 }
 
+func FromDomainTask(data mentor.TaskCore) Task {
+	return Task{
+		IdClass:     data.IdClass,
+		IdMentor:    data.IdMentor,
+		Description: data.Description,
+		File:        data.File,
+		Images:      data.Images,
+	}
+}
+
 // TO DOMAIN
 
 func ToDomainMentee(data Mentee) mentor.UserCore {
@@ -91,5 +105,18 @@ func ToDomainMentor(data Mentor) mentor.UserCore {
 		Name:   data.Name,
 		Email:  data.Email,
 		Images: data.Images,
+	}
+}
+
+func ToDomainTask(data Task) mentor.TaskCore {
+	return mentor.TaskCore{
+		ID:          data.ID,
+		IdClass:     data.IdClass,
+		IdMentor:    data.IdMentor,
+		Title:       data.Title,
+		Description: data.Description,
+		File:        data.File,
+		Images:      data.Images,
+		DueDate: data.DueDate,
 	}
 }
