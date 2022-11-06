@@ -13,6 +13,50 @@ type UseCaseInterface struct {
 	mock.Mock
 }
 
+// GetAll provides a mock function with given fields:
+func (_m *UseCaseInterface) GetAll() ([]mentee.Status, error) {
+	ret := _m.Called()
+
+	var r0 []mentee.Status
+	if rf, ok := ret.Get(0).(func() []mentee.Status); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]mentee.Status)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// InsertStatus provides a mock function with given fields: data, token
+func (_m *UseCaseInterface) InsertStatus(data mentee.Status, token int) (mentee.Status, error) {
+	ret := _m.Called(data, token)
+
+	var r0 mentee.Status
+	if rf, ok := ret.Get(0).(func(mentee.Status, int) mentee.Status); ok {
+		r0 = rf(data, token)
+	} else {
+		r0 = ret.Get(0).(mentee.Status)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(mentee.Status, int) error); ok {
+		r1 = rf(data, token)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UpdateProfile provides a mock function with given fields: id, data
 func (_m *UseCaseInterface) UpdateProfile(id uint, data mentee.MenteeCore) (mentee.MenteeCore, error) {
 	ret := _m.Called(id, data)

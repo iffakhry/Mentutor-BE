@@ -174,6 +174,24 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 	if role != "admin" {
 		return admin.UserCore{}, errors.New("user not admin")
 	}
+
+	var user admin.UserCore
+	
+	if  input.IdUser < 1000 {
+		res, err := au.adminRepo.GetSingleMentee(input.IdUser)
+		if err != nil {
+			return admin.UserCore{}, errors.New("user not found")
+		}
+		user = res
+	} else if  input.IdUser >= 1000 {
+		res, err := au.adminRepo.GetSingleMentor(input.IdUser)
+		if err != nil {
+			return admin.UserCore{}, errors.New("user not found")
+		}
+		user = res
+	}
+
+	
 	
 	// CEK KONDISI NAMA
 	if input.Name != "" {
@@ -205,6 +223,8 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 		} else if space < 1 {
 			return admin.UserCore{}, errors.New("input name not valid")
 		}
+	} else {
+		input.Name = user.Name
 	}
 	
 	// CEK KONDISI EMAIL
@@ -220,6 +240,8 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 		} else if strings.Contains(input.Email, "@") == false && strings.Contains(input.Email, ".") == false {
 			return admin.UserCore{}, errors.New("not contain (@) and (.)")
 		} 
+	} else {
+		input.Email = user.Email
 	}
 	
 
@@ -257,13 +279,15 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 		input.Password = string(generate)
 	}
 
-	// CEK KELAS TERSEDIA
-	if input.IdClass < 1 {
+	// CEK KELAS TERSEDIA]
+	if input.IdClass > 0 {
 		idClass := uint(input.IdClass)
 		_, err := au.adminRepo.GetClass(idClass)
 		if err != nil {
 			return admin.UserCore{}, errors.New("input class not valid")
 		}
+	} else if input.IdClass == 0 {
+		input.IdClass = user.IdClass
 	}
 	
 

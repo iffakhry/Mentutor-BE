@@ -29,9 +29,8 @@ func New(e *echo.Echo, usecase admin.UsecaseInterface) {
 	e.GET("/admin/classes", handler.GetAllClass(), middleware.JWT([]byte(config.SECRET_JWT)))            // GET ALL CLASS
 	e.PUT("/admin/users/:id_user", handler.UpdateUserAdmin(), middleware.JWT([]byte(config.SECRET_JWT))) // UPDATE DATA USER BY ADMIN
 	e.GET("/admin/users/:id_user", handler.GetSingleUser(), middleware.JWT([]byte(config.SECRET_JWT)))   // GET SINGLE PROFILE OTHER USER
-	e.DELETE("/admin/mentee/:id_user", handler.DeleteUser(), middleware.JWT([]byte(config.SECRET_JWT)))  // DELETE USER ACCOUNT
 	e.PUT("/admin/classes/:id_class", handler.UpdateClass(), middleware.JWT([]byte(config.SECRET_JWT)))	// UPDATE CLASS
-	e.DELETE("/admin/classes/:id_class", handler.DeleteClass(), middleware.JWT([]byte(config.SECRET_JWT)))
+	e.DELETE("/admin/users/:id_class", handler.DeleteClass(), middleware.JWT([]byte(config.SECRET_JWT)))
 }
 
 func (ad *AdminDelivery) AddUser() echo.HandlerFunc {
@@ -87,7 +86,7 @@ func (ad *AdminDelivery) AddNewClass() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
 
-		return c.JSON(http.StatusOK, helper.SuccessResponseNoData("Success created"))
+		return c.JSON(http.StatusCreated, helper.SuccessResponseNoData("Success created"))
 	}
 }
 
@@ -135,7 +134,7 @@ func (ad *AdminDelivery) UpdateUserAdmin() echo.HandlerFunc {
 			log.Print(err)
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
-		return c.JSON(http.StatusOK, helper.SuccessResponse("update profile successful", ToResponseUpdateUser(res)))
+		return c.JSON(http.StatusCreated, helper.SuccessResponse("update profile successful", ToResponseUpdateUser(res)))
 	}
 }
 
@@ -192,7 +191,7 @@ func (ad *AdminDelivery) UpdateClass() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
-		return c.JSON(http.StatusOK, helper.SuccessResponse("Update Class Successful", ToResponseUpdateClass(res)))
+		return c.JSON(http.StatusCreated, helper.SuccessResponse("Update Class Successful", ToResponseUpdateClass(res)))
 	}
 }
 

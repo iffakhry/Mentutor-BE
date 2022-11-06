@@ -13,6 +13,27 @@ type RepoInterface struct {
 	mock.Mock
 }
 
+// AddStatus provides a mock function with given fields: data, token
+func (_m *RepoInterface) AddStatus(data mentee.Status, token int) (mentee.Status, error) {
+	ret := _m.Called(data, token)
+
+	var r0 mentee.Status
+	if rf, ok := ret.Get(0).(func(mentee.Status, int) mentee.Status); ok {
+		r0 = rf(data, token)
+	} else {
+		r0 = ret.Get(0).(mentee.Status)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(mentee.Status, int) error); ok {
+		r1 = rf(data, token)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // EditProfile provides a mock function with given fields: id, data
 func (_m *RepoInterface) EditProfile(id uint, data mentee.MenteeCore) (mentee.MenteeCore, error) {
 	ret := _m.Called(id, data)
@@ -27,6 +48,29 @@ func (_m *RepoInterface) EditProfile(id uint, data mentee.MenteeCore) (mentee.Me
 	var r1 error
 	if rf, ok := ret.Get(1).(func(uint, mentee.MenteeCore) error); ok {
 		r1 = rf(id, data)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetAllPosts provides a mock function with given fields:
+func (_m *RepoInterface) GetAllPosts() ([]mentee.Status, error) {
+	ret := _m.Called()
+
+	var r0 []mentee.Status
+	if rf, ok := ret.Get(0).(func() []mentee.Status); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]mentee.Status)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
 	} else {
 		r1 = ret.Error(1)
 	}
