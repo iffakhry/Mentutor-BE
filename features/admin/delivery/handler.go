@@ -30,7 +30,8 @@ func New(e *echo.Echo, usecase admin.UsecaseInterface) {
 	e.PUT("/admin/users/:id_user", handler.UpdateUserAdmin(), middleware.JWT([]byte(config.SECRET_JWT))) // UPDATE DATA USER BY ADMIN
 	e.GET("/admin/users/:id_user", handler.GetSingleUser(), middleware.JWT([]byte(config.SECRET_JWT)))   // GET SINGLE PROFILE OTHER USER
 	e.PUT("/admin/classes/:id_class", handler.UpdateClass(), middleware.JWT([]byte(config.SECRET_JWT)))	// UPDATE CLASS
-	e.DELETE("/admin/users/:id_class", handler.DeleteClass(), middleware.JWT([]byte(config.SECRET_JWT)))
+	e.DELETE("/admin/classes/:id_class", handler.DeleteClass(), middleware.JWT([]byte(config.SECRET_JWT)))
+	e.DELETE("/admin/users/:id_user", handler.DeleteUser(), middleware.JWT([]byte(config.SECRET_JWT)))
 }
 
 func (ad *AdminDelivery) AddUser() echo.HandlerFunc {
