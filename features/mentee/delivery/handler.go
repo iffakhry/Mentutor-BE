@@ -4,7 +4,10 @@ import (
 	"be12/mentutor/config"
 	"be12/mentutor/features/mentee"
 	"be12/mentutor/middlewares"
+	"errors"
+	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -23,6 +26,10 @@ func New(e *echo.Echo, usecase mentee.UseCaseInterface) {
 	e.PUT("/update/:id_user", handler.UpdateProfile()) // UPDATE PROFILE USER
 	e.POST("/forum", handler.AddStatus(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.GET("/forum", handler.SelectAll(), middleware.JWT([]byte(config.SECRET_JWT)))
+	e.POST("/forum/:id", handler.AddComment(), middleware.JWT([]byte(config.SECRET_JWT)))
+	e.POST("/mentees/submission/:id", handler.AddSub(), middleware.JWT([]byte(config.SECRET_JWT)))
+	e.POST("/mentees/sub/:id", handler.AddSub(), middleware.JWT([]byte(config.SECRET_JWT)))
+
 }
 
 func (md *MenteeDelivery) UpdateProfile() echo.HandlerFunc {
@@ -69,12 +76,89 @@ func (md *MenteeDelivery) SelectAll() echo.HandlerFunc {
 		if id < 1 {
 			return c.JSON(http.StatusNotFound, FailedResponse("Invalid Input From Client"))
 		}
-		res, err := md.MenteeUsecase.GetAll()
+		res, resC, err := md.MenteeUsecase.GetAll()
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
 		}
 
-		return c.JSON(http.StatusOK, SuccessResponse("success get all status", ToCoreArray(res)))
+		// return c.JSON(http.StatusOK, SuccessResponse("success get all status", ToCoreArray(res)))
+		return c.JSON(http.StatusOK, SuccessResponse("success get all status", ToCoreArray(res, resC)))
+
+	}
+}
+func (md *MenteeDelivery) AddComment() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var comment CommentFormat
+		id_status := c.Param("id")
+
+		if err := c.Bind(&comment); err != nil {
+			c.JSON(http.StatusBadRequest, errors.New("Invalid Input From Client"))
+		}
+
+		idUser, _, _ := middlewares.ExtractToken(c)
+		idCnv, _ := strconv.Atoi(id_status)
+		idStatus := uint(idCnv)
+		comment.IdStatus = idStatus
+		comment.ID_User = uint(idUser)
+		data := ToDomainComments(comment)
+		log.Print(data)
+		res, err1 := md.MenteeUsecase.Insert(data)
+		if err1 != nil {
+			return c.JSON(http.StatusInternalServerError, errors.New("error from server"))
+		}
+
+		return c.JSON(http.StatusCreated, SuccessResponse("success insert comment", ToResponseComments(res)))
+
+	}
+}
+
+func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var submission SubFormat
+		idtasks := c.Param("id")
+
+		if err := c.Bind(&submission); err != nil {
+			c.JSON(http.StatusBadRequest, errors.New("Invalid Input From Client"))
+		}
+
+		idUser, _, _ := middlewares.ExtractToken(c)
+		idCnv, _ := strconv.Atoi(idtasks)
+		IdTask := uint(idCnv)
+		submission.ID_Tasks = IdTask
+		submission.ID_Mentee = uint(idUser)
+		data := ToDomainSub(submission)
+		log.Print(data)
+		res, err1 := md.MenteeUsecase.InsertSub(data)
+		if err1 != nil {
+			return c.JSON(http.StatusInternalServerError, errors.New("error from server"))
+		}
+
+		return c.JSON(http.StatusCreated, SuccessResponse("success insert submission", ToResponseSub(res)))
+
+	}
+}
+func (md *MenteeDelivery) AddSubMis() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var submission SubFormat
+		idtasks := c.Param("id")
+
+		if err := c.Bind(&submission); err != nil {
+			c.JSON(http.StatusBadRequest, errors.New("Invalid Input From Client"))
+		}
+
+		idUser, _, _ := middlewares.ExtractToken(c)
+		idCnv, _ := strconv.Atoi(idtasks)
+		IdTask := uint(idCnv)
+		submission.ID_Tasks = IdTask
+		submission.ID_Mentee = uint(idUser)
+		data := ToDomainSub(submission)
+		log.Print(data)
+		res, err1 := md.MenteeUsecase.InsertSubmis(int(IdTask), data)
+		if err1 != nil {
+			return c.JSON(http.StatusInternalServerError, errors.New("error from server"))
+		}
+
+		return c.JSON(http.StatusCreated, SuccessResponse("success insert submission", ToResponseSub(res)))
 
 	}
 }

@@ -2,8 +2,8 @@ package repository
 
 import (
 	"be12/mentutor/features/mentee"
-	"log"
 
+	"github.com/labstack/gommon/log"
 	"gorm.io/gorm"
 )
 
@@ -47,14 +47,64 @@ func (md *menteeData) AddStatus(data mentee.Status, token int) (mentee.Status, e
 
 }
 
-func (md *menteeData) GetAllPosts() ([]mentee.Status, error) {
-	var dataPost []Status
-	tx := md.db.Find(&dataPost)
+func (md *menteeData) GetAllPosts() ([]mentee.Status, []mentee.CommentsCore, error) {
+	var status []Status
+	var comment []Comments
+	tx := md.db.Find(&status)
 	if tx.Error != nil {
-		return nil, tx.Error
+		return nil, nil, tx.Error
+	}
+	cmn := md.db.Find(&comment)
+	if cmn.Error != nil {
+		return nil, nil, cmn.Error
 	}
 
-	dataPostUser := ToCoreArray(dataPost)
+	dataSC := toPostList(status)
+	datacm := ToComent(comment)
 
-	return dataPostUser, nil
+	return dataSC, datacm, nil
+}
+
+func (md *menteeData) AddComment(data mentee.CommentsCore) (mentee.CommentsCore, error) {
+	var input Comments
+	input = ToEntityComent(data)
+	log.Print(input.ID_User, "  INI ID USER DI QUERY")
+	res := md.db.Create(&input)
+	if res.Error != nil {
+		return mentee.CommentsCore{}, res.Error
+	}
+
+	return data, nil
+
+}
+
+func (md *menteeData) AddSub(data mentee.Submission) (mentee.Submission, error) {
+	var input Submission
+	input = FromEntitySub(data)
+
+	res := md.db.Create(&input).Last(&input)
+	log.Print(input.ID, " INI ID DARI QUERY")
+	if res.Error != nil {
+		log.Error("ERROR QUERY")
+		return mentee.Submission{}, res.Error
+	}
+	res = md.db.Model(&Task{}).Select("title").Where("id = ?", input.IdTask).Scan(&input)
+	cnv := ToEntitySub(input)
+
+	return cnv, nil
+
+}
+func (md *menteeData) AddSubmis(param int, data mentee.Submission) (mentee.Submission, error) {
+	// var input Submission
+	input := FromEntitySub(data)
+
+	res := md.db.Create(&input)
+	if res.Error != nil {
+		// log.Error("ERROR QUERY")
+		return mentee.Submission{}, res.Error
+	}
+	log.Print(input.ID, " INI ID DARI QUERY")
+
+	return data, nil
+
 }

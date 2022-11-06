@@ -35,9 +35,9 @@ type Mentor struct {
 
 type Class struct {
 	gorm.Model
-	ClassName string `gorm:"type:varchar(255);unique;not null"`
-	Status    string `gorm:"type:enum('active','non_active');not null"`
-	Mentors   []Mentor	`gorm:"foreignKey:IdClass"`
+	ClassName string   `gorm:"type:varchar(255);unique;not null"`
+	Status    string   `gorm:"type:enum('active','non_active');not null"`
+	Mentors   []Mentor `gorm:"foreignKey:IdClass"`
 	Mentees   []Mentee `gorm:"foreignKey:IdClass"`
 	Tasks     []Task   `gorm:"foreignKey:IdClass"`
 }
@@ -46,6 +46,7 @@ type Task struct {
 	gorm.Model
 	IdClass     uint
 	IdMentor    uint
+	Title       string       `gorm:"type:varchar(255);not null"`
 	Description string       `gorm:"type:varchar(255);not null"`
 	File        string       `gorm:"type:varchar(255);not null"`
 	DueDate     time.Time    `gorm:"not null"`
@@ -56,8 +57,9 @@ type Submission struct {
 	gorm.Model
 	IdMentee uint
 	IdTask   uint
-	File     string `gorm:"type:varchar(255);not null"`
-	Score    int    `gorm:"type:int(3);not null"`
+	// Title    string `gorm:"type:varchar(255);not null"`
+	File  string `gorm:"type:varchar(255);not null"`
+	Score int    `gorm:"type:int(3);not null"`
 }
 
 type Status struct {
@@ -65,6 +67,7 @@ type Status struct {
 	IdMentee uint
 	Caption  string `gorm:"type:varchar(255);not null"`
 	Images   string `gorm:"type:varchar(255);not null"`
+	// Comment  []Comment
 }
 
 type Comment struct {
