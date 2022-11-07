@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -35,8 +36,13 @@ func (h *AuthDelivery) Login() echo.HandlerFunc {
 		res, token, err := h.authUsecase.Login(cnv)
 		if err != nil {
 			log.Print(err)
-			errx := errors.New("Invalid Input From Client")
-			return c.JSON(http.StatusBadRequest, helper.FailedResponse(errx.Error()))
+			if strings.Contains(err.Error(), "email not found") == true {
+				errx := errors.New("user not found")
+				return c.JSON(http.StatusNotFound, helper.FailedResponse(errx.Error()))
+			} else {
+				errx := errors.New("Invalid Input From Client")
+				return c.JSON(http.StatusBadRequest, helper.FailedResponse(errx.Error()))
+			}
 		}
 		res.Token = token
 		return c.JSON(http.StatusOK, helper.SuccessResponse("login successful", ToResponse(res, "login")))
