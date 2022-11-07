@@ -208,6 +208,7 @@ func ToDomainClass(data Class) admin.ClassCore {
 	return admin.ClassCore{
 		IdClass: data.ID,
 		ClassName: data.ClassName,
+		Status: data.Status,
 	}
 }
 
