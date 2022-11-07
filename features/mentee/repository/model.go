@@ -13,14 +13,15 @@ type Mentee struct {
 	Email    string `gorm:"type:varchar(255);not null;unique"`
 	Password string `gorm:"type:varchar(255);not null"`
 	Images   string `gorm:"type:varchar(255);not null"`
+	Role     string `gorm:"type:enum('mentee');not null"`
 	IdClass  uint
 }
 
 // MODEL STATUS
 type Status struct {
 	gorm.Model
-	IdMentee uint `json:"id_mentee" form:"Id_mentee"`
-	Name     string
+	IdMentee uint   `json:"id_mentee" form:"Id_mentee"`
+	Name     string `gorm:"->"`
 	Images   string `json:"images" form:"images"`
 	Caption  string `json:"caption" form:"caption"`
 }
@@ -31,8 +32,8 @@ type Comments struct {
 	ID_User  uint   `json:"id_user" form:"id_user"`
 	IdStatus uint   `json:"id_status" form:"id_status"`
 	Caption  string `json:"caption" form:"caption"`
-	// Name     string `json:"name" form:"name"` //`gorm:"->"`
-	// Role     string `json:"role" form:"role"` //`gorm:"->"`
+	Name     string `json:"name" form:"name"` //`gorm:"->"`
+	Role     string `json:"role" form:"role"` //`gorm:"->"`
 }
 
 // MODEL SUBMISSION
@@ -74,14 +75,14 @@ func ToEntity(id uint, data Mentee) mentee.MenteeCore {
 	}
 }
 
-func (status *Status) ToDomain() mentee.Status {
-	return mentee.Status{
-		ID:       status.ID,
-		IdMentee: status.IdMentee,
-		Caption:  status.Caption,
-		Images:   status.Images,
-	}
-}
+// func (status *Status) ToDomain() mentee.Status {
+// 	return mentee.Status{
+// 		ID:       status.ID,
+// 		IdMentee: status.IdMentee,
+// 		Caption:  status.Caption,
+// 		Images:   status.Images,
+// 	}
+// }
 
 func ToEntityMentee(data mentee.Status) Status {
 	return Status{
@@ -101,6 +102,7 @@ func toPostUser(dataPost Status) mentee.Status {
 		IdMentee: dataPost.IdMentee,
 		Images:   dataPost.Images,
 		Caption:  dataPost.Caption,
+		Name:     dataPost.Name,
 		// Comment:  dataPost.Comments,
 	}
 
@@ -127,10 +129,10 @@ func (comment *Comments) ToDomainComments(data Comments) mentee.CommentsCore {
 	return mentee.CommentsCore{
 		ID: data.ID,
 		// ID_User:    data.ID_User,
-		IdStatus: data.IdStatus,
-		Caption:  data.Caption,
-		// Role:       data.Role,
-		// Name:       data.Name,
+		IdStatus:   data.IdStatus,
+		Caption:    data.Caption,
+		Role:       data.Role,
+		Name:       data.Name,
 		Created_At: data.CreatedAt,
 	}
 }
@@ -173,8 +175,8 @@ func ToComent(data []Comments) []mentee.CommentsCore {
 			ID_User:  v.ID_User,
 			IdStatus: v.IdStatus,
 			Caption:  v.Caption,
-			// Name:     v.Name,
-			// Role:     v.Role,
+			Name:     v.Name,
+			Role:     v.Role,
 		})
 	}
 	return dataCmn

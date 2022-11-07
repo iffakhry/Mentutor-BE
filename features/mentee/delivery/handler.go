@@ -61,7 +61,6 @@ func (md *MenteeDelivery) AddStatus() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
 		}
 
-		cnv := ToDomain(input)
 		file, fileheader, err := c.Request().FormFile("images")
 		if err == nil {
 			res, err := helper.UploadStatusImages(file, fileheader)
@@ -72,6 +71,7 @@ func (md *MenteeDelivery) AddStatus() echo.HandlerFunc {
 			log.Print(res)
 			input.Images = res
 		}
+		cnv := ToDomain(input)
 
 		res, errposts := md.MenteeUsecase.InsertStatus(cnv, id)
 		if errposts != nil {
@@ -140,7 +140,7 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 		}
 		file, fileheader, err := c.Request().FormFile("file")
 		if err == nil {
-			res, err := helper.UploadFileSubmisiion(file, fileheader)
+			res, err := helper.UploadFileSubmission(file, fileheader)
 			if err != nil {
 				log.Print(err)
 				return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
@@ -178,7 +178,7 @@ func (md *MenteeDelivery) AddSubMis() echo.HandlerFunc {
 		}
 		file, fileheader, err := c.Request().FormFile("file")
 		if err == nil {
-			res, err := helper.UploadFileSubmisiion(file, fileheader)
+			res, err := helper.UploadFileSubmission(file, fileheader)
 			if err != nil {
 				log.Print(err)
 				return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))

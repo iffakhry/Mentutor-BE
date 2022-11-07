@@ -37,25 +37,25 @@ func (au *adminUsecase) AddUser(input admin.UserCore, role string) (admin.UserCo
 			return admin.UserCore{}, errors.New("contain space")
 		}
 	}
-	if len(input.Email) < 8 || len(input.Email) > 40  {
+	if len(input.Email) < 8 || len(input.Email) > 40 {
 		return admin.UserCore{}, errors.New("length email not valid")
 	} else if strings.Contains(input.Email, "@") == false && strings.Contains(input.Email, ".") == false {
 		return admin.UserCore{}, errors.New("not contain (@) and (.)")
-	} 
+	}
 
 	// String to lower email
 	strEmail := strings.ToLower(input.Email)
 	input.Email = strEmail
 
 	// CEK KONDISI NAMA
-	if len(input.Name) < 5 || len(input.Name) > 50{
+	if len(input.Name) < 5 || len(input.Name) > 50 {
 		return admin.UserCore{}, errors.New("length name not valid")
 	}
 	var upper, lower, number, sChar int
 	for _, v := range input.Name {
 		if unicode.IsUpper(v) == true {
-			upper+=1
-		} else if unicode.IsLower(v) ==  true {
+			upper += 1
+		} else if unicode.IsLower(v) == true {
 			lower += 1
 		} else if unicode.IsNumber(v) == true {
 			number+=1
@@ -73,7 +73,6 @@ func (au *adminUsecase) AddUser(input admin.UserCore, role string) (admin.UserCo
 	} else if sChar > 1 {
 		return admin.UserCore{}, errors.New("Dinput name not valid")
 	}
-
 
 	// CEK KONDISI PASSOWRD
 	var sCharString = "@#$%^&*<>:;'[]{}|`~!"
@@ -97,7 +96,7 @@ func (au *adminUsecase) AddUser(input admin.UserCore, role string) (admin.UserCo
 		return admin.UserCore{}, errors.New("string not as expected")
 	} else if passNumber < 1 {
 		return admin.UserCore{}, errors.New("string not as expected")
-	} 
+	}
 	if specialChar == 0 {
 		return admin.UserCore{}, errors.New("string not as expected")
 	} else if len(input.Password) < 8 || len(input.Password) > 30 {
@@ -134,9 +133,9 @@ func (au *adminUsecase) AddUser(input admin.UserCore, role string) (admin.UserCo
 }
 
 func (au *adminUsecase) GetAllUser(role string) ([]admin.UserCore, []admin.UserCore, error) {
-	
+
 	if role != "admin" {
-		return []admin.UserCore{}, []admin.UserCore{},errors.New("user not admin")
+		return []admin.UserCore{}, []admin.UserCore{}, errors.New("user not admin")
 	}
 
 	resMentee, resMentor, err := au.adminRepo.GetAllUser()
@@ -147,7 +146,7 @@ func (au *adminUsecase) GetAllUser(role string) ([]admin.UserCore, []admin.UserC
 }
 
 func (au *adminUsecase) AddNewClass(input admin.ClassCore, role string) (admin.ClassCore, error) {
-	
+
 	if role != "admin" {
 		return admin.ClassCore{}, errors.New("user not admin")
 	}
@@ -160,7 +159,7 @@ func (au *adminUsecase) AddNewClass(input admin.ClassCore, role string) (admin.C
 }
 
 func (au *adminUsecase) GetAllClass(role string) ([]admin.ClassCore, error) {
-	
+
 	if role != "admin" {
 		return []admin.ClassCore{}, errors.New("user not admin")
 	}
@@ -174,14 +173,14 @@ func (au *adminUsecase) GetAllClass(role string) ([]admin.ClassCore, error) {
 }
 
 func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admin.UserCore, error) {
-	
+
 	if role != "admin" {
 		return admin.UserCore{}, errors.New("user not admin")
 	}
 
 	var user admin.UserCore
-	
-	if  input.IdUser < 1000 {
+
+	if input.IdUser < 1000 {
 		res, err := au.adminRepo.GetSingleMentee(input.IdUser)
 		if err != nil {
 			return admin.UserCore{}, errors.New("user not found")
@@ -189,7 +188,7 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 			return admin.UserCore{}, errors.New("user not found")
 		}
 		user = res
-	} else if  input.IdUser >= 1000 {
+	} else if input.IdUser >= 1000 {
 		res, err := au.adminRepo.GetSingleMentor(input.IdUser)
 		if err != nil {
 			return admin.UserCore{}, errors.New("user not found")
@@ -197,25 +196,25 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 			return admin.UserCore{}, errors.New("user not found")
 		}
 		user = res
-	}	
+	}
 
 	// CEK KONDISI NAMA
 	if input.Name != "" {
-		if len(input.Name) < 5 || len(input.Name) > 50{
+		if len(input.Name) < 5 || len(input.Name) > 50 {
 			return admin.UserCore{}, errors.New("length name not valid")
 		}
 		var upper, lower, number, sChar, space int
 		for _, v := range input.Name {
 			if unicode.IsUpper(v) == true {
-				upper+=1
-			} else if unicode.IsLower(v) ==  true {
+				upper += 1
+			} else if unicode.IsLower(v) == true {
 				lower += 1
 			} else if unicode.IsNumber(v) == true {
-				number+=1
-			} else if unicode.IsPunct(v){
-				sChar+=1
-			} else if unicode.IsSpace(v){
-				space+=1
+				number += 1
+			} else if unicode.IsPunct(v) {
+				sChar += 1
+			} else if unicode.IsSpace(v) {
+				space += 1
 			}
 		}
 		if upper < 1 {
@@ -232,7 +231,7 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 	} else {
 		input.Name = user.Name
 	}
-	
+
 	// CEK KONDISI EMAIL
 	if input.Email != "" {
 		for _, v := range input.Email {
@@ -241,17 +240,17 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 				return admin.UserCore{}, errors.New("contain space")
 			}
 		}
-		if len(input.Email) < 8 || len(input.Email) > 40  {
+		if len(input.Email) < 8 || len(input.Email) > 40 {
 			return admin.UserCore{}, errors.New("length email not valid")
 		} else if strings.Contains(input.Email, "@") == false && strings.Contains(input.Email, ".") == false {
 			return admin.UserCore{}, errors.New("not contain (@) and (.)")
-		} 
+		}
 	} else {
 		input.Email = user.Email
 	}
 
 	// CEK KONDISI PASSWORD
-	if input.Password != ""{
+	if input.Password != "" {
 		var sChar = "@#$%^&*<>:;'[]{}|`~!"
 		var passUpper, passLower, passNumber, specialChar int
 		for _, v := range input.Password {
@@ -273,14 +272,14 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 			return admin.UserCore{}, errors.New("string not as expected")
 		} else if passNumber < 1 {
 			return admin.UserCore{}, errors.New("string not as expected")
-		} 
+		}
 		if specialChar == 0 {
 			return admin.UserCore{}, errors.New("string not as expected")
 		} else if len(input.Password) < 8 || len(input.Password) > 30 {
 			return admin.UserCore{}, errors.New("string too short or too long")
 		}
 
-		generate , _:= bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+		generate, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 		input.Password = string(generate)
 	}
 
@@ -294,9 +293,8 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 			return admin.UserCore{}, errors.New("input class not valid")
 		}
 	}
-	
 
-	if input.IdUser >= 1000{
+	if input.IdUser >= 1000 {
 		res, err := au.adminRepo.EditUserMentor(input)
 		if err != nil {
 			return admin.UserCore{}, errors.New("error in database")
@@ -315,8 +313,8 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 	return admin.UserCore{}, errors.New("user not found")
 }
 
-func (au *adminUsecase) DeleteUser(id uint, role string) (error) {
-	
+func (au *adminUsecase) DeleteUser(id uint, role string) error {
+
 	if role != "admin" {
 		return errors.New("user not admin")
 	}
@@ -339,7 +337,7 @@ func (au *adminUsecase) DeleteUser(id uint, role string) (error) {
 }
 
 func (au *adminUsecase) GetSingleUser(id uint, role string) (admin.UserCore, error) {
-	
+
 	if role != "admin" {
 		return admin.UserCore{}, errors.New("user not admin")
 	}
@@ -361,7 +359,7 @@ func (au *adminUsecase) GetSingleUser(id uint, role string) (admin.UserCore, err
 }
 
 func (au *adminUsecase) UpdateClass(input admin.ClassCore, role string) (admin.ClassCore, error) {
-	
+
 	if role != "admin" {
 		return admin.ClassCore{}, errors.New("user not admin")
 	}
@@ -388,12 +386,12 @@ func (au *adminUsecase) UpdateClass(input admin.ClassCore, role string) (admin.C
 }
 
 func (au *adminUsecase) DeleteClass(id uint, role string) error {
-	
+
 	if role != "admin" {
 		return errors.New("user not admin")
 	}
 
-	err := au.adminRepo.DeleteClass(id) 
+	err := au.adminRepo.DeleteClass(id)
 	if err != nil {
 		return errors.New("error in databse")
 	}

@@ -28,6 +28,7 @@ func (mu *MenteeUsecase) InsertStatus(data mentee.Status, token int) (mentee.Sta
 	if len(data.Caption) < 5 || len(data.Caption) > 120 {
 		return mentee.Status{}, errors.New("input not valid")
 	}
+	log.Print(data.Images, "INI LOG IMAGES")
 	data, err := mu.menteeData.AddStatus(data, token)
 	if err != nil {
 		return mentee.Status{}, err
@@ -54,7 +55,6 @@ func (mu *MenteeUsecase) InsertSub(data mentee.Submission) (mentee.Submission, e
 	if err != nil {
 		return mentee.Submission{}, err
 	}
-	log.Print(data.ID, "INI ID LOGIC")
 	return data, nil
 }
 
