@@ -15,20 +15,20 @@ func TestFailedUpdateUser(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
 	t.Run("Length name not valid", func(t *testing.T) {
 		repo.On("GetSingleMentee", mock.Anything).
-		Return(mentor.UserCore{
-			IdUser: 1,
-			Name: "Nur Fatchurohman",
-			Email: "nur.faturohman28@gmail.com",
-			IdClass: 1,
-			Role: "mentor",
-		}, errors.New("user not found")).Once()
+			Return(mentor.UserCore{
+				IdUser:  1,
+				Name:    "Nur Fatchurohman",
+				Email:   "nur.faturohman28@gmail.com",
+				IdClass: 1,
+				Role:    "mentor",
+			}, errors.New("user not found")).Once()
 
 		input := mentor.UserCore{
-			IdUser: 1,
-			Name: "58hgdghdghhdG",
-			Email: "nur.faturohman28@gmail.com",
+			IdUser:  1,
+			Name:    "58hgdghdghhdG",
+			Email:   "nur.faturohman28@gmail.com",
 			IdClass: 1,
-			Role: "mentee",
+			Role:    "mentee",
 		}
 		srv := New(repo)
 		res, err := srv.UpdateProfile(input, "mentor")
@@ -41,27 +41,27 @@ func TestSuccessUpdateUser(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
 	t.Run("Success update user mentee", func(t *testing.T) {
 		repo.On("GetSingleMentee", mock.Anything).
-		Return(mentor.UserCore{
-				IdUser: 1,
-				Name: "Nur Fatchurohman",
-				Email: "nur.faturohman28@gmail.com",
+			Return(mentor.UserCore{
+				IdUser:  1,
+				Name:    "Nur Fatchurohman",
+				Email:   "nur.faturohman28@gmail.com",
 				IdClass: 1,
-				Role: "mentee",
+				Role:    "mentee",
 			}, nil).Once()
 		repo.On("EditProfileMentee", mock.Anything).
-		Return(mentor.UserCore{
-			IdUser: 1,
-			Name: "Nur Fatchurohman",
-			Email: "nur.faturohman28@gmail.com",
-			IdClass: 1,
-			Role: "mentee",
-		}, nil).Once()
-		input := mentor.UserCore{
-			IdUser: 1,
-				Name: "Nur Fatchurohman",
-				Email: "nur.faturohman28@gmail.com",
+			Return(mentor.UserCore{
+				IdUser:  1,
+				Name:    "Nur Fatchurohman",
+				Email:   "nur.faturohman28@gmail.com",
 				IdClass: 1,
-				Role: "mentee",
+				Role:    "mentee",
+			}, nil).Once()
+		input := mentor.UserCore{
+			IdUser:  1,
+			Name:    "Nur Fatchurohman",
+			Email:   "nur.faturohman28@gmail.com",
+			IdClass: 1,
+			Role:    "mentee",
 		}
 		srv := New(repo)
 		res, err := srv.UpdateProfile(input, "mentee")
@@ -71,27 +71,27 @@ func TestSuccessUpdateUser(t *testing.T) {
 	})
 	t.Run("Success update user mentor", func(t *testing.T) {
 		repo.On("GetSingleMentor", mock.Anything).
-		Return(mentor.UserCore{
-				IdUser: 1000,
-				Name: "Nur Fatchurohman",
-				Email: "nur.faturohman28@gmail.com",
+			Return(mentor.UserCore{
+				IdUser:  1000,
+				Name:    "Nur Fatchurohman",
+				Email:   "nur.faturohman28@gmail.com",
 				IdClass: 1,
-				Role: "mentor",
+				Role:    "mentor",
 			}, nil).Once()
 		repo.On("EditProfileMentor", mock.Anything).
-		Return(mentor.UserCore{
-			IdUser: 1000,
-			Name: "Nur Fatchurohman",
-			Email: "nur.faturohman28@gmail.com",
-			IdClass: 1,
-			Role: "mentor",
-		}, nil).Once()
-		input := mentor.UserCore{
-			IdUser: 1000,
-				Name: "Nur Fatchurohman",
-				Email: "nur.faturohman28@gmail.com",
+			Return(mentor.UserCore{
+				IdUser:  1000,
+				Name:    "Nur Fatchurohman",
+				Email:   "nur.faturohman28@gmail.com",
 				IdClass: 1,
-				Role: "mentor",
+				Role:    "mentor",
+			}, nil).Once()
+		input := mentor.UserCore{
+			IdUser:  1000,
+			Name:    "Nur Fatchurohman",
+			Email:   "nur.faturohman28@gmail.com",
+			IdClass: 1,
+			Role:    "mentor",
 		}
 		srv := New(repo)
 		res, err := srv.UpdateProfile(input, "mentor")
@@ -101,14 +101,14 @@ func TestSuccessUpdateUser(t *testing.T) {
 	})
 	t.Run("Failed get user mentor", func(t *testing.T) {
 		repo.On("GetSingleMentor", mock.Anything).
-		Return(mentor.UserCore{}, errors.New("user not found")).Once()
+			Return(mentor.UserCore{}, errors.New("user not found")).Once()
 
 		input := mentor.UserCore{
-			IdUser: 1000,
-				Name: "Nur Fatchurohman",
-				Email: "nur.faturohman28@gmail.com",
-				IdClass: 1,
-				Role: "mentor",
+			IdUser:  1000,
+			Name:    "Nur Fatchurohman",
+			Email:   "nur.faturohman28@gmail.com",
+			IdClass: 1,
+			Role:    "mentor",
 		}
 		srv := New(repo)
 		res, err := srv.UpdateProfile(input, "mentor")
@@ -118,14 +118,14 @@ func TestSuccessUpdateUser(t *testing.T) {
 	})
 	t.Run("Failed get user mentee", func(t *testing.T) {
 		repo.On("GetSingleMentee", mock.Anything).
-		Return(mentor.UserCore{}, errors.New("user not found")).Once()
+			Return(mentor.UserCore{}, errors.New("user not found")).Once()
 
 		input := mentor.UserCore{
-			IdUser: 1,
-				Name: "Nur Fatchurohman",
-				Email: "nur.faturohman28@gmail.com",
-				IdClass: 1,
-				Role: "mentee",
+			IdUser:  1,
+			Name:    "Nur Fatchurohman",
+			Email:   "nur.faturohman28@gmail.com",
+			IdClass: 1,
+			Role:    "mentee",
 		}
 		srv := New(repo)
 		res, err := srv.UpdateProfile(input, "mentor")
@@ -134,4 +134,3 @@ func TestSuccessUpdateUser(t *testing.T) {
 		repo.AssertExpectations(t)
 	})
 }
-

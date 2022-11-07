@@ -4,6 +4,7 @@ import (
 	"be12/mentutor/config"
 	"be12/mentutor/features/mentee"
 	"be12/mentutor/middlewares"
+	"be12/mentutor/utils/helper"
 	"errors"
 	"log"
 	"net/http"
@@ -28,7 +29,7 @@ func New(e *echo.Echo, usecase mentee.UseCaseInterface) {
 	e.GET("/forum", handler.SelectAll(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.POST("/forum/:id", handler.AddComment(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.POST("/mentees/submission/:id", handler.AddSub(), middleware.JWT([]byte(config.SECRET_JWT)))
-	e.POST("/mentees/sub/:id", handler.AddSub(), middleware.JWT([]byte(config.SECRET_JWT)))
+	e.POST("/mentees/sub/:id", handler.AddSubMis(), middleware.JWT([]byte(config.SECRET_JWT)))
 
 }
 
@@ -61,6 +62,16 @@ func (md *MenteeDelivery) AddStatus() echo.HandlerFunc {
 		}
 
 		cnv := ToDomain(input)
+		file, fileheader, err := c.Request().FormFile("images")
+		if err == nil {
+			res, err := helper.UploadStatusImages(file, fileheader)
+			if err != nil {
+				log.Print(err)
+				return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
+			}
+			log.Print(res)
+			input.Images = res
+		}
 
 		res, errposts := md.MenteeUsecase.InsertStatus(cnv, id)
 		if errposts != nil {
@@ -95,13 +106,16 @@ func (md *MenteeDelivery) AddComment() echo.HandlerFunc {
 			c.JSON(http.StatusBadRequest, errors.New("Invalid Input From Client"))
 		}
 
-		idUser, _, _ := middlewares.ExtractToken(c)
+		idUser, _, role := middlewares.ExtractToken(c)
 		idCnv, _ := strconv.Atoi(id_status)
 		idStatus := uint(idCnv)
 		comment.IdStatus = idStatus
 		comment.ID_User = uint(idUser)
 		data := ToDomainComments(comment)
 		log.Print(data)
+		if role == "admin" {
+			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
+		}
 		res, err1 := md.MenteeUsecase.Insert(data)
 		if err1 != nil {
 			return c.JSON(http.StatusInternalServerError, errors.New("error from server"))
@@ -121,13 +135,30 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 			c.JSON(http.StatusBadRequest, errors.New("Invalid Input From Client"))
 		}
 
-		idUser, _, _ := middlewares.ExtractToken(c)
+		if err := c.Bind(&submission); err != nil {
+			c.JSON(http.StatusBadRequest, errors.New("Invalid Input From Client"))
+		}
+		file, fileheader, err := c.Request().FormFile("file")
+		if err == nil {
+			res, err := helper.UploadFileSubmisiion(file, fileheader)
+			if err != nil {
+				log.Print(err)
+				return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
+			}
+			log.Print(res)
+			submission.File = res
+		}
+
+		idUser, _, role := middlewares.ExtractToken(c)
 		idCnv, _ := strconv.Atoi(idtasks)
 		IdTask := uint(idCnv)
 		submission.ID_Tasks = IdTask
 		submission.ID_Mentee = uint(idUser)
 		data := ToDomainSub(submission)
 		log.Print(data)
+		if role != "mentee" {
+			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
+		}
 		res, err1 := md.MenteeUsecase.InsertSub(data)
 		if err1 != nil {
 			return c.JSON(http.StatusInternalServerError, errors.New("error from server"))
@@ -145,14 +176,26 @@ func (md *MenteeDelivery) AddSubMis() echo.HandlerFunc {
 		if err := c.Bind(&submission); err != nil {
 			c.JSON(http.StatusBadRequest, errors.New("Invalid Input From Client"))
 		}
-
-		idUser, _, _ := middlewares.ExtractToken(c)
+		file, fileheader, err := c.Request().FormFile("file")
+		if err == nil {
+			res, err := helper.UploadFileSubmisiion(file, fileheader)
+			if err != nil {
+				log.Print(err)
+				return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
+			}
+			log.Print(res)
+			submission.File = res
+		}
+		idUser, _, role := middlewares.ExtractToken(c)
 		idCnv, _ := strconv.Atoi(idtasks)
 		IdTask := uint(idCnv)
 		submission.ID_Tasks = IdTask
 		submission.ID_Mentee = uint(idUser)
 		data := ToDomainSub(submission)
 		log.Print(data)
+		if role != "mentee" {
+			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
+		}
 		res, err1 := md.MenteeUsecase.InsertSubmis(int(IdTask), data)
 		if err1 != nil {
 			return c.JSON(http.StatusInternalServerError, errors.New("error from server"))

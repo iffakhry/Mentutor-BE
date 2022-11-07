@@ -31,6 +31,8 @@ type Comments struct {
 	ID_User  uint   `json:"id_user" form:"id_user"`
 	IdStatus uint   `json:"id_status" form:"id_status"`
 	Caption  string `json:"caption" form:"caption"`
+	// Name     string `json:"name" form:"name"` //`gorm:"->"`
+	// Role     string `json:"role" form:"role"` //`gorm:"->"`
 }
 
 // MODEL SUBMISSION
@@ -139,6 +141,19 @@ func ToEntityComent(data mentee.CommentsCore) Comments {
 		ID_User:  data.ID_User,
 		IdStatus: data.IdStatus,
 		Caption:  data.Caption,
+		// Role:     data.Role,
+		// Name:     data.Name,
+	}
+}
+
+func FromEntityComment(data Comments) mentee.CommentsCore {
+	return mentee.CommentsCore{
+		ID:       data.ID,
+		ID_User:  data.ID_User,
+		IdStatus: data.IdStatus,
+		Caption:  data.Caption,
+		// Role:     data.Role,
+		// Name:     data.Name,
 	}
 }
 
@@ -153,7 +168,14 @@ func toPostList(data []Status) []mentee.Status {
 func ToComent(data []Comments) []mentee.CommentsCore {
 	var dataCmn []mentee.CommentsCore
 	for _, v := range data {
-		dataCmn = append(dataCmn, mentee.CommentsCore{ID: v.ID, ID_User: v.ID_User, IdStatus: v.IdStatus, Caption: v.Caption})
+		dataCmn = append(dataCmn, mentee.CommentsCore{
+			ID:       v.ID,
+			ID_User:  v.ID_User,
+			IdStatus: v.IdStatus,
+			Caption:  v.Caption,
+			// Name:     v.Name,
+			// Role:     v.Role,
+		})
 	}
 	return dataCmn
 }

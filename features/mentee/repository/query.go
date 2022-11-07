@@ -58,7 +58,6 @@ func (md *menteeData) GetAllPosts() ([]mentee.Status, []mentee.CommentsCore, err
 	if cmn.Error != nil {
 		return nil, nil, cmn.Error
 	}
-
 	dataSC := toPostList(status)
 	datacm := ToComent(comment)
 
@@ -68,13 +67,13 @@ func (md *menteeData) GetAllPosts() ([]mentee.Status, []mentee.CommentsCore, err
 func (md *menteeData) AddComment(data mentee.CommentsCore) (mentee.CommentsCore, error) {
 	var input Comments
 	input = ToEntityComent(data)
-	log.Print(input.ID_User, "  INI ID USER DI QUERY")
 	res := md.db.Create(&input)
 	if res.Error != nil {
 		return mentee.CommentsCore{}, res.Error
 	}
-
-	return data, nil
+	res = md.db.Model(&Mentee{}).Select("name").Where("id = ?", input.IdStatus).Scan(&input)
+	cnv := FromEntityComment(input)
+	return cnv, nil
 
 }
 
