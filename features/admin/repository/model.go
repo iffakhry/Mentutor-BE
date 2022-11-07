@@ -9,57 +9,58 @@ import (
 
 type Mentee struct {
 	gorm.Model
-	Name        string `gorm:"type:varchar(255);not null"`
-	Email       string `gorm:"type:varchar(255);not null;unique"`
-	Password    string `gorm:"type:varchar(255);not null"`
-	Images      string `gorm:"type:varchar(255);not null"`
-	Role        string `gorm:"type:enum('mentee');not null"`
-	IdClass     uint
+	Name      string `gorm:"type:varchar(255);not null"`
+	Email     string `gorm:"type:varchar(255);not null;unique"`
+	Password  string `gorm:"type:varchar(255);not null"`
+	Images    string `gorm:"type:varchar(255);not null"`
+	Role      string `gorm:"type:enum('mentee');not null"`
+	ClassName string
+	IdClass   uint
 }
 
 type Mentor struct {
 	gorm.Model
-	Name     string `gorm:"type:varchar(255);not null"`
-	Images   string `gorm:"type:varchar(255);not null"`
-	Email    string `gorm:"type:varchar(255);unique;not null"`
-	Password string `gorm:"type:varchar(255);not null"`
-	Role     string `gorm:"type:enum('admin','mentor');not null"`
-	IdClass  uint
+	Name      string `gorm:"type:varchar(255);not null"`
+	Images    string `gorm:"type:varchar(255);not null"`
+	Email     string `gorm:"type:varchar(255);unique;not null"`
+	Password  string `gorm:"type:varchar(255);not null"`
+	Role      string `gorm:"type:enum('admin','mentor');not null"`
+	ClassName string
+	IdClass   uint
 }
 
 type MenteeSingle struct {
 	gorm.Model
-	Name        string `gorm:"type:varchar(255);not null"`
-	Email       string `gorm:"type:varchar(255);not null;unique"`
-	Password    string `gorm:"type:varchar(255);not null"`
-	Images      string `gorm:"type:varchar(255);not null"`
-	Role        string `gorm:"type:enum('mentee');not null"`
+	Name      string `gorm:"type:varchar(255);not null"`
+	Email     string `gorm:"type:varchar(255);not null;unique"`
+	Password  string `gorm:"type:varchar(255);not null"`
+	Images    string `gorm:"type:varchar(255);not null"`
+	Role      string `gorm:"type:enum('mentee');not null"`
 	ClassName string
-	IdClass     uint
+	IdClass   uint
 }
 
 type MentorSingle struct {
 	gorm.Model
-	Name     string `gorm:"type:varchar(255);not null"`
-	Images   string `gorm:"type:varchar(255);not null"`
-	Email    string `gorm:"type:varchar(255);unique;not null"`
-	Password string `gorm:"type:varchar(255);not null"`
-	Role     string `gorm:"type:enum('admin','mentor');not null"`
+	Name      string `gorm:"type:varchar(255);not null"`
+	Images    string `gorm:"type:varchar(255);not null"`
+	Email     string `gorm:"type:varchar(255);unique;not null"`
+	Password  string `gorm:"type:varchar(255);not null"`
+	Role      string `gorm:"type:enum('admin','mentor');not null"`
 	ClassName string
-	IdClass  uint
+	IdClass   uint
 }
-
 
 type Class struct {
 	gorm.Model
-	ClassName string 
-	Status    string 
+	ClassName string
+	Status    string
 }
 
 type GetClass struct {
 	gorm.Model
-	ClassName string 
-	Status    string 
+	ClassName    string
+	Status       string
 	TotalStudent int
 }
 
@@ -67,25 +68,25 @@ type Task struct {
 	gorm.Model
 	IdClass     uint
 	IdMentor    uint
-	Title       string      
-	Description string      
-	File        string       
-	Images      string      
-	DueDate     *time.Time   
+	Title       string
+	Description string
+	File        string
+	Images      string
+	DueDate     *time.Time
 }
 
 type Submission struct {
 	gorm.Model
 	IdMentee uint
 	IdTask   uint
-	File     string 
-	Score    int   
+	File     string
+	Score    int
 }
 
 type Status struct {
 	gorm.Model
 	IdMentee uint
-	Caption  string 
+	Caption  string
 	Images   string
 }
 
@@ -93,121 +94,123 @@ type Comment struct {
 	gorm.Model
 	IdUser   uint
 	IdStatus uint
-	Caption  string 
+	Caption  string
 }
 
 // FROM DOMAIN
 
 func FromDomainMentee(data admin.UserCore) Mentee {
 	return Mentee{
-		Name: data.Name,
-		Email: data.Email,
+		Name:     data.Name,
+		Email:    data.Email,
 		Password: data.Password,
-		IdClass: data.IdClass,
-		Role: data.Role,
+		IdClass:  data.IdClass,
+		Role:     data.Role,
 	}
 }
 
 func FromDomainMentor(data admin.UserCore) Mentor {
 	return Mentor{
-		Name: data.Name,
-		Email: data.Email,
+		Name:     data.Name,
+		Email:    data.Email,
 		Password: data.Password,
-		IdClass: data.IdClass,
-		Role: data.Role,
+		IdClass:  data.IdClass,
+		Role:     data.Role,
 	}
 }
 
 func FromDomainClass(data admin.ClassCore) Class {
 	return Class{
 		ClassName: data.ClassName,
-		Status: "active",
+		Status:    "active",
 	}
 }
 
 func FromDomainUpdateClass(data admin.ClassCore) Class {
 	return Class{
-		Model: gorm.Model{ID: data.IdClass},
+		Model:     gorm.Model{ID: data.IdClass},
 		ClassName: data.ClassName,
-		Status: data.Status,
+		Status:    data.Status,
 	}
 }
 
 func FromDomainUpdateMentee(data admin.UserCore) Mentee {
 	return Mentee{
-		Model: gorm.Model{ID: data.IdUser},
-		Name: data.Name,
-		Email: data.Email,
+		Model:    gorm.Model{ID: data.IdUser},
+		Name:     data.Name,
+		Email:    data.Email,
 		Password: data.Password,
-		Images: data.Images,
-		Role: data.Role,
-		IdClass: data.IdClass,
+		Images:   data.Images,
+		Role:     data.Role,
+		IdClass:  data.IdClass,
 	}
 }
 
 func FromDomainUpdateMentor(data admin.UserCore) Mentor {
 	return Mentor{
-		Model: gorm.Model{ID: data.IdUser},
-		Name: data.Name,
-		Email: data.Email,
+		Model:    gorm.Model{ID: data.IdUser},
+		Name:     data.Name,
+		Email:    data.Email,
 		Password: data.Password,
-		Images: data.Images,
-		Role: data.Role,
-		IdClass: data.IdClass,
+		Images:   data.Images,
+		Role:     data.Role,
+		IdClass:  data.IdClass,
 	}
 }
+
 // TO DOMAIN
 
 func ToDomainMentee(data Mentee) admin.UserCore {
 	return admin.UserCore{
-		IdUser: data.ID,
-		Name: data.Name,
-		Email: data.Email,
-		Images: data.Images,
+		IdUser:  data.ID,
+		Name:    data.Name,
+		Email:   data.Email,
+		Images:  data.Images,
 		IdClass: data.IdClass,
-		Role: data.Role,
+		Role:    data.Role,
 	}
 }
 
 func ToDomainMentor(data Mentor) admin.UserCore {
 	return admin.UserCore{
-		IdUser: data.ID,
-		Name: data.Name,
-		Email: data.Email,
-		Images: data.Images,
+		IdUser:  data.ID,
+		Name:    data.Name,
+		Email:   data.Email,
+		Images:  data.Images,
 		IdClass: data.IdClass,
-		Role: data.Role,
+		Role:    data.Role,
 	}
 }
 
 func ToDomainSingleMentee(data MenteeSingle) admin.UserCore {
 	return admin.UserCore{
-		IdUser: data.ID,
-		Name: data.Name,
-		Email: data.Email,
-		Images: data.Images,
+		IdUser:  data.ID,
+		Name:    data.Name,
+		Email:   data.Email,
+		Images:  data.Images,
 		IdClass: data.IdClass,
-		Class: data.ClassName,
-		Role: data.Role,
+		Class:   data.ClassName,
+		Role:    data.Role,
 	}
 }
 
 func ToDomainSingleMentor(data MentorSingle) admin.UserCore {
 	return admin.UserCore{
-		IdUser: data.ID,
-		Name: data.Name,
-		Email: data.Email,
-		Images: data.Images,
+		IdUser:  data.ID,
+		Name:    data.Name,
+		Email:   data.Email,
+		Images:  data.Images,
 		IdClass: data.IdClass,
-		Class: data.ClassName,
-		Role: data.Role,
+		Class:   data.ClassName,
+		Role:    data.Role,
 	}
 }
 
 func ToDomainClass(data Class) admin.ClassCore {
 	return admin.ClassCore{
-		IdClass: data.ID,
+		IdClass:   data.ID,
 		ClassName: data.ClassName,
+		Status:    data.Status,
 	}
 }
 
@@ -216,40 +219,40 @@ func ToDomainClassArray(data []GetClass) []admin.ClassCore {
 
 	for _, val := range data {
 		res = append(res, admin.ClassCore{
-			IdClass: val.ID,
-			ClassName: val.ClassName,
-			Status: val.Status,
+			IdClass:      val.ID,
+			ClassName:    val.ClassName,
+			Status:       val.Status,
 			TotalStudent: val.TotalStudent,
 		})
 	}
 	return res
 }
 
-func ToDomainMenteeArray(data []Mentee) []admin.UserCore{
+func ToDomainMenteeArray(data []Mentee) []admin.UserCore {
 	var res []admin.UserCore
-	
+
 	for _, val := range data {
 		res = append(res, admin.UserCore{
 			IdUser: val.ID,
-			Name: val.Name,
-			Email: val.Email,
-			Role: val.Role,
-			Class: val.Role,
+			Name:   val.Name,
+			Email:  val.Email,
+			Role:   val.Role,
+			Class:  val.ClassName,
 		})
 	}
 	return res
 }
 
-func ToDomainMentorArray(data []Mentor) []admin.UserCore{
+func ToDomainMentorArray(data []Mentor) []admin.UserCore {
 	var res []admin.UserCore
-	
+
 	for _, val := range data {
 		res = append(res, admin.UserCore{
 			IdUser: val.ID,
-			Name: val.Name,
-			Email: val.Email,
-			Role: val.Role,
-			Class: val.Role,
+			Name:   val.Name,
+			Email:  val.Email,
+			Role:   val.Role,
+			Class:  val.ClassName,
 		})
 	}
 	return res

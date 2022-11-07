@@ -3,6 +3,7 @@ package services
 import (
 	"be12/mentutor/features/mentor"
 	"errors"
+	"log"
 	"strings"
 	"unicode"
 
@@ -159,3 +160,65 @@ func (mu *mentorUsecase) AddTask(input mentor.TaskCore, role string) (mentor.Tas
 	}
 	return res, nil
 }
+
+func (mu *mentorUsecase) GetAllTask(role string) ([]mentor.TaskCore, error) {
+	if err := roleCheck(role); err != true {
+		return []mentor.TaskCore{}, errors.New("user not mentor")
+	}
+
+	res, err := mu.mentorRepo.GetAllTask()
+	if err != nil {
+		return []mentor.TaskCore{}, errors.New("error get all task")
+	}
+	return res, nil
+}
+
+func (mu *mentorUsecase) GetTaskSub(id uint, role string) (mentor.TaskCore, []mentor.SubmissionCore, error) {
+	if err := roleCheck(role); err != true {
+		return mentor.TaskCore{}, []mentor.SubmissionCore{}, errors.New("user not mentor")
+	}
+
+	resTask, resSub, err := mu.mentorRepo.GetTaskSub(id)
+	if err != nil {
+		return mentor.TaskCore{}, []mentor.SubmissionCore{}, errors.New("error get detail task")
+	}
+	return resTask, resSub, nil
+}
+
+func (mu *mentorUsecase) UpdateTask(input mentor.TaskCore, role string) (mentor.TaskCore, error) {
+	if err := roleCheck(role); err != true {
+		return mentor.TaskCore{}, errors.New("user not mentor")
+	}
+
+	log.Print(input.ID)
+
+	data, err := mu.mentorRepo.GetSingleTask(input.ID)
+	if err != nil {
+		return mentor.TaskCore{}, errors.New("task not found")
+	}
+
+	// CEK INPUT KOSONG
+	if input.Title == "" {
+		input.Title = data.Title
+	}
+	if input.Description == "" {
+		input.Description = data.Description
+	}
+	date := input.DueDate
+	if date.IsZero() == true{
+		input.DueDate = data.DueDate
+	}
+	if input.File == "" {
+		input.File = data.File
+	}
+	if input.Images == "" {
+		input.Images = data.Images
+	}
+
+	res, err := mu.mentorRepo.EditTask(input)
+	if err != nil {
+		return mentor.TaskCore{}, errors.New("error update task")
+	}
+	return res, nil
+}
+	

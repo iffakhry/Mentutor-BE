@@ -47,11 +47,17 @@ func (ar *adminRepo) GetAllUser() ([]admin.UserCore, []admin.UserCore, error) {
 	var mentees []Mentee
 	var mentors []Mentor
 	
-	if err := ar.db.Find(&mentees).Error; err != nil {
+	if err := ar.db.Model(&Mentee{}).Select("classes.class_name, mentees.name, mentees.email, mentees.password, mentees.role, mentees.id").
+	Where("classes.id = mentees.id_class").
+	Joins("left join classes on classes.id = mentees.id_class").
+	Scan(&mentees).Error; err != nil {
 		return []admin.UserCore{}, []admin.UserCore{}, err
 	}
 
-	if err := ar.db.Where("role != ?", "admin").Find(&mentors).Error; err != nil {
+	if err := ar.db.Model(&Mentor{}).Select("classes.class_name, mentors.name, mentors.email, mentors.password, mentors.role, mentors.id").
+	Where("classes.id = mentors.id_class").
+	Joins("left join classes on classes.id = mentors.id_class").
+	Scan(&mentors).Error; err != nil {
 		return []admin.UserCore{}, []admin.UserCore{}, err
 	}
 
@@ -59,7 +65,6 @@ func (ar *adminRepo) GetAllUser() ([]admin.UserCore, []admin.UserCore, error) {
 	cnvMentors := ToDomainMentorArray(mentors)
 
 	return cnvMentees, cnvMentors, nil
-
 }
 
 func (ar *adminRepo) InsertNewClass(input admin.ClassCore) (admin.ClassCore, error) {
@@ -191,16 +196,14 @@ func (ar *adminRepo) GetSingleMentor(id uint) (admin.UserCore, error) {
 		mentor.ID = 0
 	}
 	cnv := ToDomainSingleMentor(mentor)
-	return cnv, nil
-	
+	return cnv, nil	
 }
 
 func (ar *adminRepo) EditClass(input admin.ClassCore) (admin.ClassCore, error) {
 	class := FromDomainUpdateClass(input)	
 
-	// log.Print(input)
 	if err := ar.db.Model(&class).Updates(&class).Error; err != nil {
-		return admin.ClassCore{}, nil
+		return admin.ClassCore{}, err
 	}
 	
 	return input, nil
@@ -208,8 +211,19 @@ func (ar *adminRepo) EditClass(input admin.ClassCore) (admin.ClassCore, error) {
 
 func (ar *adminRepo) DeleteClass(id uint) error {
 	var class Class
-	if err := ar.db.Where("id = ?", id).Delete(&class).Error; err != nil {
+	if err := ar.db.Where("id = ?", id).Unscoped().Delete(&class).Error; err != nil {
 		return err
 	}
 	return nil
+}
+
+func (ar *adminRepo)GetSingleClass(id uint) (admin.ClassCore, error) {
+	var class Class
+
+	if err := ar.db.Where("id = ?", id).First(&class).Error; err != nil {
+		return admin.ClassCore{} ,err
+	}
+	
+	cnv := ToDomainClass(class)
+	return cnv, nil
 }

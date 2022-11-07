@@ -44,5 +44,6 @@ type RepoInterface interface {
 	GetSingleMentee(id uint) (UserCore, error)
 	GetSingleMentor(id uint) (UserCore, error)
 	EditClass(input ClassCore) (ClassCore, error)
+	GetSingleClass(id uint) (ClassCore, error)
 	DeleteClass(id uint) (error)
 }

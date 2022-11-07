@@ -2,7 +2,7 @@ package repository
 
 import (
 	"be12/mentutor/features/mentor"
-	// "log"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -64,13 +64,64 @@ func (mr *mentorRepo) EditProfileMentor(input mentor.UserCore) (mentor.UserCore,
 	return input, nil
 }
 
-func (mr *mentorRepo) InsertTask(input mentor.TaskCore) (mentor.TaskCore, error ) {
+func (mr *mentorRepo) InsertTask(input mentor.TaskCore) (mentor.TaskCore, error) {
 	data := FromDomainTask(input)
 
 	if err := mr.db.Create(&data).Last(&data).Error; err != nil {
 		return mentor.TaskCore{}, err
 	}
 
+	cnv := ToDomainTask(data)
+	return cnv, nil
+}
+
+func (mr *mentorRepo) GetAllTask() ([]mentor.TaskCore, error) {
+	var tasks []Task
+
+	if err := mr.db.Find(&tasks).Error; err != nil {
+		return []mentor.TaskCore{}, err
+	}
+
+	log.Print(tasks)
+
+	cnv := ToDomainAllTask(tasks)
+	return cnv, nil
+}
+
+func (mr *mentorRepo) GetTaskSub(idTask uint) (mentor.TaskCore, []mentor.SubmissionCore, error) {
+	var task Task
+	var submission []Submission
+
+	if err := mr.db.Where("id = ?", idTask).First(&task).Error; err != nil {
+		return mentor.TaskCore{}, []mentor.SubmissionCore{}, err
+	}
+	if err := mr.db.Find(&submission).Joins("left join mentees on mentees.id = submissions.id_mentee").Scan(&submission).Error; err != nil {
+		return mentor.TaskCore{}, []mentor.SubmissionCore{}, err
+	}
+	
+	cnvTask := ToDomainSingleTask(task)
+	cnvSub := ToDomainTaskSub(submission)
+	return cnvTask, cnvSub, nil
+}
+
+func(mr *mentorRepo) GetSingleTask(id uint) (mentor.TaskCore, error) {
+	var res Task
+
+	if err := mr.db.Where("id = ?", id).First(&res).Error; err != nil {
+		return mentor.TaskCore{}, err 
+	}
+
+	cnv := ToDomainTask(res)
+	return cnv, nil
+}
+
+func (mr *mentorRepo) EditTask(input mentor.TaskCore) (mentor.TaskCore, error) {
+	data := FromDomainTask(input)
+
+	if err := mr.db.Where("id = ?", data.ID).Updates(&data).Error; err != nil {
+		return mentor.TaskCore{}, err
+	}
+	
 	cnv := ToDomainTask(data)
 	return cnv, nil
 }

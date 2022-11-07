@@ -54,6 +54,15 @@ type Comment struct {
 	Caption  string `gorm:"type:varchar(255);not null"`
 }
 
+type Submission struct {
+	gorm.Model
+	IdMentee uint
+	IdTask   uint
+	Name     string
+	File     string `json:"file"`
+	Score    int    `gorm:"type:int(3);not null"`
+}
+
 // FROM DOMAIN
 
 func FromDomainMentee(data mentor.UserCore) Mentee {
@@ -121,4 +130,46 @@ func ToDomainTask(data Task) mentor.TaskCore {
 		Images:      data.Images,
 		DueDate:     data.DueDate,
 	}
+}
+
+func ToDomainAllTask(data []Task) []mentor.TaskCore {
+	var res []mentor.TaskCore
+
+	for _, val := range data {
+		res = append(res, mentor.TaskCore{
+			ID:          val.ID,
+			Title:       val.Title,
+			Description: val.Description,
+			Images:      val.Images,
+			File:        val.File,
+			DueDate:     val.DueDate,
+		})
+	}
+	return res
+}
+
+func ToDomainSingleTask(data Task) mentor.TaskCore {
+	return mentor.TaskCore{
+		ID:          data.ID,
+		Title:       data.Title,
+		Description: data.Description,
+		Images:      data.Images,
+		File:        data.File,
+		DueDate:     data.DueDate,
+	}
+}
+
+func ToDomainTaskSub(data []Submission) []mentor.SubmissionCore {
+	var res []mentor.SubmissionCore
+
+	for _, val := range data {
+		res = append(res, mentor.SubmissionCore{
+			ID:         val.ID,
+			File: val.File,
+			IdTask: val.IdTask,
+			Score: val.Score,
+			NameMentee: val.Name,
+		})
+	}
+	return res
 }

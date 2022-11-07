@@ -58,20 +58,20 @@ func (au *adminUsecase) AddUser(input admin.UserCore, role string) (admin.UserCo
 		} else if unicode.IsLower(v) == true {
 			lower += 1
 		} else if unicode.IsNumber(v) == true {
-			number += 1
-		} else {
-			sChar += 1
+			number+=1
+		} else if unicode.IsPunct(v) {
+			sChar+=1
 		}
 	}
 
 	if upper < 1 {
-		return admin.UserCore{}, errors.New("input name not valid")
+		return admin.UserCore{}, errors.New("Ainput name not valid")
 	} else if lower < 1 {
-		return admin.UserCore{}, errors.New("input name not valid")
+		return admin.UserCore{}, errors.New("Binput name not valid")
 	} else if number > 1 {
-		return admin.UserCore{}, errors.New("input name not valid")
+		return admin.UserCore{}, errors.New("Cinput name not valid")
 	} else if sChar > 1 {
-		return admin.UserCore{}, errors.New("input name not valid")
+		return admin.UserCore{}, errors.New("Dinput name not valid")
 	}
 
 	// CEK KONDISI PASSOWRD
@@ -362,6 +362,20 @@ func (au *adminUsecase) UpdateClass(input admin.ClassCore, role string) (admin.C
 
 	if role != "admin" {
 		return admin.ClassCore{}, errors.New("user not admin")
+	}
+
+	// CEK KELAS TERSEDIA
+	dataClass, err := au.adminRepo.GetSingleClass(input.IdClass)
+	if err != nil {
+		return admin.ClassCore{}, err
+	}
+
+	if input.Status == "" {
+		input.Status = dataClass.Status
+	}
+
+	if input.ClassName == "" {
+		input.ClassName = dataClass.ClassName
 	}
 
 	res, err := au.adminRepo.EditClass(input)
