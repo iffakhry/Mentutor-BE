@@ -51,10 +51,18 @@ type SubFormat struct {
 
 func ToDomainComments(i CommentFormat) mentee.CommentsCore {
 	// var cnv CommentFormat
-	return mentee.CommentsCore{IdStatus: i.IdStatus, ID_User: i.ID_User, Caption: i.Caption}
+	return mentee.CommentsCore{
+		IdStatus: i.IdStatus,
+		ID_User:  i.ID_User,
+		Caption:  i.Caption,
+	}
 }
 
 func ToDomainSub(i SubFormat) mentee.Submission {
 	// var cnv CommentFormat
-	return mentee.Submission{ID_Mentee: i.ID_Mentee, ID_Tasks: i.ID_Tasks, File: i.File}
+	return mentee.Submission{
+		ID_Mentee: i.ID_Mentee,
+		ID_Tasks:  i.ID_Tasks,
+		File:      i.File,
+	}
 }

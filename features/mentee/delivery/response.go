@@ -24,7 +24,11 @@ type CommentRespon struct {
 	Role    string `json:"role"`
 	Name    string `json:"name"`
 }
-
+type CommentPostResponse struct {
+	IdUser   uint   `json:"id_user"`
+	IdStatus uint   `json:"id_status"`
+	Caption  string `json:"caption"`
+}
 type SubResponse struct {
 	ID    uint   `json:"id_submission"`
 	Title string `json:"title"`
@@ -39,10 +43,11 @@ func ToResponse(data mentee.Status) StatusRespon {
 	}
 }
 
-func ToResponseComments(data mentee.CommentsCore) CommentRespon {
-	return CommentRespon{
-
-		Caption: data.Caption,
+func ToResponseComments(data mentee.CommentsCore) CommentPostResponse {
+	return CommentPostResponse{
+		IdStatus: data.IdStatus,
+		IdUser:   data.ID_User,
+		Caption:  data.Caption,
 	}
 }
 
@@ -63,7 +68,12 @@ func ToCoreArray(status []mentee.Status, coment []mentee.CommentsCore) []StatusR
 		var comres []CommentRespon
 		for j, v := range coment {
 			if status[i].ID == coment[j].IdStatus {
-				comres = append(comres, CommentRespon{ID: v.ID, Caption: v.Caption, Role: v.Role, Name: v.Name})
+				comres = append(comres, CommentRespon{
+					ID:      v.ID,
+					Caption: v.Caption,
+					Role:    v.Role,
+					Name:    v.Name,
+				})
 
 			}
 

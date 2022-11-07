@@ -25,9 +25,8 @@ type Status struct {
 
 // FITUR COMMENT
 type CommentsCore struct {
-	ID      uint
-	ID_User uint
-	// Post_ID    uint
+	ID         uint
+	ID_User    uint
 	Name       string
 	Role       string
 	IdStatus   uint
