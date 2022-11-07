@@ -46,6 +46,17 @@ type SubmissionByTask struct {
 	File         string `json:"file"`
 }
 
+type DeleteResponse struct {
+	Id uint `json:"id_task"`
+}
+
+type AddScoreResponse struct {
+	Id    uint   `json:"id_submission"`
+	Title string `json:"title"`
+	File  string `json:"file"`
+	Score int    `json:"score"`
+}
+
 func ToResponseUpdateUser(data mentor.UserCore) UpdateUserResponse {
 	return UpdateUserResponse{
 		ID:     data.IdUser,
@@ -103,5 +114,20 @@ func ToResponseSingleTask(task mentor.TaskCore, sub []mentor.SubmissionCore) Get
 		File:        task.File,
 		DueDate:     task.DueDate.Format("2006-01-02 15:04 MST"),
 		Submission:  subs,
+	}
+}
+
+func ToResponseDelete(id uint) DeleteResponse {
+	return DeleteResponse{
+		Id: id,
+	}
+}
+
+func ToResponseAddScore(data mentor.SubmissionCore) AddScoreResponse {
+	return AddScoreResponse{
+		Id:    data.ID,
+		Title: data.Title,
+		File:  data.File,
+		Score: data.Score,
 	}
 }

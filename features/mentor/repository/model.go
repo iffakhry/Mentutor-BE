@@ -58,7 +58,8 @@ type Submission struct {
 	gorm.Model
 	IdMentee uint
 	IdTask   uint
-	Name     string
+	Name     string	`gorm:"<-:false"`
+	Title    string	`gorm:"<-:false"`
 	File     string `json:"file"`
 	Score    int    `gorm:"type:int(3);not null"`
 }
@@ -96,6 +97,14 @@ func FromDomainTask(data mentor.TaskCore) Task {
 		Images:      data.Images,
 		DueDate:     data.DueDate,
 		Title:       data.Title,
+	}
+}
+
+func FromDomainSubmission(data mentor.SubmissionCore) Submission {
+	return Submission{
+		Model:  gorm.Model{ID: data.ID},
+		IdTask: data.IdTask,
+		Score:  data.Score,
 	}
 }
 
@@ -165,11 +174,20 @@ func ToDomainTaskSub(data []Submission) []mentor.SubmissionCore {
 	for _, val := range data {
 		res = append(res, mentor.SubmissionCore{
 			ID:         val.ID,
-			File: val.File,
-			IdTask: val.IdTask,
-			Score: val.Score,
+			File:       val.File,
+			IdTask:     val.IdTask,
+			Score:      val.Score,
 			NameMentee: val.Name,
 		})
 	}
 	return res
+}
+
+func ToDomainSubmission(data Submission) mentor.SubmissionCore {
+	return mentor.SubmissionCore{
+		ID:    data.ID,
+		Title: data.Title,
+		File: data.File,
+		Score: data.Score,
+	}
 }
