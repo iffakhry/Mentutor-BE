@@ -2,6 +2,8 @@ package repository
 
 import (
 	"be12/mentutor/features/admin"
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -59,6 +61,39 @@ type GetClass struct {
 	ClassName string 
 	Status    string 
 	TotalStudent int
+}
+
+type Task struct {
+	gorm.Model
+	IdClass     uint
+	IdMentor    uint
+	Title       string      
+	Description string      
+	File        string       
+	Images      string      
+	DueDate     *time.Time   
+}
+
+type Submission struct {
+	gorm.Model
+	IdMentee uint
+	IdTask   uint
+	File     string 
+	Score    int   
+}
+
+type Status struct {
+	gorm.Model
+	IdMentee uint
+	Caption  string 
+	Images   string
+}
+
+type Comment struct {
+	gorm.Model
+	IdUser   uint
+	IdStatus uint
+	Caption  string 
 }
 
 // FROM DOMAIN

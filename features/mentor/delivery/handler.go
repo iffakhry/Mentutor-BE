@@ -86,7 +86,7 @@ func (md *MentorDelivery) AddTask() echo.HandlerFunc {
 		// CEK FILE
 		file, fileheader, err = c.Request().FormFile("file")
 		if err == nil {
-			res, err := helper.UploadGambarTugas(file, fileheader)
+			res, err := helper.UploadFileTugas(file, fileheader)
 			if err != nil {
 				log.Print(err)
 				return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))

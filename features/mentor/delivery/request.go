@@ -3,7 +3,6 @@ package delivery
 import (
 	"be12/mentutor/features/mentor"
 	"log"
-	"strings"
 	"time"
 )
 
@@ -38,11 +37,9 @@ func ToDomainUpdateUser(data UpdateUserFormat) mentor.UserCore {
 }
 
 func ToDomainTask(data TaskRequest) mentor.TaskCore {
-	tgl := strings.Split(data.DueDate, "T")
-	layoutFormat := "2006-01-02 15:04:05"
-	value := tgl[0] + " " + tgl[1] + ":00"
+	layoutFormat := "2006-01-02 15:04:05.999 MST"
+	value := data.DueDate + " " + "23:59:59.000 WIB"
 	dateRes, _ := time.Parse(layoutFormat, value)
-	log.Print(value)
 	log.Print(dateRes)
 	return mentor.TaskCore{
 		Description: data.Description,
@@ -50,6 +47,7 @@ func ToDomainTask(data TaskRequest) mentor.TaskCore {
 		IdClass: data.IdClass,
 		File: data.File,
 		DueDate: dateRes,
+		Title: data.Title,
 	}
 }
 

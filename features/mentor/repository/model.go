@@ -85,6 +85,8 @@ func FromDomainTask(data mentor.TaskCore) Task {
 		Description: data.Description,
 		File:        data.File,
 		Images:      data.Images,
+		DueDate:     data.DueDate,
+		Title:       data.Title,
 	}
 }
 
@@ -117,6 +119,6 @@ func ToDomainTask(data Task) mentor.TaskCore {
 		Description: data.Description,
 		File:        data.File,
 		Images:      data.Images,
-		DueDate: data.DueDate,
+		DueDate:     data.DueDate,
 	}
 }

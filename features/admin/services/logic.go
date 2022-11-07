@@ -43,6 +43,10 @@ func (au *adminUsecase) AddUser(input admin.UserCore, role string) (admin.UserCo
 		return admin.UserCore{}, errors.New("not contain (@) and (.)")
 	} 
 
+	// String to lower email
+	strEmail := strings.ToLower(input.Email)
+	input.Email = strEmail
+
 	// CEK KONDISI NAMA
 	if len(input.Name) < 5 || len(input.Name) > 50{
 		return admin.UserCore{}, errors.New("length name not valid")
@@ -142,17 +146,17 @@ func (au *adminUsecase) GetAllUser(role string) ([]admin.UserCore, []admin.UserC
 	return resMentee, resMentor, nil
 }
 
-func (au *adminUsecase) AddNewClass(input admin.ClassCore, role string) error {
+func (au *adminUsecase) AddNewClass(input admin.ClassCore, role string) (admin.ClassCore, error) {
 	
 	if role != "admin" {
-		return errors.New("user not admin")
+		return admin.ClassCore{}, errors.New("user not admin")
 	}
 
-	err := au.adminRepo.InsertNewClass(input)
+	res, err := au.adminRepo.InsertNewClass(input)
 	if err != nil {
-		return errors.New("input not valid")
+		return admin.ClassCore{}, errors.New("input not valid")
 	}
-	return nil
+	return res, nil
 }
 
 func (au *adminUsecase) GetAllClass(role string) ([]admin.ClassCore, error) {
@@ -181,18 +185,20 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 		res, err := au.adminRepo.GetSingleMentee(input.IdUser)
 		if err != nil {
 			return admin.UserCore{}, errors.New("user not found")
+		} else if res.IdUser == 0 {
+			return admin.UserCore{}, errors.New("user not found")
 		}
 		user = res
 	} else if  input.IdUser >= 1000 {
 		res, err := au.adminRepo.GetSingleMentor(input.IdUser)
 		if err != nil {
 			return admin.UserCore{}, errors.New("user not found")
+		} else if res.IdUser == 0 {
+			return admin.UserCore{}, errors.New("user not found")
 		}
 		user = res
-	}
+	}	
 
-	
-	
 	// CEK KONDISI NAMA
 	if input.Name != "" {
 		if len(input.Name) < 5 || len(input.Name) > 50{
@@ -280,14 +286,14 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 	}
 
 	// CEK KELAS TERSEDIA]
-	if input.IdClass > 0 {
+	if input.IdClass == 0 {
+		input.IdClass = user.IdClass
+	} else if input.IdClass != 0 {
 		idClass := uint(input.IdClass)
 		_, err := au.adminRepo.GetClass(idClass)
 		if err != nil {
 			return admin.UserCore{}, errors.New("input class not valid")
 		}
-	} else if input.IdClass == 0 {
-		input.IdClass = user.IdClass
 	}
 	
 
@@ -296,15 +302,18 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 		if err != nil {
 			return admin.UserCore{}, errors.New("error in database")
 		}
+
 		return res, nil
 	} else if input.IdUser < 1000 {
 		res, err := au.adminRepo.EditUserMentee(input)
 		if err != nil {
+			input.IdUser = 0
 			return admin.UserCore{}, errors.New("error in database")
+		} else {
+			return res, nil
 		}
-		return res, nil
 	}
-	return admin.UserCore{}, nil
+	return admin.UserCore{}, errors.New("user not found")
 }
 
 func (au *adminUsecase) DeleteUser(id uint, role string) (error) {

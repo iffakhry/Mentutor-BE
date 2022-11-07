@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -82,12 +83,12 @@ func (ad *AdminDelivery) AddNewClass() echo.HandlerFunc {
 		}
 
 		cnvInput := ToDomainClass(input)
-		err := ad.adminUsecase.AddNewClass(cnvInput, role)
+		res, err := ad.adminUsecase.AddNewClass(cnvInput, role)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
 
-		return c.JSON(http.StatusCreated, helper.SuccessResponseNoData("Success created"))
+		return c.JSON(http.StatusCreated, helper.SuccessResponse("Success created", ToResponseAddClass(res)))
 	}
 }
 
@@ -126,12 +127,14 @@ func (ad *AdminDelivery) UpdateUserAdmin() echo.HandlerFunc {
 				log.Print(err)
 				return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 			}
-			log.Print(res)
 			input.Images = res
 		} 
 
 		res, err := ad.adminUsecase.UpdateUserAdmin(cnv, role)
-		if err != nil {
+		if  err != nil && strings.Contains(err.Error(), "user") == true{
+			log.Print(err)
+			return c.JSON(http.StatusNotFound, helper.FailedResponse("User Not Found"))
+		}  else if err != nil {
 			log.Print(err)
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
@@ -151,7 +154,7 @@ func (ad *AdminDelivery) DeleteUser() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
-		return c.JSON(http.StatusOK, helper.SuccessResponseNoData("Delete Success"))
+		return c.JSON(http.StatusOK, helper.SuccessResponse("Delete Success", ToResponseDeleteUser(cnv)))
 	}
 }
 
