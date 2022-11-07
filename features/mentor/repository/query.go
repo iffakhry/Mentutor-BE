@@ -103,3 +103,25 @@ func (mr *mentorRepo) GetTaskSub(idTask uint) (mentor.TaskCore, []mentor.Submiss
 	cnvSub := ToDomainTaskSub(submission)
 	return cnvTask, cnvSub, nil
 }
+
+func(mr *mentorRepo) GetSingleTask(id uint) (mentor.TaskCore, error) {
+	var res Task
+
+	if err := mr.db.Where("id = ?", id).First(&res).Error; err != nil {
+		return mentor.TaskCore{}, err 
+	}
+
+	cnv := ToDomainTask(res)
+	return cnv, nil
+}
+
+func (mr *mentorRepo) EditTask(input mentor.TaskCore) (mentor.TaskCore, error) {
+	data := FromDomainTask(input)
+
+	if err := mr.db.Where("id = ?", data.ID).Updates(&data).Error; err != nil {
+		return mentor.TaskCore{}, err
+	}
+	
+	cnv := ToDomainTask(data)
+	return cnv, nil
+}

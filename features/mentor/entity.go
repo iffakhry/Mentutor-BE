@@ -53,6 +53,7 @@ type UsecaseInterface interface {
 	AddTask(input TaskCore, role string) (TaskCore, error)
 	GetAllTask(role string) ([]TaskCore, error)
 	GetTaskSub(id uint, role string) (TaskCore, []SubmissionCore, error)
+	UpdateTask(input TaskCore, role string) (TaskCore, error)
 }
 
 type RepoInterface interface {
@@ -63,4 +64,6 @@ type RepoInterface interface {
 	InsertTask(input TaskCore) (TaskCore, error)
 	GetAllTask() ([]TaskCore, error)
 	GetTaskSub(id uint) (TaskCore, []SubmissionCore, error)
+	EditTask(input TaskCore) (TaskCore, error)
+	GetSingleTask(id uint) (TaskCore, error)
 }

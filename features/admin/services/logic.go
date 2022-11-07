@@ -59,19 +59,19 @@ func (au *adminUsecase) AddUser(input admin.UserCore, role string) (admin.UserCo
 			lower += 1
 		} else if unicode.IsNumber(v) == true {
 			number+=1
-		} else{
+		} else if unicode.IsPunct(v) {
 			sChar+=1
 		}
 	}
 
 	if upper < 1 {
-		return admin.UserCore{}, errors.New("input name not valid")
+		return admin.UserCore{}, errors.New("Ainput name not valid")
 	} else if lower < 1 {
-		return admin.UserCore{}, errors.New("input name not valid")
+		return admin.UserCore{}, errors.New("Binput name not valid")
 	} else if number > 1 {
-		return admin.UserCore{}, errors.New("input name not valid")
+		return admin.UserCore{}, errors.New("Cinput name not valid")
 	} else if sChar > 1 {
-		return admin.UserCore{}, errors.New("input name not valid")
+		return admin.UserCore{}, errors.New("Dinput name not valid")
 	}
 
 
