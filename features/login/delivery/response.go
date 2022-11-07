@@ -5,6 +5,7 @@ import "be12/mentutor/features/login"
 type LoginResponse struct {
 	ID      uint   `json:"id_user"`
 	Name    string `json:"name"`
+	Email string `json:"email"`
 	IdClass uint   `json:"id_class"`
 	Class   string `json:"class_name"`
 	Role    string `json:"role"`
@@ -18,7 +19,7 @@ func ToResponse(core interface{}, code string) interface{} {
 
 	case "login":
 		cnv := core.(login.Core)
-		res = LoginResponse{ID: cnv.ID, Name: cnv.Name, IdClass: cnv.IdClass, Images: cnv.Images, Class: cnv.Class, Role: cnv.Role, Token: cnv.Token}
+		res = LoginResponse{ID: cnv.ID, Name: cnv.Name, Email: cnv.Email, IdClass: cnv.IdClass, Images: cnv.Images, Class: cnv.Class, Role: cnv.Role, Token: cnv.Token}
 	}
 	return res
 }

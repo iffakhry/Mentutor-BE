@@ -21,7 +21,7 @@ type ClassCore struct {
 type UsecaseInterface interface {
 	AddUser(input UserCore, role string) (UserCore, error)
 	GetAllUser(role string) ([]UserCore, []UserCore, error)
-	AddNewClass(input ClassCore, role string) error
+	AddNewClass(input ClassCore, role string) (ClassCore ,error)
 	GetAllClass(role string) ([]ClassCore, error)
 	UpdateUserAdmin(input UserCore, role string,) (UserCore, error)
 	DeleteUser(id uint, role string) error
@@ -35,7 +35,7 @@ type RepoInterface interface {
 	InsertMentor(input UserCore) (UserCore, error)
 	GetClass(id uint) (ClassCore, error)
 	GetAllUser() ([]UserCore, []UserCore, error)
-	InsertNewClass(input ClassCore) error
+	InsertNewClass(input ClassCore) (ClassCore, error)
 	GetAllClass() ([]ClassCore, error)
 	EditUserMentee(input UserCore) (UserCore, error)
 	EditUserMentor(input UserCore) (UserCore, error)

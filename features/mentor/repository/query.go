@@ -2,6 +2,7 @@ package repository
 
 import (
 	"be12/mentutor/features/mentor"
+	// "log"
 
 	"gorm.io/gorm"
 )

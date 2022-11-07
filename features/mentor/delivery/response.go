@@ -34,6 +34,6 @@ func ToResponseAddTask(data mentor.TaskCore) AddTaskResponse {
 		Description: data.Description,
 		Images:      data.Images,
 		File:        data.File,
-		DueDate:     data.DueDate.Format("Monday 02, January 2006 15:04 MST"),
+		DueDate:     data.DueDate.Format("2006-01-02 15:04 MST"),
 	}
 }

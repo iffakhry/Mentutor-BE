@@ -15,18 +15,17 @@ type UpdateUserFormat struct {
 	Email    string `json:"email" form:"email"`
 	Password string `json:"password" form:"password"`
 	IdClass  uint   `json:"id_class" form:"id_class"`
-	Role     string `json:"role" form:"role"`
 	Images   string `json:"images" form:"images"`
 }
 
 type AddClassFormat struct {
-	Class string `json:"class_name" form:"class_name"`
+	Class   string `json:"class_name" form:"class_name"`
 }
 
 type UpdateClassFormat struct {
-	IdClass uint 
-	Class string `json:"class_name" form:"class_name"`
-	Status string `json:"status" form:"status"`
+	IdClass uint
+	Class   string `json:"class_name" form:"class_name"`
+	Status  string `json:"status" form:"status"`
 }
 
 func ToDomain(data RegisterFormat) admin.UserCore {
@@ -51,15 +50,14 @@ func ToDomainUpdateUser(data UpdateUserFormat) admin.UserCore {
 		Email:    data.Email,
 		Password: data.Password,
 		IdClass:  data.IdClass,
-		Role:     data.Role,
 		Images:   data.Images,
 	}
 }
 
 func ToDomainUpdateClass(data UpdateClassFormat) admin.ClassCore {
 	return admin.ClassCore{
-		IdClass: data.IdClass,
+		IdClass:   data.IdClass,
 		ClassName: data.Class,
-		Status: data.Status,
+		Status:    data.Status,
 	}
 }

@@ -90,7 +90,7 @@ func UploadFileTugas(file multipart.File, fileheader *multipart.FileHeader) (str
 
 	fileExtension := filepath.Ext(fileheader.Filename)
 
-	if fileExtension == ".pdf" || fileExtension == ".wordx" {
+	if fileExtension == ".xlsx" || fileExtension == ".docx" || fileExtension == ".pdf" {
 		randomStr := String(20)
 
 		godotenv.Load("config.env")

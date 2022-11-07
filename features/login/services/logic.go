@@ -39,6 +39,10 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 		return login.Core{}, "", errors.New("not contain (@) or (.)")
 	}
 
+	// String email to lowercase
+	strEmail := strings.ToLower(input.Email)
+	input.Email = strEmail
+
 	// Cek ketentuan password
 	var upper, lower, number, sChar int
 	for _, v := range input.Password {

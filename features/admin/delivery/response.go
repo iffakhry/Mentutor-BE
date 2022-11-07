@@ -12,9 +12,13 @@ type RegisterResponse struct {
 type GetUserResponse struct {
 	IdUser uint   `json:"id_user"`
 	Name   string `json:"name"`
-	Email string `json:"email"`
+	Email  string `json:"email"`
 	Role   string `json:"role"`
 	Class  string `json:"class_name"`
+}
+
+type DeleteUserResponse struct {
+	IdUser int   `json:"id_user"`
 }
 
 type GetAllClassResponse struct {
@@ -25,14 +29,16 @@ type GetAllClassResponse struct {
 }
 
 type UpdateUserResponse struct {
+	IdUser uint   `json:"id_user"`
 	Name   string `json:"name"`
 	Email  string `json:"email"`
 	Class  string `json:"class_name"`
+	Role   string `json:"role"`
 	Images string `json:"images"`
 }
 
 type GetSingleUserResponse struct {
-	IdUser uint `json:"id_user"`
+	IdUser uint   `json:"id_user"`
 	Name   string `json:"name"`
 	Email  string `json:"email"`
 	Class  string `json:"class_name"`
@@ -41,9 +47,9 @@ type GetSingleUserResponse struct {
 }
 
 type UpdateClassResponse struct {
-	IdClass      uint   `json:"id_class"`
-	Class        string `json:"class_name"`
-	Status       string `json:"status"`
+	IdClass uint   `json:"id_class"`
+	Class   string `json:"class_name"`
+	Status  string `json:"status"`
 }
 
 func ToResponse(data admin.UserCore) RegisterResponse {
@@ -70,7 +76,7 @@ func ToResponseUserArray(mentee []admin.UserCore, mentor []admin.UserCore) []Get
 		res = append(res, GetUserResponse{
 			IdUser: val.IdUser,
 			Name:   val.Name,
-			Email: val.Email,
+			Email:  val.Email,
 			Role:   val.Role,
 			Class:  val.Class,
 		})
@@ -94,8 +100,10 @@ func ToResponseClassArray(data []admin.ClassCore) []GetAllClassResponse {
 
 func ToResponseUpdateUser(data admin.UserCore) UpdateUserResponse {
 	return UpdateUserResponse{
+		IdUser: data.IdUser,
 		Name:   data.Name,
 		Email:  data.Email,
+		Role:   data.Role,
 		Class:  data.Class,
 		Images: data.Images,
 	}
@@ -104,17 +112,31 @@ func ToResponseUpdateUser(data admin.UserCore) UpdateUserResponse {
 func ToResponseGetUser(data admin.UserCore) GetSingleUserResponse {
 	return GetSingleUserResponse{
 		IdUser: data.IdUser,
-		Name:    data.Name,
-		Email:   data.Email,
-		Class: data.Class,
-		Role:    data.Role,
+		Name:   data.Name,
+		Email:  data.Email,
+		Class:  data.Class,
+		Role:   data.Role,
 	}
 }
 
 func ToResponseUpdateClass(data admin.ClassCore) UpdateClassResponse {
 	return UpdateClassResponse{
 		IdClass: data.IdClass,
-		Class: data.ClassName,
-		Status: data.Status,
+		Class:   data.ClassName,
+		Status:  data.Status,
+	}
+}
+
+func ToResponseAddClass(data admin.ClassCore) UpdateClassResponse {
+	return UpdateClassResponse{
+		IdClass: data.IdClass,
+		Class:   data.ClassName,
+		Status:  "active",
+	}
+}
+
+func ToResponseDeleteUser(data int) DeleteUserResponse {
+	return DeleteUserResponse{
+		IdUser: data,
 	}
 }
