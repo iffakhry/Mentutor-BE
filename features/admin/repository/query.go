@@ -191,16 +191,14 @@ func (ar *adminRepo) GetSingleMentor(id uint) (admin.UserCore, error) {
 		mentor.ID = 0
 	}
 	cnv := ToDomainSingleMentor(mentor)
-	return cnv, nil
-	
+	return cnv, nil	
 }
 
 func (ar *adminRepo) EditClass(input admin.ClassCore) (admin.ClassCore, error) {
 	class := FromDomainUpdateClass(input)	
 
-	// log.Print(input)
 	if err := ar.db.Model(&class).Updates(&class).Error; err != nil {
-		return admin.ClassCore{}, nil
+		return admin.ClassCore{}, err
 	}
 	
 	return input, nil
@@ -208,8 +206,19 @@ func (ar *adminRepo) EditClass(input admin.ClassCore) (admin.ClassCore, error) {
 
 func (ar *adminRepo) DeleteClass(id uint) error {
 	var class Class
-	if err := ar.db.Where("id = ?", id).Delete(&class).Error; err != nil {
+	if err := ar.db.Where("id = ?", id).Unscoped().Delete(&class).Error; err != nil {
 		return err
 	}
 	return nil
+}
+
+func (ar *adminRepo)GetSingleClass(id uint) (admin.ClassCore, error) {
+	var class Class
+
+	if err := ar.db.Where("id = ?", id).First(&class).Error; err != nil {
+		return admin.ClassCore{} ,err
+	}
+	
+	cnv := ToDomainClass(class)
+	return cnv, nil
 }

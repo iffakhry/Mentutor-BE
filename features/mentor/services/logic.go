@@ -159,3 +159,28 @@ func (mu *mentorUsecase) AddTask(input mentor.TaskCore, role string) (mentor.Tas
 	}
 	return res, nil
 }
+
+func (mu *mentorUsecase) GetAllTask(role string) ([]mentor.TaskCore, error) {
+	if err := roleCheck(role); err != true {
+		return []mentor.TaskCore{}, errors.New("user not mentor")
+	}
+
+	res, err := mu.mentorRepo.GetAllTask()
+	if err != nil {
+		return []mentor.TaskCore{}, errors.New("error get all task")
+	}
+	return res, nil
+}
+
+func (mu *mentorUsecase) GetTaskSub(id uint, role string) (mentor.TaskCore, []mentor.SubmissionCore, error) {
+	if err := roleCheck(role); err != true {
+		return mentor.TaskCore{}, []mentor.SubmissionCore{}, errors.New("user not mentor")
+	}
+
+	resTask, resSub, err := mu.mentorRepo.GetTaskSub(id)
+	if err != nil {
+		return mentor.TaskCore{}, []mentor.SubmissionCore{}, errors.New("error get detail task")
+	}
+	return resTask, resSub, nil
+}
+	

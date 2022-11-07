@@ -249,7 +249,6 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 	} else {
 		input.Email = user.Email
 	}
-	
 
 	// CEK KONDISI PASSWORD
 	if input.Password != ""{
@@ -365,6 +364,20 @@ func (au *adminUsecase) UpdateClass(input admin.ClassCore, role string) (admin.C
 	
 	if role != "admin" {
 		return admin.ClassCore{}, errors.New("user not admin")
+	}
+
+	// CEK KELAS TERSEDIA
+	dataClass, err := au.adminRepo.GetSingleClass(input.IdClass)
+	if err != nil {
+		return admin.ClassCore{}, err
+	}
+
+	if input.Status == "" {
+		input.Status = dataClass.Status
+	}
+
+	if input.ClassName == "" {
+		input.ClassName = dataClass.ClassName
 	}
 
 	res, err := au.adminRepo.EditClass(input)
