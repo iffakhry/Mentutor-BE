@@ -2,7 +2,6 @@ package delivery
 
 import (
 	"be12/mentutor/features/mentor"
-
 )
 
 type UpdateUserResponse struct {
@@ -13,12 +12,12 @@ type UpdateUserResponse struct {
 }
 
 type AddTaskResponse struct {
-	ID          uint   `json:"id_task"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Images      string `json:"images"`
-	File        string `json:"file"`
-	DueDate     string `json:"due_date"`
+	ID          uint   `json:"id_task" form:"id_task"`
+	Title       string `json:"title" form:"title"`
+	Description string `json:"description" form:"description"`
+	Images      string `json:"images" form:"images"`
+	File        string `json:"file" form:"file"`
+	DueDate     string `json:"due_date" form:"due_date"`
 }
 
 type GetAllTask struct {
@@ -31,12 +30,12 @@ type GetAllTask struct {
 }
 
 type GetSingleTask struct {
-	IdTask      uint             `json:"id_task"`
+	IdTask      uint               `json:"id_task"`
 	Title       string             `json:"title"`
-	Description string           `json:"description"`
-	Images      string           `json:"images"`
-	File        string           `json:"file"`
-	DueDate     string           `json:"due_date"`
+	Description string             `json:"description"`
+	Images      string             `json:"images"`
+	File        string             `json:"file"`
+	DueDate     string             `json:"due_date"`
 	Submission  []SubmissionByTask `json:"submission"`
 }
 
@@ -97,12 +96,12 @@ func ToResponseSingleTask(task mentor.TaskCore, sub []mentor.SubmissionCore) Get
 	}
 
 	return GetSingleTask{
-		IdTask: task.ID,
-		Title: task.Title,
+		IdTask:      task.ID,
+		Title:       task.Title,
 		Description: task.Description,
-		Images: task.Images,
-		File: task.File,
-		DueDate: task.DueDate.Format("2006-01-02 15:04 MST"),
-		Submission: subs,
+		Images:      task.Images,
+		File:        task.File,
+		DueDate:     task.DueDate.Format("2006-01-02 15:04 MST"),
+		Submission:  subs,
 	}
 }

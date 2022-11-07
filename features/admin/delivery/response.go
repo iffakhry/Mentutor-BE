@@ -52,6 +52,10 @@ type UpdateClassResponse struct {
 	Status  string `json:"status"`
 }
 
+type UpdateTaskResponse struct {
+
+}
+
 func ToResponse(data admin.UserCore) RegisterResponse {
 	return RegisterResponse{
 		Name:    data.Name,

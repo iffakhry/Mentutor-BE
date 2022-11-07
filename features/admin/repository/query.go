@@ -47,11 +47,17 @@ func (ar *adminRepo) GetAllUser() ([]admin.UserCore, []admin.UserCore, error) {
 	var mentees []Mentee
 	var mentors []Mentor
 	
-	if err := ar.db.Find(&mentees).Error; err != nil {
+	if err := ar.db.Model(&Mentee{}).Select("classes.class_name, mentees.name, mentees.email, mentees.password, mentees.role, mentees.id").
+	Where("classes.id = mentees.id_class").
+	Joins("left join classes on classes.id = mentees.id_class").
+	Scan(&mentees).Error; err != nil {
 		return []admin.UserCore{}, []admin.UserCore{}, err
 	}
 
-	if err := ar.db.Where("role != ?", "admin").Find(&mentors).Error; err != nil {
+	if err := ar.db.Model(&Mentor{}).Select("classes.class_name, mentors.name, mentors.email, mentors.password, mentors.role, mentors.id").
+	Where("classes.id = mentors.id_class").
+	Joins("left join classes on classes.id = mentors.id_class").
+	Scan(&mentors).Error; err != nil {
 		return []admin.UserCore{}, []admin.UserCore{}, err
 	}
 
@@ -59,7 +65,6 @@ func (ar *adminRepo) GetAllUser() ([]admin.UserCore, []admin.UserCore, error) {
 	cnvMentors := ToDomainMentorArray(mentors)
 
 	return cnvMentees, cnvMentors, nil
-
 }
 
 func (ar *adminRepo) InsertNewClass(input admin.ClassCore) (admin.ClassCore, error) {
