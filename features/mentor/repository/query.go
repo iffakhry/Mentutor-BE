@@ -125,3 +125,32 @@ func (mr *mentorRepo) EditTask(input mentor.TaskCore) (mentor.TaskCore, error) {
 	cnv := ToDomainTask(data)
 	return cnv, nil
 }
+
+func (mr *mentorRepo) DeleteTask(idTask uint, FromidClass uint) (mentor.TaskCore, error) {
+
+	if err := mr.db.Where("id = ? AND id_class = ?", idTask, FromidClass).Delete(&Task{}).Error; err != nil {
+		return mentor.TaskCore{}, err
+	}
+
+	
+	return mentor.TaskCore{ID: idTask, IdClass: FromidClass}, nil
+}
+
+func (mr *mentorRepo) AddScore(input mentor.SubmissionCore) (mentor.SubmissionCore, error) {
+	data := FromDomainSubmission(input)
+
+	if err := mr.db.First(&data).Error; err != nil {
+		return mentor.SubmissionCore{}, err
+	}
+
+
+	if err := mr.db.Model(&Submission{}).Where("id = ? AND id_task = ?", input.ID, input.IdTask).Updates(data).Error; err != nil {
+		return mentor.SubmissionCore{}, err
+	}
+
+	mr.db.Model(&Submission{}).Where("id = ?", input.ID).Select("file").Scan(&data)
+	mr.db.Model(&Task{}).Where("id = ?", input.IdTask).Select("title").Scan(&data)
+	log.Print(data, " INI LOG QUERY")
+	cnv := ToDomainSubmission(data)
+	return cnv, nil 
+}

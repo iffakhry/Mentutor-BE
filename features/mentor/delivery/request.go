@@ -35,6 +35,12 @@ type UpdateTaskFormat struct {
 	DueDate     string `form:"due_date"`
 }
 
+type AddScoreFormat struct {
+	IdSub  uint
+	IdTask uint `json:"id_task" form:"id_task"`
+	Score  int `json:"score" form:"score"`
+}
+
 func ToDomainUpdateUser(data UpdateUserFormat) mentor.UserCore {
 	return mentor.UserCore{
 		IdUser:   data.ID,
@@ -55,7 +61,7 @@ func ToDomainTask(data TaskRequest) mentor.TaskCore {
 		Description: data.Description,
 		IdMentor:    data.IdMentor,
 		IdClass:     data.IdClass,
-		Images: data.Images,
+		Images:      data.Images,
 		File:        data.File,
 		DueDate:     dateRes,
 		Title:       data.Title,
@@ -67,12 +73,20 @@ func ToDomainUpdateTask(data UpdateTaskFormat) mentor.TaskCore {
 	value := data.DueDate + " " + "23:59:59.000 WIB"
 	dateRes, _ := time.Parse(layoutFormat, value)
 	return mentor.TaskCore{
-		ID: data.IdTask,
+		ID:          data.IdTask,
 		Description: data.Description,
 		IdMentor:    data.IdMentor,
 		File:        data.File,
 		DueDate:     dateRes,
 		Title:       data.Title,
-		Images:  data.Images,
+		Images:      data.Images,
+	}
+}
+
+func ToDomainScore(data AddScoreFormat) mentor.SubmissionCore {
+	return mentor.SubmissionCore{
+		ID: data.IdSub,
+		IdTask: data.IdTask,
+		Score:  data.Score,
 	}
 }
