@@ -14,6 +14,7 @@ type UpdateResponse struct {
 
 type StatusRespon struct {
 	ID       uint            `json:"id_status"`
+	Name     string          `json:"name"`
 	Images   string          `json:"images"`
 	Caption  string          `json:"caption"`
 	Comments []CommentRespon `json:"comments"`
@@ -23,6 +24,12 @@ type CommentRespon struct {
 	Caption string `json:"caption"`
 	Role    string `json:"role"`
 	Name    string `json:"name"`
+}
+type PostStatusResponse struct {
+	ID      uint   `json:"id_status"`
+	IdUser  uint   `json:"id_user"`
+	Images  string `json:"images"`
+	Caption string `json:"caption"`
 }
 type CommentPostResponse struct {
 	IdUser   uint   `json:"id_user"`
@@ -35,11 +42,12 @@ type SubResponse struct {
 	File  string `json:"file"`
 }
 
-func ToResponse(data mentee.Status) StatusRespon {
-	return StatusRespon{
+func ToResponse(data mentee.Status) PostStatusResponse {
+	return PostStatusResponse{
 		ID:      data.ID,
 		Caption: data.Caption,
 		Images:  data.Images,
+		IdUser:  data.IdMentee,
 	}
 }
 
@@ -81,6 +89,7 @@ func ToCoreArray(status []mentee.Status, coment []mentee.CommentsCore) []StatusR
 
 		res = append(res, StatusRespon{
 			ID:       val.ID,
+			Name:     val.Name,
 			Images:   val.Images,
 			Caption:  val.Caption,
 			Comments: comres,

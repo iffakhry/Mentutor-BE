@@ -39,8 +39,6 @@ func ToEntity(data UpdateFormat) mentee.MenteeCore {
 type CommentFormat struct {
 	IdStatus uint
 	ID_User  uint
-	Role     string
-	Name     string
 	Caption  string `json:"caption" form:"caption"`
 }
 type SubFormat struct {

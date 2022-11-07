@@ -36,10 +36,10 @@ func (md *menteeData) AddStatus(data mentee.Status, token int) (mentee.Status, e
 	dataModel := ToEntityMentee(data)
 	dataModel.IdMentee = uint(token)
 	tx := md.db.Create(&dataModel).Last(&dataModel)
-	log.Print(dataModel.ID, "ini id status")
 	if tx.Error != nil {
 		return mentee.Status{}, tx.Error
 	}
+	log.Print(dataModel.Images, "INI DATAMODEL")
 	AddRes := toPostUser(dataModel)
 	AddRes.ID = dataModel.ID
 
@@ -50,14 +50,18 @@ func (md *menteeData) AddStatus(data mentee.Status, token int) (mentee.Status, e
 func (md *menteeData) GetAllPosts() ([]mentee.Status, []mentee.CommentsCore, error) {
 	var status []Status
 	var comment []Comments
-	tx := md.db.Find(&status)
+
+	tx := md.db.Model(&Status{}).Select("statuses.id, statuses.id_mentee, mentees.name, statuses.images, statuses.caption , mentees.role").
+		Joins("left join mentees on mentees.id = statuses.id_mentee").Where("mentees.id = statuses.id_mentee").Scan(&status)
 	if tx.Error != nil {
 		return nil, nil, tx.Error
 	}
-	cmn := md.db.Find(&comment)
+	cmn := md.db.Model(&Comments{}).Select("comments.id, comments.id_user, mentees.name,  comments.caption, comments.id_status , mentees.role").
+		Joins("left join mentees on mentees.id = comments.id_user").Where("mentees.id = comments.id_user").Scan(&comment)
 	if cmn.Error != nil {
 		return nil, nil, cmn.Error
 	}
+
 	dataSC := toPostList(status)
 	datacm := ToComent(comment)
 
@@ -71,8 +75,9 @@ func (md *menteeData) AddComment(data mentee.CommentsCore) (mentee.CommentsCore,
 	if res.Error != nil {
 		return mentee.CommentsCore{}, res.Error
 	}
-	res = md.db.Model(&Mentee{}).Select("name").Where("id = ?", input.IdStatus).Scan(&input)
+	// res = md.db.Model(&Comments{}).Select("name").Where("id = ?", input.IdStatus).Scan(&input)
 	cnv := FromEntityComment(input)
+	log.Print(input.Role, "    INI ROLE")
 	return cnv, nil
 
 }

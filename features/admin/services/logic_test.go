@@ -29,7 +29,7 @@ func TestAddUser(t *testing.T) {
 				ClassName: "Back End",
 				Status:    "active",
 			}, nil).Once()
-		srv := New(repo)
+		srv := New(admin.RepoInterface)
 		input := admin.UserCore{
 			Name:     "Nur Fatchurohman",
 			Email:    "fatur@gmail.com",
@@ -267,7 +267,7 @@ func TestAddUser(t *testing.T) {
 		assert.NotNil(t, err)
 		repo.AssertExpectations(t)
 	})
-	
+
 	t.Run("Class avail false", func(t *testing.T) {
 		repo.On("GetClass", mock.Anything).
 			Return(admin.ClassCore{}, errors.New("input class not valid")).Once()
@@ -803,7 +803,7 @@ func TestUpdateUser(t *testing.T) {
 		repo.AssertExpectations(t)
 	})
 }
-	
+
 func TestDelete(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
 	t.Run("Not Admin", func(t *testing.T) {

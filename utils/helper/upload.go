@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"mime/multipart"
+	"strings"
 
 	"os"
 	"path/filepath"
@@ -163,8 +164,8 @@ func UploadStatusImages(file multipart.File, fileheader *multipart.FileHeader) (
 		return "", errors.New("file size is too large")
 	}
 
-	fileExtension := filepath.Ext(fileheader.Filename)
-
+	fileExt := filepath.Ext(fileheader.Filename)
+	fileExtension := strings.ToLower(fileExt)
 	if fileExtension == ".jpeg" || fileExtension == ".jpg" || fileExtension == ".png" {
 		randomStr := String(20)
 
@@ -193,7 +194,7 @@ func UploadStatusImages(file multipart.File, fileheader *multipart.FileHeader) (
 	return "", errors.New("file not an image")
 }
 
-func UploadFileSubmisiion(file multipart.File, fileheader *multipart.FileHeader) (string, error) {
+func UploadFileSubmission(file multipart.File, fileheader *multipart.FileHeader) (string, error) {
 
 	size := fileheader.Size
 	if size > 5*1024*1024 {
@@ -203,7 +204,7 @@ func UploadFileSubmisiion(file multipart.File, fileheader *multipart.FileHeader)
 
 	fileExtension := filepath.Ext(fileheader.Filename)
 
-	if fileExtension == ".pdf" || fileExtension == ".wordx" {
+	if fileExtension == ".pdf" || fileExtension == ".docx" || fileExtension == ".xlsx" || fileExtension == ".pptx" {
 		randomStr := String(20)
 
 		godotenv.Load("config.env")
@@ -218,9 +219,9 @@ func UploadFileSubmisiion(file multipart.File, fileheader *multipart.FileHeader)
 		uploader := s3manager.NewUploader(s3Session)
 
 		input := &s3manager.UploadInput{
-			Bucket: aws.String("mentutor"),                                                // bucket's name
-			Key:    aws.String("sbmisiion-file/" + randomStr + "-" + fileheader.Filename), // files destination location
-			Body:   file,                                                                  // content of the file                                   // content type
+			Bucket: aws.String("mentutor"),                                                 // bucket's name
+			Key:    aws.String("submission-file/" + randomStr + "-" + fileheader.Filename), // files destination location
+			Body:   file,                                                                   // content of the file                                   // content type
 		}
 		res, err := uploader.UploadWithContext(context.Background(), input)
 
