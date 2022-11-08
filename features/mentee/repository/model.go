@@ -2,6 +2,7 @@ package repository
 
 import (
 	"be12/mentutor/features/mentee"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -32,8 +33,8 @@ type Comments struct {
 	ID_User  uint   `json:"id_user" form:"id_user"`
 	IdStatus uint   `json:"id_status" form:"id_status"`
 	Caption  string `json:"caption" form:"caption"`
-	Name     string `json:"name" form:"name"` //`gorm:"->"`
-	Role     string `json:"role" form:"role"` //`gorm:"->"`
+	Name     string `gorm:"<-:false"`
+	Role     string `gorm:"<-:false"`
 }
 
 // MODEL SUBMISSION
@@ -51,6 +52,9 @@ type Task struct {
 	gorm.Model
 	IdClass     uint
 	IdMentor    uint
+	Images      string
+	DueDate     *time.Time
+	Score       uint   `gorm:"->"`
 	Title       string `gorm:"type:varchar(255);not null"`
 	Description string `gorm:"type:varchar(255);not null"`
 	File        string `gorm:"type:varchar(255);not null"`
@@ -74,15 +78,6 @@ func ToEntity(id uint, data Mentee) mentee.MenteeCore {
 		Images: data.Images,
 	}
 }
-
-// func (status *Status) ToDomain() mentee.Status {
-// 	return mentee.Status{
-// 		ID:       status.ID,
-// 		IdMentee: status.IdMentee,
-// 		Caption:  status.Caption,
-// 		Images:   status.Images,
-// 	}
-// }
 
 func ToEntityMentee(data mentee.Status) Status {
 	return Status{
@@ -166,7 +161,21 @@ func toPostList(data []Status) []mentee.Status {
 	}
 	return dataCore
 }
-
+func toTaskList(data []Task) []mentee.Task {
+	var dataCore []mentee.Task
+	for i := 0; i < len(data); i++ {
+		dataCore = append(dataCore, mentee.Task{
+			ID:          data[i].ID,
+			Title:       data[i].Title,
+			Images:      data[i].Images,
+			Description: data[i].Description,
+			File:        data[i].File,
+			Score:       data[i].Score,
+			DueDate:     data[i].DueDate,
+		})
+	}
+	return dataCore
+}
 func ToComent(data []Comments) []mentee.CommentsCore {
 	var dataCmn []mentee.CommentsCore
 	for _, v := range data {
@@ -200,4 +209,19 @@ func FromEntitySub(data mentee.Submission) Submission {
 		IdMentee: data.ID_Mentee,
 		File:     data.File,
 	}
+}
+
+// TASK
+func ToCoreArrayTask(task []Task) []mentee.Task {
+	var res []mentee.Task
+	for _, val := range task {
+		res = append(res, mentee.Task{
+			ID:          val.ID,
+			Title:       val.Title,
+			Description: val.Description,
+			Images:      val.Images,
+			DueDate:     val.DueDate,
+		})
+	}
+	return res
 }

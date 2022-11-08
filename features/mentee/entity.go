@@ -43,20 +43,35 @@ type Submission struct {
 	Score     uint
 	Title     string
 }
+
+type Task struct {
+	ID          uint
+	IdClass     uint
+	IdMentor    uint
+	Title       string     `gorm:"type:varchar(255);not null"`
+	Description string     `gorm:"type:varchar(255);not null"`
+	File        string     `gorm:"type:varchar(255);not null"`
+	Images      string     `gorm:"type:varchar(255);not null"`
+	DueDate     *time.Time `gorm:"not null"`
+	Score       uint
+	Submissions []Submission `gorm:"foreignKey:IdTask"`
+}
 type UseCaseInterface interface {
 	UpdateProfile(id uint, data MenteeCore) (MenteeCore, error)
 	InsertStatus(data Status, token int) (Status, error)
-	GetAll() (data []Status, comen []CommentsCore, err error)
+	GetAll() (data []Status, comen []CommentsCore, comenmentor []CommentsCore, err error)
 	Insert(data CommentsCore) (CommentsCore, error)
 	InsertSub(data Submission) (Submission, error)
 	InsertSubmis(param int, data Submission) (Submission, error)
+	GetTask() (data []Task, err error)
 }
 
 type RepoInterface interface {
 	EditProfile(id uint, data MenteeCore) (MenteeCore, error)
 	AddStatus(data Status, token int) (Status, error)
-	GetAllPosts() (data []Status, comen []CommentsCore, err error)
+	GetAllPosts() (data []Status, comen []CommentsCore, comenmentor []CommentsCore, err error)
 	AddComment(data CommentsCore) (CommentsCore, error)
 	AddSub(data Submission) (Submission, error)
 	AddSubmis(param int, data Submission) (Submission, error)
+	GetAllTask() (data []Task, err error)
 }

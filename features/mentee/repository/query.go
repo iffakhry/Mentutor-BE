@@ -47,27 +47,50 @@ func (md *menteeData) AddStatus(data mentee.Status, token int) (mentee.Status, e
 
 }
 
-func (md *menteeData) GetAllPosts() ([]mentee.Status, []mentee.CommentsCore, error) {
+func (md *menteeData) GetAllPosts() ([]mentee.Status, []mentee.CommentsCore, []mentee.CommentsCore, error) {
 	var status []Status
 	var comment []Comments
-
+	var mentorcom []Comments
 	tx := md.db.Model(&Status{}).Select("statuses.id, statuses.id_mentee, mentees.name, statuses.images, statuses.caption , mentees.role").
 		Joins("left join mentees on mentees.id = statuses.id_mentee").Where("mentees.id = statuses.id_mentee").Scan(&status)
 	if tx.Error != nil {
-		return nil, nil, tx.Error
+		return nil, nil, nil, tx.Error
 	}
-	cmn := md.db.Model(&Comments{}).Select("comments.id, comments.id_user, mentees.name,  comments.caption, comments.id_status , mentees.role").
-		Joins("left join mentees on mentees.id = comments.id_user").Where("mentees.id = comments.id_user").Scan(&comment)
+	cmn := md.db.Model(&Comments{}).Select("comments.id, comments.id_user, mentees.name,mentees.role, comments.caption, comments.id_status ").
+		Joins("left join mentees on mentees.id = comments.id_user").
+		Where("mentees.id = comments.id_user ").Scan(&comment)
 	if cmn.Error != nil {
-		return nil, nil, cmn.Error
+		return nil, nil, nil, cmn.Error
+
+	}
+	com := md.db.Model(&Comments{}).Select("comments.id, comments.id_user, mentors.name,mentors.role, comments.caption, comments.id_status ").
+		Joins("left join mentors on mentors.id = comments.id_user").
+		Where("mentors.id = comments.id_user ").Scan(&mentorcom)
+	if com.Error != nil {
+		return nil, nil, nil, com.Error
+
 	}
 
 	dataSC := toPostList(status)
 	datacm := ToComent(comment)
+	comenmentor := ToComent(mentorcom)
 
-	return dataSC, datacm, nil
+	return dataSC, datacm, comenmentor, nil
 }
 
+func (md *menteeData) GetAllTask() ([]mentee.Task, error) {
+	var task []Task
+
+	tx := md.db.Model(&Task{}).Select("tasks.id,tasks.title, tasks.description, submissions.score, tasks.images, tasks.file, tasks.due_date").
+		Joins("left join submissions on submissions.id_task = tasks.id").Where("submissions.id_task = tasks.id").Scan(&task)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	log.Print(len(task))
+
+	return toTaskList(task), nil
+
+}
 func (md *menteeData) AddComment(data mentee.CommentsCore) (mentee.CommentsCore, error) {
 	var input Comments
 	input = ToEntityComent(data)
