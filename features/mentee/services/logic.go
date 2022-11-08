@@ -36,12 +36,20 @@ func (mu *MenteeUsecase) InsertStatus(data mentee.Status, token int) (mentee.Sta
 	return data, nil
 }
 
-func (mu *MenteeUsecase) GetAll() ([]mentee.Status, []mentee.CommentsCore, error) {
-	dataStatus, dataCmn, err := mu.menteeData.GetAllPosts()
+func (mu *MenteeUsecase) GetAll() ([]mentee.Status, []mentee.CommentsCore, []mentee.CommentsCore, error) {
+	dataStatus, dataCmn, dataMntr, err := mu.menteeData.GetAllPosts()
 	if err != nil {
-		return nil, nil, errors.New("failed get all data")
+		return nil, nil, nil, errors.New("failed get all data")
 	}
-	return dataStatus, dataCmn, nil
+	return dataStatus, dataCmn, dataMntr, nil
+}
+
+func (mu *MenteeUsecase) GetTask() ([]mentee.Task, error) {
+	dataTask, err := mu.menteeData.GetAllTask()
+	if err != nil {
+		return nil, err
+	}
+	return dataTask, nil
 }
 func (mu *MenteeUsecase) Insert(data mentee.CommentsCore) (mentee.CommentsCore, error) {
 	if len(data.Caption) < 5 || len(data.Caption) > 120 {

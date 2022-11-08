@@ -3,6 +3,7 @@ package delivery
 import (
 	"be12/mentutor/features/mentee"
 	"log"
+	"time"
 )
 
 type UpdateResponse struct {
@@ -41,7 +42,31 @@ type SubResponse struct {
 	Title string `json:"title"`
 	File  string `json:"file"`
 }
+type TaskResponse struct {
+	ID          uint       `json:"id_task"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	Images      string     `json:"images"`
+	File        string     `json:"file"`
+	DueDate     *time.Time `json:"due_date"`
+	Score       uint       `json:"score"`
+}
 
+func tasksResponse(data []mentee.Task) []TaskResponse {
+	var dataCore []TaskResponse
+	for i := 0; i < len(data); i++ {
+		dataCore = append(dataCore, TaskResponse{
+			ID:          data[i].ID,
+			Title:       data[i].Title,
+			Images:      data[i].Images,
+			Description: data[i].Description,
+			File:        data[i].File,
+			DueDate:     data[i].DueDate,
+			Score:       data[i].Score,
+		})
+	}
+	return dataCore
+}
 func ToResponse(data mentee.Status) PostStatusResponse {
 	return PostStatusResponse{
 		ID:      data.ID,
@@ -69,13 +94,26 @@ func ToResponseSub(data mentee.Submission) SubResponse {
 	}
 }
 
-func ToCoreArray(status []mentee.Status, coment []mentee.CommentsCore) []StatusRespon {
+func ToCoreArray(status []mentee.Status, coment []mentee.CommentsCore, cmnmtr []mentee.CommentsCore) []StatusRespon {
 	var res []StatusRespon
 
 	for i, val := range status {
 		var comres []CommentRespon
 		for j, v := range coment {
 			if status[i].ID == coment[j].IdStatus {
+				comres = append(comres, CommentRespon{
+					ID:      v.ID,
+					Caption: v.Caption,
+					Role:    v.Role,
+					Name:    v.Name,
+				})
+
+			}
+
+		}
+
+		for k, v := range cmnmtr {
+			if status[i].ID == cmnmtr[k].IdStatus {
 				comres = append(comres, CommentRespon{
 					ID:      v.ID,
 					Caption: v.Caption,

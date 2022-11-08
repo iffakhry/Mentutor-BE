@@ -30,6 +30,7 @@ func New(e *echo.Echo, usecase mentee.UseCaseInterface) {
 	e.POST("/forum/:id", handler.AddComment(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.POST("/mentees/submission/:id", handler.AddSub(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.POST("/mentees/sub/:id", handler.AddSubMis(), middleware.JWT([]byte(config.SECRET_JWT)))
+	e.GET("/task", handler.GetAllTasks(), middleware.JWT([]byte(config.SECRET_JWT)))
 
 }
 
@@ -87,13 +88,30 @@ func (md *MenteeDelivery) SelectAll() echo.HandlerFunc {
 		if id < 1 {
 			return c.JSON(http.StatusNotFound, FailedResponse("Invalid Input From Client"))
 		}
-		res, resC, err := md.MenteeUsecase.GetAll()
+		res, resC, resMntr, err := md.MenteeUsecase.GetAll()
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
 		}
 
 		// return c.JSON(http.StatusOK, SuccessResponse("success get all status", ToCoreArray(res)))
-		return c.JSON(http.StatusOK, SuccessResponse("success get all status", ToCoreArray(res, resC)))
+		return c.JSON(http.StatusOK, SuccessResponse("success get all status", ToCoreArray(res, resC, resMntr)))
+
+	}
+}
+
+func (md *MenteeDelivery) GetAllTasks() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id, _, _ := middlewares.ExtractToken(c)
+		if id < 1 {
+			return c.JSON(http.StatusNotFound, FailedResponse("Invalid Input From Client"))
+		}
+		res, err := md.MenteeUsecase.GetTask()
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
+		}
+
+		// return c.JSON(http.StatusOK, SuccessResponse("success get all status", ToCoreArray(res)))
+		return c.JSON(http.StatusOK, SuccessResponse("success get all status", tasksResponse(res)))
 
 	}
 }
