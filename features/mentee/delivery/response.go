@@ -3,7 +3,6 @@ package delivery
 import (
 	"be12/mentutor/features/mentee"
 	"log"
-	"time"
 )
 
 type UpdateResponse struct {
@@ -48,8 +47,9 @@ type TaskResponse struct {
 	Description string     `json:"description"`
 	Images      string     `json:"images"`
 	File        string     `json:"file"`
-	DueDate     *time.Time `json:"due_date"`
+	DueDate     string `json:"due_date"`
 	Score       uint       `json:"score"`
+	Status      string     `json:"status"`
 }
 
 func tasksResponse(data []mentee.Task) []TaskResponse {
@@ -61,8 +61,9 @@ func tasksResponse(data []mentee.Task) []TaskResponse {
 			Images:      data[i].Images,
 			Description: data[i].Description,
 			File:        data[i].File,
-			DueDate:     data[i].DueDate,
+			DueDate:     data[i].DueDate.Format("2006-01-02 15:04 MST"),
 			Score:       data[i].Score,
+			Status:      data[i].Status,
 		})
 	}
 	return dataCore
@@ -137,6 +138,7 @@ func ToCoreArray(status []mentee.Status, coment []mentee.CommentsCore, cmnmtr []
 
 	return res
 }
+
 func SuccessResponse(msg string, data interface{}) map[string]interface{} {
 	return map[string]interface{}{
 		"message": msg,

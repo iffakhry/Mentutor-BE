@@ -45,6 +45,7 @@ type Submission struct {
 	File     string
 	Score    uint
 	Title    string `gorm:"->"`
+	Status  string
 }
 
 // MODEL TASK
@@ -55,6 +56,7 @@ type Task struct {
 	Images      string
 	DueDate     *time.Time
 	Score       uint   `gorm:"->"`
+	Status      string `gorm:"->"`
 	Title       string `gorm:"type:varchar(255);not null"`
 	Description string `gorm:"type:varchar(255);not null"`
 	File        string `gorm:"type:varchar(255);not null"`
@@ -171,7 +173,8 @@ func toTaskList(data []Task) []mentee.Task {
 			Description: data[i].Description,
 			File:        data[i].File,
 			Score:       data[i].Score,
-			DueDate:     data[i].DueDate,
+			DueDate:     *data[i].DueDate,
+			Status:      data[i].Status,
 		})
 	}
 	return dataCore
@@ -199,6 +202,7 @@ func ToEntitySub(data Submission) mentee.Submission {
 		Title:     data.Title,
 		File:      data.File,
 		Score:     data.Score,
+		Status: data.Status,
 	}
 }
 
@@ -220,7 +224,7 @@ func ToCoreArrayTask(task []Task) []mentee.Task {
 			Title:       val.Title,
 			Description: val.Description,
 			Images:      val.Images,
-			DueDate:     val.DueDate,
+			DueDate:     *val.DueDate,
 		})
 	}
 	return res

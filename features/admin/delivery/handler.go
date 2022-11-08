@@ -114,12 +114,6 @@ func (ad *AdminDelivery) UpdateUserAdmin() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
 
-		cnv := ToDomainUpdateUser(input)
-		id := c.Param("id_user")
-		cnvId, _ := strconv.Atoi(id)
-		cnv.IdUser = uint(cnvId)
-
-
 		file, fileheader, err := c.Request().FormFile("images")
 		if err == nil {
 			res, err := helper.UploadFotoProfile(file, fileheader)
@@ -129,6 +123,11 @@ func (ad *AdminDelivery) UpdateUserAdmin() echo.HandlerFunc {
 			}
 			input.Images = res
 		} 
+
+		cnv := ToDomainUpdateUser(input)
+		id := c.Param("id_user")
+		cnvId, _ := strconv.Atoi(id)
+		cnv.IdUser = uint(cnvId)
 
 		res, err := ad.adminUsecase.UpdateUserAdmin(cnv, role)
 		if  err != nil && strings.Contains(err.Error(), "user") == true{

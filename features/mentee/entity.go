@@ -42,6 +42,7 @@ type Submission struct {
 	File      string
 	Score     uint
 	Title     string
+	Status string
 }
 
 type Task struct {
@@ -52,9 +53,10 @@ type Task struct {
 	Description string     `gorm:"type:varchar(255);not null"`
 	File        string     `gorm:"type:varchar(255);not null"`
 	Images      string     `gorm:"type:varchar(255);not null"`
-	DueDate     *time.Time `gorm:"not null"`
+	DueDate     time.Time `gorm:"not null"`
 	Score       uint
 	Submissions []Submission `gorm:"foreignKey:IdTask"`
+	Status      string
 }
 type UseCaseInterface interface {
 	UpdateProfile(id uint, data MenteeCore) (MenteeCore, error)
@@ -63,7 +65,7 @@ type UseCaseInterface interface {
 	Insert(data CommentsCore) (CommentsCore, error)
 	InsertSub(data Submission) (Submission, error)
 	InsertSubmis(param int, data Submission) (Submission, error)
-	GetTask() (data []Task, err error)
+	GetTask(idClass uint, role string) (data []Task, err error)
 }
 
 type RepoInterface interface {
@@ -73,5 +75,6 @@ type RepoInterface interface {
 	AddComment(data CommentsCore) (CommentsCore, error)
 	AddSub(data Submission) (Submission, error)
 	AddSubmis(param int, data Submission) (Submission, error)
-	GetAllTask() (data []Task, err error)
+	GetAllTask(idClass uint) (data []Task, err error)
+	GetSingleTask(idTask uint) (Task, error)
 }

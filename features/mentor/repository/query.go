@@ -95,7 +95,9 @@ func (mr *mentorRepo) GetTaskSub(idTask uint) (mentor.TaskCore, []mentor.Submiss
 	if err := mr.db.Where("id = ?", idTask).First(&task).Error; err != nil {
 		return mentor.TaskCore{}, []mentor.SubmissionCore{}, err
 	}
-	if err := mr.db.Find(&submission).Joins("left join mentees on mentees.id = submissions.id_mentee").Scan(&submission).Error; err != nil {
+	if err := mr.db.Model(&Submission{}).Select("submissions.id, submissions.file, submissions.id_task, mentees.name, submissions.score").
+	Joins("left join mentees on mentees.id = submissions.id_mentee").
+	Scan(&submission).Error; err != nil {
 		return mentor.TaskCore{}, []mentor.SubmissionCore{}, err
 	}
 	
@@ -143,14 +145,15 @@ func (mr *mentorRepo) AddScore(input mentor.SubmissionCore) (mentor.SubmissionCo
 		return mentor.SubmissionCore{}, err
 	}
 
-
-	if err := mr.db.Model(&Submission{}).Where("id = ? AND id_task = ?", input.ID, input.IdTask).Updates(data).Error; err != nil {
+	log.Print(data.Score)
+	
+	data.Score = input.Score
+	if err := mr.db.Model(&Submission{}).Where("id = ?", input.ID).Updates(&data).Error; err != nil {
 		return mentor.SubmissionCore{}, err
 	}
 
 	mr.db.Model(&Submission{}).Where("id = ?", input.ID).Select("file").Scan(&data)
 	mr.db.Model(&Task{}).Where("id = ?", input.IdTask).Select("title").Scan(&data)
-	log.Print(data, " INI LOG QUERY")
 	cnv := ToDomainSubmission(data)
 	return cnv, nil 
 }

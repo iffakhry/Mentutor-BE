@@ -78,19 +78,18 @@ func (md *menteeData) GetAllPosts() ([]mentee.Status, []mentee.CommentsCore, []m
 	return dataSC, datacm, comenmentor, nil
 }
 
-func (md *menteeData) GetAllTask() ([]mentee.Task, error) {
+func (md *menteeData) GetAllTask(idClass uint) ([]mentee.Task, error) {
 	var task []Task
 
-	tx := md.db.Model(&Task{}).Select("tasks.id,tasks.title, tasks.description, submissions.score, tasks.images, tasks.file, tasks.due_date").
-		Joins("left join submissions on submissions.id_task = tasks.id").Where("submissions.id_task = tasks.id").Scan(&task)
+	tx := md.db.Model(&Task{}).Select("tasks.id,tasks.title, tasks.description, submissions.status, submissions.score, tasks.images, tasks.file, tasks.due_date").
+		Joins("left join submissions on submissions.id_task = tasks.id").Where("tasks.id_class = ?", idClass).Scan(&task)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
-	log.Print(len(task))
 
 	return toTaskList(task), nil
-
 }
+
 func (md *menteeData) AddComment(data mentee.CommentsCore) (mentee.CommentsCore, error) {
 	var input Comments
 	input = ToEntityComent(data)
@@ -108,9 +107,9 @@ func (md *menteeData) AddComment(data mentee.CommentsCore) (mentee.CommentsCore,
 func (md *menteeData) AddSub(data mentee.Submission) (mentee.Submission, error) {
 	var input Submission
 	input = FromEntitySub(data)
+	input.Status = "done"
 
 	res := md.db.Create(&input).Last(&input)
-	log.Print(input.ID, " INI ID DARI QUERY")
 	if res.Error != nil {
 		log.Error("ERROR QUERY")
 		return mentee.Submission{}, res.Error
@@ -121,6 +120,7 @@ func (md *menteeData) AddSub(data mentee.Submission) (mentee.Submission, error) 
 	return cnv, nil
 
 }
+
 func (md *menteeData) AddSubmis(param int, data mentee.Submission) (mentee.Submission, error) {
 	// var input Submission
 	input := FromEntitySub(data)
@@ -133,5 +133,16 @@ func (md *menteeData) AddSubmis(param int, data mentee.Submission) (mentee.Submi
 	log.Print(input.ID, " INI ID DARI QUERY")
 
 	return data, nil
+}
+
+func (md *menteeData) GetSingleTask(idTask uint) (mentee.Task, error) {
+	var res Task
+
+	if err := md.db.Where("id = ?", idTask).First(&res).Error; err != nil {
+		return mentee.Task{}, err
+	}
+	
+	cnv := mentee.Task{ID: res.ID, DueDate: *res.DueDate}
+	return cnv, nil
 
 }
