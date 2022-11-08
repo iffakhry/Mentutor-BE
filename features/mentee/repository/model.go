@@ -32,8 +32,8 @@ type Comments struct {
 	ID_User  uint   `json:"id_user" form:"id_user"`
 	IdStatus uint   `json:"id_status" form:"id_status"`
 	Caption  string `json:"caption" form:"caption"`
-	Name     string `json:"name" form:"name"` //`gorm:"->"`
-	Role     string `json:"role" form:"role"` //`gorm:"->"`
+	Name     string `gorm:"<-:false"`
+	Role     string `gorm:"<-:false"`
 }
 
 // MODEL SUBMISSION

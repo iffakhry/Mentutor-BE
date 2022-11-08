@@ -14,7 +14,7 @@ type Mentee struct {
 	Password  string `gorm:"type:varchar(255);not null"`
 	Images    string `gorm:"type:varchar(255);not null"`
 	Role      string `gorm:"type:enum('mentee');not null"`
-	ClassName string
+	ClassName string `gorm:"<-:false"`
 	IdClass   uint
 }
 
@@ -25,7 +25,7 @@ type Mentor struct {
 	Email     string `gorm:"type:varchar(255);unique;not null"`
 	Password  string `gorm:"type:varchar(255);not null"`
 	Role      string `gorm:"type:enum('admin','mentor');not null"`
-	ClassName string
+	ClassName string `gorm:"<-:false"`
 	IdClass   uint
 }
 
