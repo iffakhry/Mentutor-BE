@@ -75,7 +75,7 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 
 	// // CEK ID = 0
 	if res.ID == 0  {
-		return login.Core{}, "", errors.New("wrong email or password")
+		return login.Core{}, "", errors.New("email not found")
 	}
 
 	// Check password admin

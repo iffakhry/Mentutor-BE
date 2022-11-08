@@ -39,7 +39,7 @@ func (au *adminUsecase) AddUser(input admin.UserCore, role string) (admin.UserCo
 	}
 	if len(input.Email) < 8 || len(input.Email) > 40 {
 		return admin.UserCore{}, errors.New("length email not valid")
-	} else if strings.Contains(input.Email, "@") == false && strings.Contains(input.Email, ".") == false {
+	} else if strings.Contains(input.Email, "@") == false || strings.Contains(input.Email, ".") == false {
 		return admin.UserCore{}, errors.New("not contain (@) and (.)")
 	}
 
@@ -240,14 +240,18 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 				return admin.UserCore{}, errors.New("contain space")
 			}
 		}
+		contain1 := strings.Contains(input.Email, "@") 
+		contain2 := strings.Contains(input.Email, ".") 
 		if len(input.Email) < 8 || len(input.Email) > 40 {
 			return admin.UserCore{}, errors.New("length email not valid")
-		} else if strings.Contains(input.Email, "@") == false && strings.Contains(input.Email, ".") == false {
+		} else if contain1 == false || contain2 == false {
 			return admin.UserCore{}, errors.New("not contain (@) and (.)")
 		}
 	} else {
 		input.Email = user.Email
 	}
+
+	
 
 	// CEK KONDISI PASSWORD
 	if input.Password != "" {

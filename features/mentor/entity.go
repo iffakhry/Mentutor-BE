@@ -39,13 +39,12 @@ type CommentCore struct {
 
 type SubmissionCore struct {
 	ID         uint
-	NameMentee string
+	NameMentee string `gorm:"<-:false"`
+	Title      string `gorm:"<-:false"`
 	IdMentee   uint
 	IdTask     uint
 	File       string
 	Score      int
-	FileName   string
-	FileLInk   string
 }
 
 type UsecaseInterface interface {
@@ -54,6 +53,8 @@ type UsecaseInterface interface {
 	GetAllTask(role string) ([]TaskCore, error)
 	GetTaskSub(id uint, role string) (TaskCore, []SubmissionCore, error)
 	UpdateTask(input TaskCore, role string) (TaskCore, error)
+	DeleteTask(idTask uint, idClass uint, role string) (TaskCore, error)
+	AddScore(input SubmissionCore, role string) (SubmissionCore, error)
 }
 
 type RepoInterface interface {
@@ -66,4 +67,6 @@ type RepoInterface interface {
 	GetTaskSub(id uint) (TaskCore, []SubmissionCore, error)
 	EditTask(input TaskCore) (TaskCore, error)
 	GetSingleTask(id uint) (TaskCore, error)
+	DeleteTask(idTask uint, idClass uint) (TaskCore, error)
+	AddScore(input SubmissionCore) (SubmissionCore, error)
 }

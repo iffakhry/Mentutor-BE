@@ -28,7 +28,7 @@ type Mentor struct {
 	Password string `gorm:"type:varchar(255);not null"`
 	Role     string `gorm:"type:enum('admin','mentor');not null"`
 	IdClass  uint
-	Tasks    []Task `gorm:"foreignKey:IdMentor"`
+	Tasks    []Task    `gorm:"foreignKey:IdMentor"`
 }
 
 type Class struct {
@@ -64,9 +64,9 @@ type Submission struct {
 type Status struct {
 	gorm.Model
 	IdMentee uint
-	Caption  string `gorm:"type:varchar(255);not null"`
-	Images   string `gorm:"type:varchar(255);not null"`
-	// Comment  []Comment
+	Caption  string    `gorm:"type:varchar(255);not null"`
+	Images   string    `gorm:"type:varchar(255);not null"`
+	Comment  []Comment `gorm:"foreignKey:IdStatus"`
 }
 
 type Comment struct {

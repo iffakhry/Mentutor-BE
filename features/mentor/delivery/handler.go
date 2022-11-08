@@ -23,11 +23,13 @@ func New(e *echo.Echo, usecase mentor.UsecaseInterface) {
 		mentorUsecase: usecase,
 	}
 
-	e.PUT("/users", handler.UpdateProfile(), middleware.JWT([]byte(config.SECRET_JWT)))               // UPDATE USER
-	e.POST("/mentors/tasks", handler.AddTask(), middleware.JWT([]byte(config.SECRET_JWT)))            // UPDATE USER
-	e.GET("/mentors/tasks", handler.GetAllTask(), middleware.JWT([]byte(config.SECRET_JWT)))          // GET ALL TASk
-	e.GET("/mentors/tasks/:id_task", handler.GetTaskSub(), middleware.JWT([]byte(config.SECRET_JWT))) // GET TASK BY ID TASK
-	e.PUT("/mentors/tasks/:id_task", handler.UpdateTask(), middleware.JWT([]byte(config.SECRET_JWT))) // UPDATE TASK BY ID TASK
+	e.PUT("/users", handler.UpdateProfile(), middleware.JWT([]byte(config.SECRET_JWT)))                           // UPDATE USER
+	e.POST("/mentors/tasks", handler.AddTask(), middleware.JWT([]byte(config.SECRET_JWT)))                        // UPDATE USER
+	e.GET("/mentors/tasks", handler.GetAllTask(), middleware.JWT([]byte(config.SECRET_JWT)))                      // GET ALL TASk
+	e.GET("/mentors/tasks/:id_task", handler.GetTaskSub(), middleware.JWT([]byte(config.SECRET_JWT)))             // GET TASK BY ID TASK
+	e.PUT("/mentors/tasks/:id_task", handler.UpdateTask(), middleware.JWT([]byte(config.SECRET_JWT)))             // UPDATE TASK BY ID TASK
+	e.DELETE("/mentors/tasks/:id_task", handler.DeleteTask(), middleware.JWT([]byte(config.SECRET_JWT)))          // DELETE TASK BY ID TASK
+	e.POST("/mentors/submission/:id_submission", handler.AddScore(), middleware.JWT([]byte(config.SECRET_JWT))) // ADD SCORE TO SUBMISSION
 }
 
 func (md *MentorDelivery) UpdateProfile() echo.HandlerFunc {
@@ -132,6 +134,7 @@ func (md *MentorDelivery) GetTaskSub() echo.HandlerFunc {
 
 		resTask, resSub, err := md.mentorUsecase.GetTaskSub(uint(cnvId), role)
 		if err != nil {
+			log.Print(err)
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
 		return c.JSON(http.StatusCreated, helper.SuccessResponse("success get single task", ToResponseSingleTask(resTask, resSub)))
@@ -173,8 +176,49 @@ func (md *MentorDelivery) UpdateTask() echo.HandlerFunc {
 
 		res, err := md.mentorUsecase.UpdateTask(ToDomainUpdateTask(input), role)
 		if err != nil {
+			log.Print(err)
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
 		return c.JSON(http.StatusCreated, helper.SuccessResponse("success get single task", ToResponseAddTask(res)))
 	}
+}
+
+func (md *MentorDelivery) DeleteTask() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		_, idClass, role := middlewares.ExtractToken(c)
+
+		idTask := c.Param("id_task")
+		cnv, _ := strconv.Atoi(idTask)
+		res, err := md.mentorUsecase.DeleteTask(uint(cnv), uint(idClass), role)
+		if err != nil {
+			log.Print(err)
+			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
+		}
+		return c.JSON(http.StatusCreated, helper.SuccessResponse("Delete Success", ToResponseDelete(res.ID)))
+	}
+}
+
+func (md *MentorDelivery) AddScore() echo.HandlerFunc {	
+	return func(c echo.Context) error {
+		var input AddScoreFormat
+		_, _, role := middlewares.ExtractToken(c)
+
+		err := c.Bind(&input)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
+		}
+
+		idSub := c.Param("id_submission")
+		cnvIdSub, _ := strconv.Atoi(idSub)
+
+		input.IdSub = uint(cnvIdSub)
+		cnv := ToDomainScore(input)
+		res, err := md.mentorUsecase.AddScore(cnv, role)
+		if err != nil {
+			log.Print(err)
+			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
+		}
+		return c.JSON(http.StatusCreated, helper.SuccessResponse("success insert score", ToResponseAddScore(res)))
+	}
+
 }

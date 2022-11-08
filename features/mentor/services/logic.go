@@ -4,6 +4,7 @@ import (
 	"be12/mentutor/features/mentor"
 	"errors"
 	"log"
+	"strconv"
 	"strings"
 	"unicode"
 
@@ -222,3 +223,57 @@ func (mu *mentorUsecase) UpdateTask(input mentor.TaskCore, role string) (mentor.
 	return res, nil
 }
 	
+func (mu *mentorUsecase) DeleteTask(idTask uint, idClass uint, role string) (mentor.TaskCore, error) {
+	if err := roleCheck(role); err != true {
+		return mentor.TaskCore{}, errors.New("user not mentor")
+	}
+
+	res, err := mu.mentorRepo.DeleteTask(idTask, idClass)
+	if err != nil {
+		return mentor.TaskCore{}, errors.New("error delete task")
+	}
+	return res, nil
+}
+
+func (mu *mentorUsecase) AddScore (input mentor.SubmissionCore, role string) (mentor.SubmissionCore, error ) {
+	if err := roleCheck(role); err != true {
+		return mentor.SubmissionCore{}, errors.New("user not mentor")
+	}
+	
+	// CEK KETENTUAN SCORE
+	count := 0
+	cek := input.Score
+	for cek > 0 {
+		cek = cek/10
+		count++
+	}
+	isNumber := 0
+	cnv := strconv.Itoa(input.Score)
+	for _, v := range cnv{
+		if unicode.IsNumber(v) != true {
+			isNumber += 1
+		}
+	}
+	
+	if input.Score == 0 {
+		return mentor.SubmissionCore{}, errors.New("input score empty")
+	} 
+	if count > 3 {
+		return mentor.SubmissionCore{}, errors.New("score length not valid")
+	}
+	if isNumber > 0 {
+		return mentor.SubmissionCore{}, errors.New("input not number")
+	}
+
+	tmp, err := mu.mentorRepo.GetSingleTask(input.IdTask)
+	if err != nil {
+		return mentor.SubmissionCore{}, err
+	}
+	input.Title = tmp.Title
+
+	res, err := mu.mentorRepo.AddScore(input)
+	if err != nil {
+		return mentor.SubmissionCore{}, errors.New("error add score task")
+	}
+	return res, nil
+}
