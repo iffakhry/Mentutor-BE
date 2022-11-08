@@ -210,6 +210,6 @@ func (ad *AdminDelivery) DeleteClass() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
-			return c.JSON(http.StatusOK, helper.SuccessResponseNoData("Delete Success"))
+			return c.JSON(http.StatusOK, helper.SuccessResponse("Success Delete Class", map[string]int{"id_class": cnv}))
 	}
 }
