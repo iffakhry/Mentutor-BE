@@ -130,11 +130,10 @@ func (mr *mentorRepo) EditTask(input mentor.TaskCore) (mentor.TaskCore, error) {
 
 func (mr *mentorRepo) DeleteTask(idTask uint, FromidClass uint) (mentor.TaskCore, error) {
 
-	if err := mr.db.Where("id = ? AND id_class = ?", idTask, FromidClass).Delete(&Task{}).Error; err != nil {
-		return mentor.TaskCore{}, err
+	err := mr.db.Where("id = ?", idTask).Delete(&Task{}) 
+	if err.RowsAffected == 0 {
+		return mentor.TaskCore{}, err.Error
 	}
-
-	
 	return mentor.TaskCore{ID: idTask, IdClass: FromidClass}, nil
 }
 

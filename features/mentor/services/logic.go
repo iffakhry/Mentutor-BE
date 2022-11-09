@@ -228,6 +228,11 @@ func (mu *mentorUsecase) DeleteTask(idTask uint, idClass uint, role string) (men
 		return mentor.TaskCore{}, errors.New("user not mentor")
 	}
 
+	task,_ ,err := mu.mentorRepo.GetTaskSub(idTask)
+	if task.ID == 0 {
+		return mentor.TaskCore{}, errors.New("error delete task")
+	}
+
 	res, err := mu.mentorRepo.DeleteTask(idTask, idClass)
 	if err != nil {
 		return mentor.TaskCore{}, errors.New("error delete task")
