@@ -32,7 +32,7 @@ func New(e *echo.Echo, usecase mentee.UseCaseInterface) {
 	e.POST("/mentees/submission/:id", handler.AddSub(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.POST("/mentees/sub/:id", handler.AddSubMis(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.GET("/mentees/tasks", handler.GetAllTasks(), middleware.JWT([]byte(config.SECRET_JWT)))
-
+	// e.POST("/gmailapi/response", handler.GmailApiResponse())
 }
 
 func (md *MenteeDelivery) UpdateProfile() echo.HandlerFunc {
@@ -118,6 +118,7 @@ func (md *MenteeDelivery) GetAllTasks() echo.HandlerFunc {
 
 	}
 }
+
 func (md *MenteeDelivery) AddComment() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var comment CommentFormat
@@ -230,3 +231,14 @@ func (md *MenteeDelivery) AddSubMis() echo.HandlerFunc {
 
 	}
 }
+
+// func (md *MenteeDelivery) GmailApiResponse() echo.HandlerFunc {
+// 	return func(c echo.Context) error {
+		
+// 		err := helper.Mailer()
+// 		if err != nil {
+// 			return nil, err
+// 		}
+
+// 	}
+// }
