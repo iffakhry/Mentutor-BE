@@ -72,14 +72,13 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 	// Check email di database
 	res, _ := usecase.authData.Login(input)
 
-
 	// // CEK ID = 0
-	if res.ID == 0  {
+	if res.ID == 0 {
 		return login.Core{}, "", errors.New("email not found")
 	}
 
 	// Check password admin
-	if res.Role == "admin"{
+	if res.Role == "admin" {
 		if res.Password != input.Password {
 			log.Error(errors.New("password not equal"))
 			return login.Core{}, "", errors.New("wrong email or password")
@@ -92,7 +91,7 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 			log.Error(check, " wrong password")
 			return login.Core{}, "", errors.New("wrong email or password")
 		}
-		
+
 	}
 
 	token, err := middlewares.CreateToken(int(res.ID), int(res.IdClass), res.Role)

@@ -59,22 +59,18 @@ type Task struct {
 	Status      string
 }
 type UseCaseInterface interface {
-	// UpdateProfile(id uint, data MenteeCore) (MenteeCore, error)
 	InsertStatus(data Status, token int) (Status, error)
 	GetAll() (data []Status, comen []CommentsCore, comenmentor []CommentsCore, err error)
 	Insert(data CommentsCore) (CommentsCore, error)
 	InsertSub(data Submission) (Submission, error)
-	// InsertSubmis(param int, data Submission) (Submission, error)
 	GetTask(idClass uint, role string) (data []Task, err error)
 }
 
 type RepoInterface interface {
-	// EditProfile(id uint, data MenteeCore) (MenteeCore, error)
 	AddStatus(data Status, token int) (Status, error)
 	GetAllPosts() (data []Status, comen []CommentsCore, comenmentor []CommentsCore, err error)
 	AddComment(data CommentsCore) (CommentsCore, error)
 	AddSub(data Submission) (Submission, error)
-	// AddSubmis(param int, data Submission) (Submission, error)
 	GetAllTask(idClass uint) (data []Task, err error)
 	GetSingleTask(idTask uint) (Task, error)
 }
