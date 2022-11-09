@@ -25,31 +25,31 @@ func New(e *echo.Echo, usecase mentee.UseCaseInterface) {
 		MenteeUsecase: usecase,
 	}
 
-	e.PUT("/update/:id_user", handler.UpdateProfile()) // UPDATE PROFILE USER
+	// e.PUT("/update/:id_user", handler.UpdateProfile()) // UPDATE PROFILE USER
 	e.POST("/forum", handler.AddStatus(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.GET("/forum", handler.SelectAll(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.POST("/forum/:id", handler.AddComment(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.POST("/mentees/submission/:id", handler.AddSub(), middleware.JWT([]byte(config.SECRET_JWT)))
-	e.POST("/mentees/sub/:id", handler.AddSubMis(), middleware.JWT([]byte(config.SECRET_JWT)))
+	// e.POST("/mentees/sub/:id", handler.AddSubMis(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.GET("/mentees/tasks", handler.GetAllTasks(), middleware.JWT([]byte(config.SECRET_JWT)))
 	// e.POST("/gmailapi/response", handler.GmailApiResponse())
 }
 
-func (md *MenteeDelivery) UpdateProfile() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		var input UpdateFormat
+// func (md *MenteeDelivery) UpdateProfile() echo.HandlerFunc {
+// 	return func(c echo.Context) error {
+// 		var input UpdateFormat
 
-		IdUser, _, _ := middlewares.ExtractToken(c)
-		cnvInput := ToEntity(input)
+// 		IdUser, _, _ := middlewares.ExtractToken(c)
+// 		cnvInput := ToEntity(input)
 
-		res, err := md.MenteeUsecase.UpdateProfile(uint(IdUser), cnvInput)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, FailedResponse("Something Error In Server"))
-		}
+// 		res, err := md.MenteeUsecase.UpdateProfile(uint(IdUser), cnvInput)
+// 		if err != nil {
+// 			return c.JSON(http.StatusInternalServerError, FailedResponse("Something Error In Server"))
+// 		}
 
-		return c.JSON(http.StatusCreated, SuccessResponse("success update profile", res))
-	}
-}
+// 		return c.JSON(http.StatusCreated, SuccessResponse("success update profile", res))
+// 	}
+// }
 
 func (md *MenteeDelivery) AddStatus() echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -106,7 +106,7 @@ func (md *MenteeDelivery) GetAllTasks() echo.HandlerFunc {
 		if id < 1 {
 			return c.JSON(http.StatusNotFound, FailedResponse("Invalid Input From Client"))
 		}
-		
+
 		res, err := md.MenteeUsecase.GetTask(uint(idClass), role)
 		if err != nil {
 			log.Print(err)
@@ -194,47 +194,47 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 	}
 }
 
-func (md *MenteeDelivery) AddSubMis() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		var submission SubFormat
-		idtasks := c.Param("id")
+// func (md *MenteeDelivery) AddSubMis() echo.HandlerFunc {
+// 	return func(c echo.Context) error {
+// 		var submission SubFormat
+// 		idtasks := c.Param("id")
 
-		if err := c.Bind(&submission); err != nil {
-			c.JSON(http.StatusBadRequest, errors.New("Invalid Input From Client"))
-		}
-		file, fileheader, err := c.Request().FormFile("file")
-		if err == nil {
-			res, err := helper.UploadFileSubmission(file, fileheader)
-			if err != nil {
-				log.Print(err)
-				return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
-			}
-			log.Print(res)
-			submission.File = res
-		}
-		idUser, _, role := middlewares.ExtractToken(c)
-		idCnv, _ := strconv.Atoi(idtasks)
-		IdTask := uint(idCnv)
-		submission.ID_Tasks = IdTask
-		submission.ID_Mentee = uint(idUser)
-		data := ToDomainSub(submission)
-		log.Print(data)
-		if role != "mentee" {
-			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
-		}
-		res, err1 := md.MenteeUsecase.InsertSubmis(int(IdTask), data)
-		if err1 != nil {
-			return c.JSON(http.StatusInternalServerError, errors.New("error from server"))
-		}
+// 		if err := c.Bind(&submission); err != nil {
+// 			c.JSON(http.StatusBadRequest, errors.New("Invalid Input From Client"))
+// 		}
+// 		file, fileheader, err := c.Request().FormFile("file")
+// 		if err == nil {
+// 			res, err := helper.UploadFileSubmission(file, fileheader)
+// 			if err != nil {
+// 				log.Print(err)
+// 				return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
+// 			}
+// 			log.Print(res)
+// 			submission.File = res
+// 		}
+// 		idUser, _, role := middlewares.ExtractToken(c)
+// 		idCnv, _ := strconv.Atoi(idtasks)
+// 		IdTask := uint(idCnv)
+// 		submission.ID_Tasks = IdTask
+// 		submission.ID_Mentee = uint(idUser)
+// 		data := ToDomainSub(submission)
+// 		log.Print(data)
+// 		if role != "mentee" {
+// 			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
+// 		}
+// 		res, err1 := md.MenteeUsecase.InsertSubmis(int(IdTask), data)
+// 		if err1 != nil {
+// 			return c.JSON(http.StatusInternalServerError, errors.New("error from server"))
+// 		}
 
-		return c.JSON(http.StatusCreated, SuccessResponse("success insert submission", ToResponseSub(res)))
+// 		return c.JSON(http.StatusCreated, SuccessResponse("success insert submission", ToResponseSub(res)))
 
-	}
-}
+// 	}
+// }
 
 // func (md *MenteeDelivery) GmailApiResponse() echo.HandlerFunc {
 // 	return func(c echo.Context) error {
-		
+
 // 		err := helper.Mailer()
 // 		if err != nil {
 // 			return nil, err

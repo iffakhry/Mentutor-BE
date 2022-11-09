@@ -54,13 +54,13 @@ func (_m *UseCaseInterface) GetAll() ([]mentee.Status, []mentee.CommentsCore, []
 	return r0, r1, r2, r3
 }
 
-// GetTask provides a mock function with given fields:
-func (_m *UseCaseInterface) GetTask() ([]mentee.Task, error) {
-	ret := _m.Called()
+// GetTask provides a mock function with given fields: idClass, role
+func (_m *UseCaseInterface) GetTask(idClass uint, role string) ([]mentee.Task, error) {
+	ret := _m.Called(idClass, role)
 
 	var r0 []mentee.Task
-	if rf, ok := ret.Get(0).(func() []mentee.Task); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(uint, string) []mentee.Task); ok {
+		r0 = rf(idClass, role)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]mentee.Task)
@@ -68,8 +68,8 @@ func (_m *UseCaseInterface) GetTask() ([]mentee.Task, error) {
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
+	if rf, ok := ret.Get(1).(func(uint, string) error); ok {
+		r1 = rf(idClass, role)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -133,27 +133,6 @@ func (_m *UseCaseInterface) InsertSub(data mentee.Submission) (mentee.Submission
 	var r1 error
 	if rf, ok := ret.Get(1).(func(mentee.Submission) error); ok {
 		r1 = rf(data)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// InsertSubmis provides a mock function with given fields: param, data
-func (_m *UseCaseInterface) InsertSubmis(param int, data mentee.Submission) (mentee.Submission, error) {
-	ret := _m.Called(param, data)
-
-	var r0 mentee.Submission
-	if rf, ok := ret.Get(0).(func(int, mentee.Submission) mentee.Submission); ok {
-		r0 = rf(param, data)
-	} else {
-		r0 = ret.Get(0).(mentee.Submission)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(int, mentee.Submission) error); ok {
-		r1 = rf(param, data)
 	} else {
 		r1 = ret.Error(1)
 	}

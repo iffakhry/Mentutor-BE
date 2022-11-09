@@ -3,7 +3,6 @@ package services
 import (
 	"be12/mentutor/features/mentee"
 	"errors"
-	"log"
 	"time"
 )
 
@@ -17,19 +16,19 @@ func New(data mentee.RepoInterface) mentee.UseCaseInterface {
 	}
 }
 
-func (mu *MenteeUsecase) UpdateProfile(id uint, data mentee.MenteeCore) (mentee.MenteeCore, error) {
-	res, err := mu.menteeData.EditProfile(id, data)
-	if err != nil {
-		return mentee.MenteeCore{}, err
-	}
-	return res, nil
-}
+// func (mu *MenteeUsecase) UpdateProfile(id uint, data mentee.MenteeCore) (mentee.MenteeCore, error) {
+// 	res, err := mu.menteeData.EditProfile(id, data)
+// 	if err != nil {
+// 		return mentee.MenteeCore{}, err
+// 	}
+// 	return res, nil
+// }
 
 func (mu *MenteeUsecase) InsertStatus(data mentee.Status, token int) (mentee.Status, error) {
 	if len(data.Caption) < 5 || len(data.Caption) > 120 {
 		return mentee.Status{}, errors.New("input not valid")
 	}
-	log.Print(data.Images, "INI LOG IMAGES")
+	// log.Print(data.Images, "INI LOG IMAGES")
 	data, err := mu.menteeData.AddStatus(data, token)
 	if err != nil {
 		return mentee.Status{}, err
@@ -67,13 +66,13 @@ func (mu *MenteeUsecase) Insert(data mentee.CommentsCore) (mentee.CommentsCore, 
 
 func (mu *MenteeUsecase) InsertSub(data mentee.Submission) (mentee.Submission, error) {
 
-	res, err := mu.menteeData.GetSingleTask(data.ID_Tasks) 
+	res, err := mu.menteeData.GetSingleTask(data.ID_Tasks)
 	if err != nil {
 		return mentee.Submission{}, errors.New("task not found")
 	}
 	timeRes := res.DueDate
 	now := time.Now()
-	if  now.After(timeRes) == true{
+	if now.After(timeRes) == true {
 		return mentee.Submission{}, errors.New("melewati due date")
 	}
 
@@ -84,11 +83,11 @@ func (mu *MenteeUsecase) InsertSub(data mentee.Submission) (mentee.Submission, e
 	return data, nil
 }
 
-func (mu *MenteeUsecase) InsertSubmis(param int, data mentee.Submission) (mentee.Submission, error) {
-	data, err := mu.menteeData.AddSubmis(param, data)
-	if err != nil {
-		return mentee.Submission{}, err
-	}
-	log.Print(data.ID, "INI ID LOGIC")
-	return data, nil
-}
+// func (mu *MenteeUsecase) InsertSubmis(param int, data mentee.Submission) (mentee.Submission, error) {
+// 	data, err := mu.menteeData.AddSubmis(param, data)
+// 	if err != nil {
+// 		return mentee.Submission{}, err
+// 	}
+// 	log.Print(data.ID, "INI ID LOGIC")
+// 	return data, nil
+// }
