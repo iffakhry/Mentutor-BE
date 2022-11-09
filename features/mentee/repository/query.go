@@ -104,6 +104,19 @@ func (md *menteeData) AddSub(data mentee.Submission) (mentee.Submission, error) 
 
 }
 
+func (md *menteeData) AddSubmis(param int, data mentee.Submission) (mentee.Submission, error) {
+	// var input Submission
+	input := FromEntitySub(data)
+
+	res := md.db.Create(&input)
+	if res.Error != nil {
+		// log.Error("ERROR QUERY")
+		return mentee.Submission{}, res.Error
+	}
+	log.Print(input.ID, " INI ID DARI QUERY")
+	return data, nil
+}
+
 func (md *menteeData) GetSingleTask(idTask uint) (mentee.Task, error) {
 	var res Task
 
