@@ -44,6 +44,14 @@ func (h *AuthDelivery) Login() echo.HandlerFunc {
 				return c.JSON(http.StatusBadRequest, helper.FailedResponse(errx.Error()))
 			}
 		}
+
+		if res.Role == "mentee"{
+			// err := helper.Mailer()
+			// if err != nil {
+			// 	log.Print(err.Error(), " ERROR SEND MAIL")
+			// }
+		}
+
 		res.Token = token
 		return c.JSON(http.StatusOK, helper.SuccessResponse("login successful", ToResponse(res, "login")))
 	}

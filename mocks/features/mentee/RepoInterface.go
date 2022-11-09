@@ -76,27 +76,6 @@ func (_m *RepoInterface) AddSub(data mentee.Submission) (mentee.Submission, erro
 	return r0, r1
 }
 
-// AddSubmis provides a mock function with given fields: param, data
-func (_m *RepoInterface) AddSubmis(param int, data mentee.Submission) (mentee.Submission, error) {
-	ret := _m.Called(param, data)
-
-	var r0 mentee.Submission
-	if rf, ok := ret.Get(0).(func(int, mentee.Submission) mentee.Submission); ok {
-		r0 = rf(param, data)
-	} else {
-		r0 = ret.Get(0).(mentee.Submission)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(int, mentee.Submission) error); ok {
-		r1 = rf(param, data)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // EditProfile provides a mock function with given fields: id, data
 func (_m *RepoInterface) EditProfile(id uint, data mentee.MenteeCore) (mentee.MenteeCore, error) {
 	ret := _m.Called(id, data)
@@ -159,13 +138,13 @@ func (_m *RepoInterface) GetAllPosts() ([]mentee.Status, []mentee.CommentsCore, 
 	return r0, r1, r2, r3
 }
 
-// GetAllTask provides a mock function with given fields:
-func (_m *RepoInterface) GetAllTask() ([]mentee.Task, error) {
-	ret := _m.Called()
+// GetAllTask provides a mock function with given fields: idClass
+func (_m *RepoInterface) GetAllTask(idClass uint) ([]mentee.Task, error) {
+	ret := _m.Called(idClass)
 
 	var r0 []mentee.Task
-	if rf, ok := ret.Get(0).(func() []mentee.Task); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(uint) []mentee.Task); ok {
+		r0 = rf(idClass)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]mentee.Task)
@@ -173,8 +152,29 @@ func (_m *RepoInterface) GetAllTask() ([]mentee.Task, error) {
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
+	if rf, ok := ret.Get(1).(func(uint) error); ok {
+		r1 = rf(idClass)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetSingleTask provides a mock function with given fields: idTask
+func (_m *RepoInterface) GetSingleTask(idTask uint) (mentee.Task, error) {
+	ret := _m.Called(idTask)
+
+	var r0 mentee.Task
+	if rf, ok := ret.Get(0).(func(uint) mentee.Task); ok {
+		r0 = rf(idTask)
+	} else {
+		r0 = ret.Get(0).(mentee.Task)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(uint) error); ok {
+		r1 = rf(idTask)
 	} else {
 		r1 = ret.Error(1)
 	}

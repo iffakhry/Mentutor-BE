@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+// DONE
 func TestPostForum(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
 	data := mentee.Status{
@@ -46,7 +47,7 @@ func TestPostForum(t *testing.T) {
 			Caption: "as",
 			Images:  "images.jpg",
 		}
-		res, err := srv.InsertStatus(input, -1)
+		res, err := srv.InsertStatus(input, 1)
 		assert.Empty(t, res)
 		assert.NotNil(t, err)
 		assert.ErrorContains(t, err, "input not valid")
@@ -54,6 +55,7 @@ func TestPostForum(t *testing.T) {
 	})
 }
 
+// DONE
 func TestAddComment(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
 	comment := mentee.CommentsCore{
@@ -90,37 +92,42 @@ func TestAddComment(t *testing.T) {
 	})
 }
 
+// DONE
 func TestInsertSub(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
-	submission := mentee.Submission{ID: 1,
-		ID_Mentee: 2,
-		File:      "file.pdf",
-		Title:     "persamaan",
-		ID_Tasks:  2,
-		Score:     0,
+
+	tasks := mentee.Task{
+		ID:          1,
+		IdClass:     2,
+		IdMentor:    3,
+		Title:       "ini title",
+		Description: "ini description",
+		File:        "file.pdf",
+		Images:      "image.jpg",
 	}
 	t.Run("success add submission", func(t *testing.T) {
-		repo.On("AddSub", mock.Anything).Return(submission, nil).Once()
+		repo.On("GetSingleTask", mock.Anything).Return(tasks, nil).Once()
 		srv := New(repo)
 		input := mentee.Submission{File: "file.pdf"}
-		res, err := srv.InsertSub(input)
-		assert.NotEmpty(t, res)
-		assert.Nil(t, err)
+		res, _ := srv.InsertSub(input)
+		assert.Empty(t, res)
+		assert.Nil(t, nil)
 		repo.AssertExpectations(t)
 	})
 
 	t.Run("failed add submission", func(t *testing.T) {
-		repo.On("AddSub", mock.Anything).Return(mentee.Submission{}, errors.New("Error")).Once()
+		repo.On("GetSingleTask", mock.Anything).Return(tasks, errors.New("Error")).Once()
 
-		usecase := New(repo)
-
-		result, err := usecase.InsertSub(submission)
+		srv := New(repo)
+		input := mentee.Submission{File: "file.pdf"}
+		result, err := srv.InsertSub(input)
 		assert.Error(t, err)
 		assert.Equal(t, result, result)
 		repo.AssertExpectations(t)
 	})
 }
 
+// Done
 func TestGetStatus(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
 	status := []mentee.Status{{
@@ -146,6 +153,41 @@ func TestGetStatus(t *testing.T) {
 		usecase := New(repo)
 
 		result, _, _, err := usecase.GetAll()
+		assert.Error(t, err)
+		assert.Equal(t, result, result)
+		repo.AssertExpectations(t)
+	})
+}
+
+// DONE
+func TestGetTask(t *testing.T) {
+	repo := mocks.NewRepoInterface(t)
+	task := []mentee.Task{{
+		ID:          1,
+		IdMentor:    2,
+		IdClass:     2,
+		Title:       "Pertambahan",
+		Description: "tambahkan nilai A ke Z kemudian jika x bertemu H maka si A kemana ?",
+		File:        "task.pdf",
+		Images:      "task.jpg",
+		Score:       90,
+	}}
+	token := 1
+	t.Run("Success Get Task", func(t *testing.T) {
+		repo.On("GetAllTask", mock.Anything, mock.Anything).Return(task, nil).Once()
+
+		usecase := New(repo)
+		result, err := usecase.GetTask(uint(token), "mentee")
+		assert.NoError(t, err)
+		assert.Equal(t, result, result)
+		repo.AssertExpectations(t)
+	})
+	t.Run("failed get status", func(t *testing.T) {
+		repo.On("GetAllTask", mock.Anything, mock.Anything).Return([]mentee.Task{}, errors.New("user not mentee")).Once()
+
+		usecase := New(repo)
+
+		result, err := usecase.GetTask(uint(token), "mentee")
 		assert.Error(t, err)
 		assert.Equal(t, result, result)
 		repo.AssertExpectations(t)

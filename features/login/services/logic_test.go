@@ -100,14 +100,14 @@ func TestLogin(t *testing.T) {
 		res, _, err := srv.Login(input)
 		assert.Empty(t, res)
 		assert.NotNil(t, err)
-		assert.ErrorContains(t, err, "wrong email or password")
+		assert.ErrorContains(t, err, "email not found")
 		repo.AssertExpectations(t)
 	})
 	t.Run("Failed string not as expected", func(t *testing.T) {
 		repo.On("Login", mock.Anything).Return(login.Core{ID: 23, Password: "Admin123$", Role: "admin"}, nil).Once()
 		srv := New(repo)
 		input := login.Core{Email: "admin.fatur@gmail.com", Password: "Admasi123$"}
-		res, _ ,err := srv.Login(input)
+		res, _, err := srv.Login(input)
 		assert.Empty(t, res)
 		assert.NotNil(t, err)
 		assert.ErrorContains(t, err, "wrong email or password")
@@ -117,7 +117,7 @@ func TestLogin(t *testing.T) {
 		repo.On("Login", mock.Anything).Return(login.Core{ID: 23, Password: "$2a$10$fk68mY5i/hFtQLhtaLS6L.LVNyIWoCgQ3CUdD2ySbYwHWbQulzUUu", Role: "mentee"}, nil).Once()
 		srv := New(repo)
 		input := login.Core{Email: "fatur69@gmail.com", Password: "Admasi123$"}
-		res, _ ,err := srv.Login(input)
+		res, _, err := srv.Login(input)
 		assert.Empty(t, res)
 		assert.NotNil(t, err)
 		assert.ErrorContains(t, err, "wrong email or password")
