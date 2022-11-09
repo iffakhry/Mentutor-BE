@@ -16,8 +16,6 @@ type Mentee struct {
 	Images      string `gorm:"type:varchar(255)"`
 	Role        string `gorm:"type:enum('mentee');not null"`
 	IdClass     uint
-	Submissions []Submission `gorm:"foreignKey:IdMentee"`
-	Statuses    []Status     `gorm:"foreignKey:IdMentee"`
 }
 
 type Mentor struct {
@@ -49,7 +47,6 @@ type Task struct {
 	File        string       `gorm:"type:varchar(255);not null"`
 	Images      string       `gorm:"type:varchar(255);not null"`
 	DueDate     *time.Time   `gorm:"not null"`
-	Submissions []Submission `gorm:"foreignKey:IdTask"`
 }
 
 type Submission struct {

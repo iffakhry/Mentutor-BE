@@ -4,6 +4,7 @@ import (
 	"be12/mentutor/features/admin"
 	"errors"
 	"log"
+	"strconv"
 
 	// "log"
 	"strings"
@@ -150,9 +151,32 @@ func (au *adminUsecase) AddNewClass(input admin.ClassCore, role string) (admin.C
 	if role != "admin" {
 		return admin.ClassCore{}, errors.New("user not admin")
 	}
+	// CEK KONDISI NAMA KELAS
+	if len(input.ClassName) < 5 || len(input.ClassName) > 30 {
+		return admin.ClassCore{}, errors.New("length name not valid")
+	}
+	var sChar int
+	for _, v := range input.ClassName {
+		if unicode.IsPunct(v) == true{
+			sChar+=1
+		} else if string(v) == "?" {
+			sChar+=1
+		}
+		_, err := strconv.Atoi(input.ClassName)
+		if err == nil {
+			log.Print(err)
+			return admin.ClassCore{}, errors.New("class name is number")
+		}
+	}
+
+	if sChar > 1 {
+		return admin.ClassCore{}, errors.New("contain special character")
+	}
 
 	res, err := au.adminRepo.InsertNewClass(input)
 	if err != nil {
+		return admin.ClassCore{}, errors.New("input not valid")
+	} else if res.IdClass == 0 {
 		return admin.ClassCore{}, errors.New("input not valid")
 	}
 	return res, nil
@@ -352,10 +376,16 @@ func (au *adminUsecase) GetSingleUser(id uint, role string) (admin.UserCore, err
 		if err != nil {
 			return admin.UserCore{}, errors.New("error in database")
 		}
+		if res.IdUser == 0 {
+			return admin.UserCore{}, errors.New("error in database")
+		}
 		return res, nil
 	} else if id >= 1000 {
 		res, err := au.adminRepo.GetSingleMentor(id)
 		if err != nil {
+			return admin.UserCore{}, errors.New("error in database")
+		}
+		if res.IdUser == 0 {
 			return admin.UserCore{}, errors.New("error in database")
 		}
 		return res, nil

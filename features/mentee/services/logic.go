@@ -71,6 +71,7 @@ func (mu *MenteeUsecase) InsertSub(data mentee.Submission) (mentee.Submission, e
 	if err != nil {
 		return mentee.Submission{}, errors.New("task not found")
 	}
+	
 	timeRes := res.DueDate
 	now := time.Now()
 	if  now.After(timeRes) == true{

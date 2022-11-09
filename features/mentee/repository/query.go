@@ -131,7 +131,6 @@ func (md *menteeData) AddSubmis(param int, data mentee.Submission) (mentee.Submi
 		return mentee.Submission{}, res.Error
 	}
 	log.Print(input.ID, " INI ID DARI QUERY")
-
 	return data, nil
 }
 

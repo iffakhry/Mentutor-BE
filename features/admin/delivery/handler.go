@@ -85,6 +85,7 @@ func (ad *AdminDelivery) AddNewClass() echo.HandlerFunc {
 		cnvInput := ToDomainClass(input)
 		res, err := ad.adminUsecase.AddNewClass(cnvInput, role)
 		if err != nil {
+			log.Print(err.Error())
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
 

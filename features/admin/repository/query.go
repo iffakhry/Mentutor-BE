@@ -136,29 +136,50 @@ func (ar *adminRepo) EditUserMentor(input admin.UserCore) (admin.UserCore, error
 
 func (ar *adminRepo) DeleteUserMentor(id uint) (error) {
 	var mentor Mentor
+	var task []Task
+	var submission []Submission
 
-	ar.db.Where("id_mentor = ?", id).Unscoped().Delete(&Task{})
-	ar.db.Where("id_user = ?", id).Unscoped().Delete(&Comment{})
+	// GET ALL TASKS
+	ar.db.Where("id_mentor = ?", id).Find(&task)
 
-	if err := ar.db.Unscoped().Where("id = ?", id).Delete(&mentor).Error; err != nil {
-		return err
+	// GET ALL SUBMISSION WHERE ID TASK EQUAL
+	for _, val := range task{
+		ar.db.Where("id_task = ?", val.ID).Find(&submission)
 	}
 
+	// DELETE SUBMISSIONS
+	for _, val := range task{
+		ar.db.Where("id_task = ?", val.ID).Unscoped().Delete(&Submission{})
+	}
+
+	// DELETE TASKS
+	err := ar.db.Where("id_mentor = ?", id).Unscoped().Delete(&Task{})
+	if err.Error != nil {
+		log.Print(err.Error)
+		return err.Error
+	}
+	
+	// DELETE COMMENTS
+	ar.db.Where("id_user = ?", id).Unscoped().Delete(&Comment{})
+
+	// DELTE MENTOR
+	err = ar.db.Unscoped().Where("id = ?", id).Delete(&mentor)
+	if err.RowsAffected == 0 {
+		return errors.New("user not found")
+	}
 	return nil
 }
 
 func (ar *adminRepo) DeleteUserMentee(id uint) (error) {
 	var mentee Mentee
 	mentee.ID = id
-
-	if err := ar.db.Unscoped().Delete(&mentee).Error; err != nil {
-		return err
-	}
-
+	
 	ar.db.Where("id_mentee = ?", id).Delete(&Submission{})
-	ar.db.Where("id_user = ?", id).Delete(&Comment{})
-	ar.db.Where("id_mentee = ?", id).Delete(&Status{})
 
+	err := ar.db.Unscoped().Delete(&mentee)
+	if err.RowsAffected == 0 {
+		return errors.New("user not foud")
+	}
 	return nil
 }
 
@@ -212,8 +233,6 @@ func (ar *adminRepo) EditClass(input admin.ClassCore) (admin.ClassCore, error) {
 }
 
 func (ar *adminRepo) DeleteClass(id uint) error {
-	// var class Class
-	log.Print(id)
 	err := ar.db.Where("id = ?", id).Unscoped().Delete(&Class{})
 	if  err.RowsAffected == 0 {
 		return errors.New("class not found")

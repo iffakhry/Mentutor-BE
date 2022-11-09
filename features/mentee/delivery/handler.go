@@ -156,9 +156,6 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 			c.JSON(http.StatusBadRequest, errors.New("Invalid Input From Client"))
 		}
 
-		if err := c.Bind(&submission); err != nil {
-			c.JSON(http.StatusBadRequest, errors.New("Invalid Input From Client"))
-		}
 		file, fileheader, err := c.Request().FormFile("file")
 		if err == nil {
 			res, err := helper.UploadFileSubmission(file, fileheader)
