@@ -72,7 +72,7 @@ func saveToken(path string, token *oauth2.Token) {
 
 func Mailer() error {
         ctx := context.Background()
-        b, err := os.ReadFile("credentials.json")
+        b, err := os.ReadFile("client_secret.json")
         if err != nil {
                 log.Printf("Unable to read client secret file: %v", err)
 				return errors.New("Unable to read client secret file: %v"+err.Error())
