@@ -46,10 +46,10 @@ func (h *AuthDelivery) Login() echo.HandlerFunc {
 		}
 
 		if res.Role == "mentee"{
-			err := helper.Mailer()
-			if err != nil {
-				log.Print(err.Error(), " ERROR SEND MAIL")
-			}
+			// err := helper.Mailer()
+			// if err != nil {
+			// 	log.Print(err.Error(), " ERROR SEND MAIL")
+			// }
 		}
 
 		res.Token = token
