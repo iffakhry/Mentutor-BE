@@ -248,6 +248,7 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 			return admin.UserCore{}, errors.New("not contain (@) and (.)")
 		}
 	} else {
+		strings.ToLower(user.Email)
 		input.Email = user.Email
 	}
 

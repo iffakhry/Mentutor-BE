@@ -2,6 +2,8 @@ package repository
 
 import (
 	"be12/mentutor/features/admin"
+	"errors"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -210,9 +212,11 @@ func (ar *adminRepo) EditClass(input admin.ClassCore) (admin.ClassCore, error) {
 }
 
 func (ar *adminRepo) DeleteClass(id uint) error {
-	var class Class
-	if err := ar.db.Where("id = ?", id).Unscoped().Delete(&class).Error; err != nil {
-		return err
+	// var class Class
+	log.Print(id)
+	err := ar.db.Where("id = ?", id).Unscoped().Delete(&Class{})
+	if  err.RowsAffected == 0 {
+		return errors.New("class not found")
 	}
 	return nil
 }
