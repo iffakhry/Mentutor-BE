@@ -17,19 +17,19 @@ func New(db *gorm.DB) mentee.RepoInterface {
 	}
 }
 
-func (md *menteeData) EditProfile(id uint, data mentee.MenteeCore) (mentee.MenteeCore, error) {
-	var res Mentee
+// func (md *menteeData) EditProfile(id uint, data mentee.MenteeCore) (mentee.MenteeCore, error) {
+// 	var res Mentee
 
-	res = FromEntity(data)
-	if err := md.db.Where("id = ?", id).Updates(&res).Error; err != nil {
-		log.Print(err.Error(), "ERROR INSERT TO DATBASE")
-		return mentee.MenteeCore{}, err
-	}
+// 	res = FromEntity(data)
+// 	if err := md.db.Where("id = ?", id).Updates(&res).Error; err != nil {
+// 		log.Print(err.Error(), "ERROR INSERT TO DATBASE")
+// 		return mentee.MenteeCore{}, err
+// 	}
 
-	cnv := ToEntity(id, res)
+// 	cnv := ToEntity(id, res)
 
-	return cnv, nil
-}
+// 	return cnv, nil
+// }
 
 func (md *menteeData) AddStatus(data mentee.Status, token int) (mentee.Status, error) {
 
@@ -121,19 +121,19 @@ func (md *menteeData) AddSub(data mentee.Submission) (mentee.Submission, error) 
 
 }
 
-func (md *menteeData) AddSubmis(param int, data mentee.Submission) (mentee.Submission, error) {
-	// var input Submission
-	input := FromEntitySub(data)
+// func (md *menteeData) AddSubmis(param int, data mentee.Submission) (mentee.Submission, error) {
+// 	// var input Submission
+// 	input := FromEntitySub(data)
 
-	res := md.db.Create(&input)
-	if res.Error != nil {
-		// log.Error("ERROR QUERY")
-		return mentee.Submission{}, res.Error
-	}
-	log.Print(input.ID, " INI ID DARI QUERY")
+// 	res := md.db.Create(&input)
+// 	if res.Error != nil {
+// 		// log.Error("ERROR QUERY")
+// 		return mentee.Submission{}, res.Error
+// 	}
+// 	log.Print(input.ID, " INI ID DARI QUERY")
 
-	return data, nil
-}
+// 	return data, nil
+// }
 
 func (md *menteeData) GetSingleTask(idTask uint) (mentee.Task, error) {
 	var res Task
@@ -141,7 +141,7 @@ func (md *menteeData) GetSingleTask(idTask uint) (mentee.Task, error) {
 	if err := md.db.Where("id = ?", idTask).First(&res).Error; err != nil {
 		return mentee.Task{}, err
 	}
-	
+
 	cnv := mentee.Task{ID: res.ID, DueDate: *res.DueDate}
 	return cnv, nil
 
