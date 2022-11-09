@@ -367,6 +367,10 @@ func (au *adminUsecase) DeleteUser(id uint, role string) error {
 
 func (au *adminUsecase) GetSingleUser(id uint, role string) (admin.UserCore, error) {
 
+	if role != "admin" || role != "mentee" || role != "mentor"{
+		return admin.UserCore{}, errors.New("user not admin")
+	}
+
 	if id < 1000 {
 		res, err := au.adminRepo.GetSingleMentee(id)
 		if err != nil {
