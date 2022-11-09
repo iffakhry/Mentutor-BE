@@ -4,6 +4,7 @@ import (
 	"be12/mentutor/features/mentee"
 	"errors"
 	"log"
+	"time"
 )
 
 type MenteeUsecase struct {
@@ -44,13 +45,18 @@ func (mu *MenteeUsecase) GetAll() ([]mentee.Status, []mentee.CommentsCore, []men
 	return dataStatus, dataCmn, dataMntr, nil
 }
 
-func (mu *MenteeUsecase) GetTask() ([]mentee.Task, error) {
-	dataTask, err := mu.menteeData.GetAllTask()
+func (mu *MenteeUsecase) GetTask(idClass uint, role string) ([]mentee.Task, error) {
+	if role != "mentee" {
+		return []mentee.Task{}, errors.New("user not mentee")
+	}
+
+	dataTask, err := mu.menteeData.GetAllTask(idClass)
 	if err != nil {
 		return nil, err
 	}
 	return dataTask, nil
 }
+
 func (mu *MenteeUsecase) Insert(data mentee.CommentsCore) (mentee.CommentsCore, error) {
 	if len(data.Caption) < 5 || len(data.Caption) > 120 {
 		return mentee.CommentsCore{}, errors.New("failed add your comment check charancter len")
@@ -58,8 +64,20 @@ func (mu *MenteeUsecase) Insert(data mentee.CommentsCore) (mentee.CommentsCore, 
 	data, err := mu.menteeData.AddComment(data)
 	return data, err
 }
+
 func (mu *MenteeUsecase) InsertSub(data mentee.Submission) (mentee.Submission, error) {
-	data, err := mu.menteeData.AddSub(data)
+
+	res, err := mu.menteeData.GetSingleTask(data.ID_Tasks) 
+	if err != nil {
+		return mentee.Submission{}, errors.New("task not found")
+	}
+	timeRes := res.DueDate
+	now := time.Now()
+	if  now.After(timeRes) == true{
+		return mentee.Submission{}, errors.New("melewati due date")
+	}
+
+	data, err = mu.menteeData.AddSub(data)
 	if err != nil {
 		return mentee.Submission{}, err
 	}

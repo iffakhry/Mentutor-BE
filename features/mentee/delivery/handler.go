@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -30,7 +31,7 @@ func New(e *echo.Echo, usecase mentee.UseCaseInterface) {
 	e.POST("/forum/:id", handler.AddComment(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.POST("/mentees/submission/:id", handler.AddSub(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.POST("/mentees/sub/:id", handler.AddSubMis(), middleware.JWT([]byte(config.SECRET_JWT)))
-	e.GET("/task", handler.GetAllTasks(), middleware.JWT([]byte(config.SECRET_JWT)))
+	e.GET("/mentees/tasks", handler.GetAllTasks(), middleware.JWT([]byte(config.SECRET_JWT)))
 
 }
 
@@ -101,12 +102,14 @@ func (md *MenteeDelivery) SelectAll() echo.HandlerFunc {
 
 func (md *MenteeDelivery) GetAllTasks() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		id, _, _ := middlewares.ExtractToken(c)
+		id, idClass, role := middlewares.ExtractToken(c)
 		if id < 1 {
 			return c.JSON(http.StatusNotFound, FailedResponse("Invalid Input From Client"))
 		}
-		res, err := md.MenteeUsecase.GetTask()
+		
+		res, err := md.MenteeUsecase.GetTask(uint(idClass), role)
 		if err != nil {
+			log.Print(err)
 			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
 		}
 
@@ -169,23 +172,27 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 
 		idUser, _, role := middlewares.ExtractToken(c)
 		idCnv, _ := strconv.Atoi(idtasks)
-		IdTask := uint(idCnv)
-		submission.ID_Tasks = IdTask
+		submission.ID_Tasks = uint(idCnv)
 		submission.ID_Mentee = uint(idUser)
 		data := ToDomainSub(submission)
-		log.Print(data)
+
 		if role != "mentee" {
 			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
 		}
 		res, err1 := md.MenteeUsecase.InsertSub(data)
 		if err1 != nil {
-			return c.JSON(http.StatusInternalServerError, errors.New("error from server"))
+			log.Print(err1)
+			if strings.Contains(err1.Error(), "due date") {
+				return c.JSON(http.StatusBadRequest, FailedResponse("Submit melewati due date"))
+			}
+			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
 		}
 
 		return c.JSON(http.StatusCreated, SuccessResponse("success insert submission", ToResponseSub(res)))
 
 	}
 }
+
 func (md *MenteeDelivery) AddSubMis() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var submission SubFormat

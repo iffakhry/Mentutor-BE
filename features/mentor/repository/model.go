@@ -58,10 +58,11 @@ type Submission struct {
 	gorm.Model
 	IdMentee uint
 	IdTask   uint
-	Name     string	`gorm:"<-:false"`
-	Title    string	`gorm:"<-:false"`
+	Name     string `gorm:"<-:false"`
+	Title    string `gorm:"<-:false"`
 	File     string `json:"file"`
-	Score    int    `gorm:"type:int(3);not null"`
+	Score    int
+	Status   string
 }
 
 // FROM DOMAIN
@@ -187,7 +188,7 @@ func ToDomainSubmission(data Submission) mentor.SubmissionCore {
 	return mentor.SubmissionCore{
 		ID:    data.ID,
 		Title: data.Title,
-		File: data.File,
+		File:  data.File,
 		Score: data.Score,
 	}
 }
