@@ -16,14 +16,6 @@ func New(data mentee.RepoInterface) mentee.UseCaseInterface {
 	}
 }
 
-// func (mu *MenteeUsecase) UpdateProfile(id uint, data mentee.MenteeCore) (mentee.MenteeCore, error) {
-// 	res, err := mu.menteeData.EditProfile(id, data)
-// 	if err != nil {
-// 		return mentee.MenteeCore{}, err
-// 	}
-// 	return res, nil
-// }
-
 func (mu *MenteeUsecase) InsertStatus(data mentee.Status, token int) (mentee.Status, error) {
 	if len(data.Caption) < 5 || len(data.Caption) > 120 {
 		return mentee.Status{}, errors.New("input not valid")
@@ -82,12 +74,3 @@ func (mu *MenteeUsecase) InsertSub(data mentee.Submission) (mentee.Submission, e
 	}
 	return data, nil
 }
-
-// func (mu *MenteeUsecase) InsertSubmis(param int, data mentee.Submission) (mentee.Submission, error) {
-// 	data, err := mu.menteeData.AddSubmis(param, data)
-// 	if err != nil {
-// 		return mentee.Submission{}, err
-// 	}
-// 	log.Print(data.ID, "INI ID LOGIC")
-// 	return data, nil
-// }

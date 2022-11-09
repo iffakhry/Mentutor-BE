@@ -45,7 +45,7 @@ type Submission struct {
 	File     string
 	Score    uint
 	Title    string `gorm:"->"`
-	Status  string
+	Status   string
 }
 
 // MODEL TASK
@@ -87,7 +87,6 @@ func ToEntityMentee(data mentee.Status) Status {
 		IdMentee: data.IdMentee,
 		Caption:  data.Caption,
 		Images:   data.Images,
-		// Comments: data.Comment,
 	}
 }
 
@@ -100,7 +99,6 @@ func toPostUser(dataPost Status) mentee.Status {
 		Images:   dataPost.Images,
 		Caption:  dataPost.Caption,
 		Name:     dataPost.Name,
-		// Comment:  dataPost.Comments,
 	}
 
 	return dataPostCore
@@ -124,8 +122,7 @@ func ToCoreArray(status []Status) []mentee.Status {
 // COMMENTS
 func (comment *Comments) ToDomainComments(data Comments) mentee.CommentsCore {
 	return mentee.CommentsCore{
-		ID: data.ID,
-		// ID_User:    data.ID_User,
+		ID:         data.ID,
 		IdStatus:   data.IdStatus,
 		Caption:    data.Caption,
 		Role:       data.Role,
@@ -140,8 +137,6 @@ func ToEntityComent(data mentee.CommentsCore) Comments {
 		ID_User:  data.ID_User,
 		IdStatus: data.IdStatus,
 		Caption:  data.Caption,
-		// Role:     data.Role,
-		// Name:     data.Name,
 	}
 }
 
@@ -151,8 +146,6 @@ func FromEntityComment(data Comments) mentee.CommentsCore {
 		ID_User:  data.ID_User,
 		IdStatus: data.IdStatus,
 		Caption:  data.Caption,
-		// Role:     data.Role,
-		// Name:     data.Name,
 	}
 }
 
@@ -202,7 +195,7 @@ func ToEntitySub(data Submission) mentee.Submission {
 		Title:     data.Title,
 		File:      data.File,
 		Score:     data.Score,
-		Status: data.Status,
+		Status:    data.Status,
 	}
 }
 

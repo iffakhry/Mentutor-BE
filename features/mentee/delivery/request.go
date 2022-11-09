@@ -18,7 +18,6 @@ type Request struct {
 
 func ToDomain(data Request) mentee.Status {
 	return mentee.Status{
-		// ID:      data.ID,
 		Caption: data.Caption,
 		Images:  data.Images,
 	}
@@ -48,7 +47,6 @@ type SubFormat struct {
 }
 
 func ToDomainComments(i CommentFormat) mentee.CommentsCore {
-	// var cnv CommentFormat
 	return mentee.CommentsCore{
 		IdStatus: i.IdStatus,
 		ID_User:  i.ID_User,
@@ -57,7 +55,6 @@ func ToDomainComments(i CommentFormat) mentee.CommentsCore {
 }
 
 func ToDomainSub(i SubFormat) mentee.Submission {
-	// var cnv CommentFormat
 	return mentee.Submission{
 		ID_Mentee: i.ID_Mentee,
 		ID_Tasks:  i.ID_Tasks,

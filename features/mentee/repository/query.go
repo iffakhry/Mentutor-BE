@@ -17,20 +17,6 @@ func New(db *gorm.DB) mentee.RepoInterface {
 	}
 }
 
-// func (md *menteeData) EditProfile(id uint, data mentee.MenteeCore) (mentee.MenteeCore, error) {
-// 	var res Mentee
-
-// 	res = FromEntity(data)
-// 	if err := md.db.Where("id = ?", id).Updates(&res).Error; err != nil {
-// 		log.Print(err.Error(), "ERROR INSERT TO DATBASE")
-// 		return mentee.MenteeCore{}, err
-// 	}
-
-// 	cnv := ToEntity(id, res)
-
-// 	return cnv, nil
-// }
-
 func (md *menteeData) AddStatus(data mentee.Status, token int) (mentee.Status, error) {
 
 	dataModel := ToEntityMentee(data)
@@ -39,7 +25,6 @@ func (md *menteeData) AddStatus(data mentee.Status, token int) (mentee.Status, e
 	if tx.Error != nil {
 		return mentee.Status{}, tx.Error
 	}
-	log.Print(dataModel.Images, "INI DATAMODEL")
 	AddRes := toPostUser(dataModel)
 	AddRes.ID = dataModel.ID
 
@@ -97,9 +82,7 @@ func (md *menteeData) AddComment(data mentee.CommentsCore) (mentee.CommentsCore,
 	if res.Error != nil {
 		return mentee.CommentsCore{}, res.Error
 	}
-	// res = md.db.Model(&Comments{}).Select("name").Where("id = ?", input.IdStatus).Scan(&input)
 	cnv := FromEntityComment(input)
-	log.Print(input.Role, "    INI ROLE")
 	return cnv, nil
 
 }
@@ -120,20 +103,6 @@ func (md *menteeData) AddSub(data mentee.Submission) (mentee.Submission, error) 
 	return cnv, nil
 
 }
-
-// func (md *menteeData) AddSubmis(param int, data mentee.Submission) (mentee.Submission, error) {
-// 	// var input Submission
-// 	input := FromEntitySub(data)
-
-// 	res := md.db.Create(&input)
-// 	if res.Error != nil {
-// 		// log.Error("ERROR QUERY")
-// 		return mentee.Submission{}, res.Error
-// 	}
-// 	log.Print(input.ID, " INI ID DARI QUERY")
-
-// 	return data, nil
-// }
 
 func (md *menteeData) GetSingleTask(idTask uint) (mentee.Task, error) {
 	var res Task
