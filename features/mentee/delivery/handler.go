@@ -124,11 +124,10 @@ func (md *MenteeDelivery) AddComment() echo.HandlerFunc {
 		}
 		res, err1 := md.MenteeUsecase.Insert(data)
 		if err1 != nil {
+			log.Print(err1)
 			return c.JSON(http.StatusInternalServerError, errors.New("error from server"))
 		}
-
 		return c.JSON(http.StatusCreated, SuccessResponse("success insert comment", ToResponseComments(res)))
-
 	}
 }
 

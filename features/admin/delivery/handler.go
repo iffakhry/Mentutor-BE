@@ -170,6 +170,7 @@ func (ad *AdminDelivery) GetSingleUser() echo.HandlerFunc {
 
 		res, err := ad.adminUsecase.GetSingleUser(uint(cnv), role)
 		if err != nil {
+			log.Print(err.Error())
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
 		return c.JSON(http.StatusOK, helper.SuccessResponse("Success Get Profile", ToResponseGetUser(res)))
