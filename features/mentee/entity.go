@@ -43,6 +43,7 @@ type Submission struct {
 	Score     uint
 	Title     string
 	Status    string
+	Token     string
 }
 
 type Task struct {
