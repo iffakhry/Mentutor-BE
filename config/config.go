@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"sync"
 
-	// "github.com/joho/godotegnv"
+	// "github.com/joho/godotenv"
 )
 
 type AppConfig struct {

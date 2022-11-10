@@ -135,7 +135,7 @@ func (md *MentorDelivery) GetTaskSub() echo.HandlerFunc {
 		resTask, resSub, err := md.mentorUsecase.GetTaskSub(uint(cnvId), role)
 		if err != nil {
 			log.Print(err)
-			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
+			return c.JSON(http.StatusNotFound, helper.FailedResponse("Task not found"))
 		}
 		return c.JSON(http.StatusCreated, helper.SuccessResponse("success get single task", ToResponseSingleTask(resTask, resSub)))
 	}

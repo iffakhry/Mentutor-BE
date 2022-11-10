@@ -126,6 +126,7 @@ func (ar *adminRepo) EditUserMentor(input admin.UserCore) (admin.UserCore, error
 	if err := ar.db.Where("id = ?", data.ID).Updates(&data).Error; err != nil {
 		return admin.UserCore{}, err
 	}
+
 	ar.db.Where("id = ?", input.IdUser).Select("role, images").First(&mentor)
 	ar.db.Where("id = ?", input.IdClass).Select("*"). First(&class)
 	input.Class = class.ClassName

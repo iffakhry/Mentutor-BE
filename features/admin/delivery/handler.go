@@ -189,12 +189,11 @@ func (ad *AdminDelivery) UpdateClass() echo.HandlerFunc {
 		id := c.Param("id_class")
 		cnvId, _ := strconv.Atoi(id)
 
-		log.Print(input)
 		cnvData := ToDomainUpdateClass(input)
 		cnvData.IdClass = uint(cnvId)
-		log.Print(cnvData)
 		res, err := ad.adminUsecase.UpdateClass(cnvData, role)
 		if err != nil {
+			log.Print(err)
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
 		return c.JSON(http.StatusCreated, helper.SuccessResponse("Update Class Successful", ToResponseUpdateClass(res)))
