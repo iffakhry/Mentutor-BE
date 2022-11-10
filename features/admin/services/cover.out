@@ -72,7 +72,7 @@ be12/mentutor/features/admin/services/logic.go:178.2,178.15 1 1
 be12/mentutor/features/admin/services/logic.go:182.2,183.16 2 1
 be12/mentutor/features/admin/services/logic.go:188.2,188.17 1 0
 be12/mentutor/features/admin/services/logic.go:156.21,158.3 1 1
-be12/mentutor/features/admin/services/logic.go:160.59,162.3 1 1
+be12/mentutor/features/admin/services/logic.go:160.59,162.3 1 0
 be12/mentutor/features/admin/services/logic.go:165.36,166.33 1 1
 be12/mentutor/features/admin/services/logic.go:171.3,172.17 2 1
 be12/mentutor/features/admin/services/logic.go:166.33,168.4 1 0

@@ -95,7 +95,15 @@ func TestAddComment(t *testing.T) {
 // DONE
 func TestInsertSub(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
-
+	// submission := mentee.Submission{
+	// 	ID:        1,
+	// 	ID_Mentee: 1,
+	// 	ID_Tasks:  1,
+	// 	File:      "file.pdf",
+	// 	Score:     0,
+	// 	Title:     "persamaan",
+	// 	Status:    "active",
+	// }
 	tasks := mentee.Task{
 		ID:          1,
 		IdClass:     2,
@@ -124,6 +132,30 @@ func TestInsertSub(t *testing.T) {
 		assert.Error(t, err)
 		assert.Equal(t, result, result)
 		repo.AssertExpectations(t)
+	})
+}
+
+func TestAddStatus(t *testing.T) {
+	repo := mocks.NewRepoInterface(t)
+	submission := mentee.Submission{
+		ID:        1,
+		ID_Mentee: 1,
+		ID_Tasks:  1,
+		File:      "file.pdf",
+		Score:     0,
+		Title:     "persamaan",
+		Status:    "active",
+	}
+	t.Run("success add submission", func(t *testing.T) {
+		repo.On("GetSingleTask", mock.Anything).Return(mentee.Task{}, nil).Once()
+		// repo.On("AddSub", mock.Anything).Return(mentee.Submission{}, nil, nil).Once()
+		srv := New(repo)
+		// input := mentee.Submission{File: "file.pdf"}
+		res, _ := srv.InsertSub(submission)
+		assert.Empty(t, res)
+		assert.Nil(t, nil)
+		repo.AssertExpectations(t)
+
 	})
 }
 
