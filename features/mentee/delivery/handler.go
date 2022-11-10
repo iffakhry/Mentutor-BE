@@ -25,14 +25,12 @@ func New(e *echo.Echo, usecase mentee.UseCaseInterface) {
 		MenteeUsecase: usecase,
 	}
 
-	// e.PUT("/update/:id_user", handler.UpdateProfile()) // UPDATE PROFILE USER
 	e.POST("/forum", handler.AddStatus(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.GET("/forum", handler.SelectAll(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.POST("/forum/:id", handler.AddComment(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.POST("/mentees/submission/:id", handler.AddSub(), middleware.JWT([]byte(config.SECRET_JWT)))
-	// e.POST("/mentees/sub/:id", handler.AddSubMis(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.GET("/mentees/tasks", handler.GetAllTasks(), middleware.JWT([]byte(config.SECRET_JWT)))
-	// e.POST("/gmailapi/response", handler.GmailApiResponse())
+	// e.POST("/gmail", handler.GmailRequest())
 }
 
 func (md *MenteeDelivery) AddStatus() echo.HandlerFunc {
@@ -169,7 +167,26 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
 		}
 
+		// GET TOKEN UNTUK AUTH GMAIL
+		token , err := helper.GetToken()
+		if err != nil {
+			log.Print(err.Error())
+			return c.JSON(http.StatusInternalServerError, FailedResponse("Failed get token gmail"))
+		}
+		res.Token = token
 		return c.JSON(http.StatusCreated, SuccessResponse("success insert submission", ToResponseSub(res)))
 
+	}
+}
+
+func (md *MenteeDelivery) GmailRequest() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var data GmailFormat
+		
+		c.Bind(&data)
+
+		log.Print(data)
+		helper.SendGmail()
+		return nil
 	}
 }

@@ -22,7 +22,6 @@ func New(e *echo.Echo, usecase login.UsecaseInterface) {
 	}
 
 	e.POST("/login", handler.Login())
-
 }
 
 func (h *AuthDelivery) Login() echo.HandlerFunc {
@@ -43,13 +42,6 @@ func (h *AuthDelivery) Login() echo.HandlerFunc {
 				errx := errors.New("Invalid Input From Client")
 				return c.JSON(http.StatusBadRequest, helper.FailedResponse(errx.Error()))
 			}
-		}
-
-		if res.Role == "mentee"{
-			// err := helper.Mailer()
-			// if err != nil {
-			// 	log.Print(err.Error(), " ERROR SEND MAIL")
-			// }
 		}
 
 		res.Token = token

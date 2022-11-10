@@ -8,9 +8,32 @@ import "log"
 import "encoding/base64"
 import "io/ioutil"
 
-func SendEmail(email string) {
+func GetToken() (string, error){
 	// Reads in our credentials
-	secret, err := ioutil.ReadFile("client_secret.json")
+	secret, err := ioutil.ReadFile("client_secret_web.json")
+	if err != nil {
+		log.Printf("Error: %v", err)
+		return "", err
+	}
+
+	// Creates a oauth2.Config using the secret
+	// The second parameter is the scope, in this case we only want to send email
+	conf, err := google.ConfigFromJSON(secret, gmail.GmailSendScope)
+	if err != nil {
+		log.Printf("Error: %v", err)
+		return "", err
+	}
+
+	// Creates a URL for the user to follow
+	url := conf.AuthCodeURL("CSRF", oauth2.AccessTypeOffline)
+	// Prints the URL to the terminal
+	return url, nil
+}
+
+func SendGmail () {
+
+	// Reads in our credentials
+	secret, err := ioutil.ReadFile("client_secret_web.json")
 	if err != nil {
 		log.Printf("Error: %v", err)
 	}
@@ -21,11 +44,6 @@ func SendEmail(email string) {
 	if err != nil {
 		log.Printf("Error: %v", err)
 	}
-
-	// Creates a URL for the user to follow
-	url := conf.AuthCodeURL("CSRF", oauth2.AccessTypeOffline)
-	// Prints the URL to the terminal
-	fmt.Printf("Visit this URL: \n %v \n", url)
 
 	// Grabs the authorization code you paste into the terminal
 	var code string

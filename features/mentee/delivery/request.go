@@ -16,6 +16,12 @@ type Request struct {
 	Images  string `json:"images" form:"images"`
 }
 
+type GmailFormat struct {
+	AccessToken  string `json:"access_token"`
+	Scope        string `json:"scope"`
+	RefreshToken string `json:"refresh_token"`
+}
+
 func ToDomain(data Request) mentee.Status {
 	return mentee.Status{
 		Caption: data.Caption,
