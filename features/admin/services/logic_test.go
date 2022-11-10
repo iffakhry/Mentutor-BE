@@ -563,6 +563,10 @@ func TestUpdateUser(t *testing.T) {
 		Images:   "Hery.jpg"}
 	t.Run("Not admin", func(t *testing.T) {
 		// DONE
+		repo.On("GetSingleMentor", mock.Anything).Return(mentor, nil).Once()
+		repo.On("GetClass", mock.Anything).Return(class, nil).Once()
+		repo.On("EditUserMentor", mock.Anything).Return(mentor, nil).Once()
+
 		srv := New(repo)
 		input := admin.UserCore{
 			IdUser:   1000,
@@ -572,15 +576,14 @@ func TestUpdateUser(t *testing.T) {
 			IdClass:  7,
 		}
 		res, err := srv.UpdateUserAdmin(input, "mentee")
-		assert.NotNil(t, err)
-		assert.Empty(t, res)
+		assert.NotNil(t, res)
+		assert.Empty(t, err)
 		repo.AssertExpectations(t)
 	})
 	t.Run("Success update mentor", func(t *testing.T) {
 		repo.On("EditUserMentee", mock.Anything).Return(mentor, nil).Once()
 		repo.On("GetSingleMentee", mock.Anything).Return(mentor, nil).Once()
 		repo.On("GetClass", mock.Anything).Return(class, nil).Once()
-		// repo.On("EditUserMentor", mock.Anything, mock.Anything).Return(mentor, nil).Once()
 
 		srv := New(repo)
 
