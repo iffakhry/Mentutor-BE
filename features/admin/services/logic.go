@@ -155,6 +155,7 @@ func (au *adminUsecase) AddNewClass(input admin.ClassCore, role string) (admin.C
 	if len(input.ClassName) < 5 || len(input.ClassName) > 30 {
 		return admin.ClassCore{}, errors.New("length name not valid")
 	}
+
 	var sChar int
 	for _, v := range input.ClassName {
 		if unicode.IsPunct(v) == true{
@@ -204,6 +205,12 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 
 	var user admin.UserCore
 
+	// CEK SEMUA DATA KOSONG
+	if input.Name == "" && input.Email == "" && input.IdClass == 0 && input.Password == "" && input.Images == "" {
+		return admin.UserCore{}, errors.New("no data input")
+	}
+
+	// AMBIL DATA DARI DATABASE
 	if input.IdUser < 1000 {
 		res, err := au.adminRepo.GetSingleMentee(input.IdUser)
 		if err != nil {
@@ -271,6 +278,9 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 		} else if contain1 == false || contain2 == false {
 			return admin.UserCore{}, errors.New("not contain (@) and (.)")
 		}
+		tmp := strings.ToLower(input.Email)
+		input.Email = tmp
+
 	} else {
 		strings.ToLower(user.Email)
 		input.Email = user.Email
@@ -397,6 +407,28 @@ func (au *adminUsecase) UpdateClass(input admin.ClassCore, role string) (admin.C
 
 	if role != "admin" {
 		return admin.ClassCore{}, errors.New("user not admin")
+	}
+
+	// CEK KONDISI NAMA KELAS
+	if len(input.ClassName) < 5 == true || len(input.ClassName) > 30 == true {
+		return admin.ClassCore{}, errors.New("length name not valid")
+	}
+
+	var sChar int
+	for _, v := range input.ClassName {
+		if unicode.IsPunct(v) == true{
+			sChar+=1
+		} else if string(v) == "?" {
+			sChar+=1
+		}
+		_, err := strconv.Atoi(input.ClassName)
+		if err == nil {
+			return admin.ClassCore{}, errors.New("class name is number")
+		}
+	}
+
+	if sChar > 1 {
+		return admin.ClassCore{}, errors.New("contain special character")
 	}
 
 	// CEK KELAS TERSEDIA

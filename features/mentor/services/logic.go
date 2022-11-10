@@ -240,7 +240,7 @@ func (mu *mentorUsecase) DeleteTask(idTask uint, idClass uint, role string) (men
 	return res, nil
 }
 
-func (mu *mentorUsecase) AddScore (input mentor.SubmissionCore, role string) (mentor.SubmissionCore, error ) {
+func (mu *mentorUsecase) AddScore(input mentor.SubmissionCore, role string) (mentor.SubmissionCore, error ) {
 	if err := roleCheck(role); err != true {
 		return mentor.SubmissionCore{}, errors.New("user not mentor")
 	}

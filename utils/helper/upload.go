@@ -51,7 +51,8 @@ func UploadFotoProfile(file multipart.File, fileheader *multipart.FileHeader) (s
 		return "", errors.New("file size is too large")
 	}
 
-	fileExtension := filepath.Ext(fileheader.Filename)
+	fileExt := filepath.Ext(fileheader.Filename)
+	fileExtension := strings.ToLower(fileExt)
 
 	if fileExtension == ".jpeg" || fileExtension == ".jpg" || fileExtension == ".png" {
 		randomStr := String(20)
@@ -89,7 +90,8 @@ func UploadFileTugas(file multipart.File, fileheader *multipart.FileHeader) (str
 		return "", errors.New("file size is too large")
 	}
 
-	fileExtension := filepath.Ext(fileheader.Filename)
+	fileExt := filepath.Ext(fileheader.Filename)
+	fileExtension := strings.ToLower(fileExt)
 
 	if fileExtension == ".xlsx" || fileExtension == ".docx" || fileExtension == ".pdf" || fileExtension == ".pptx" {
 		randomStr := String(20)
@@ -126,7 +128,8 @@ func UploadGambarTugas(file multipart.File, fileheader *multipart.FileHeader) (s
 		return "", errors.New("file size is too large")
 	}
 
-	fileExtension := filepath.Ext(fileheader.Filename)
+	fileExt := filepath.Ext(fileheader.Filename)
+	fileExtension := strings.ToLower(fileExt)
 
 	if fileExtension == ".jpeg" || fileExtension == ".jpg" || fileExtension == ".png" {
 		randomStr := String(20)
@@ -166,6 +169,7 @@ func UploadStatusImages(file multipart.File, fileheader *multipart.FileHeader) (
 
 	fileExt := filepath.Ext(fileheader.Filename)
 	fileExtension := strings.ToLower(fileExt)
+
 	if fileExtension == ".jpeg" || fileExtension == ".jpg" || fileExtension == ".png" {
 		randomStr := String(20)
 
@@ -202,7 +206,8 @@ func UploadFileSubmission(file multipart.File, fileheader *multipart.FileHeader)
 		return "", errors.New("file size is too large")
 	}
 
-	fileExtension := filepath.Ext(fileheader.Filename)
+	fileExt := filepath.Ext(fileheader.Filename)
+	fileExtension := strings.ToLower(fileExt)
 
 	if fileExtension == ".pdf" || fileExtension == ".docx" || fileExtension == ".xlsx" || fileExtension == ".pptx" {
 		randomStr := String(20)
