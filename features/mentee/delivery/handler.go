@@ -30,7 +30,7 @@ func New(e *echo.Echo, usecase mentee.UseCaseInterface) {
 	e.POST("/forum/:id", handler.AddComment(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.POST("/mentees/submission/:id", handler.AddSub(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.GET("/mentees/tasks", handler.GetAllTasks(), middleware.JWT([]byte(config.SECRET_JWT)))
-	e.POST("/gmail", handler.GmailRequest())
+	e.GET("/gmail", handler.GmailRequest())
 }
 
 func (md *MenteeDelivery) AddStatus() echo.HandlerFunc {
