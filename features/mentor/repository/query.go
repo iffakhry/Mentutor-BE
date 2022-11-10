@@ -120,7 +120,7 @@ func(mr *mentorRepo) GetSingleTask(id uint) (mentor.TaskCore, error) {
 func (mr *mentorRepo) EditTask(input mentor.TaskCore) (mentor.TaskCore, error) {
 	data := FromDomainTask(input)
 
-	if err := mr.db.Where("id = ?", data.ID).Updates(&data).Error; err != nil {
+	if err := mr.db.Where("id = ?", data.ID).Updates(&data).Last(&data).Error; err != nil {
 		return mentor.TaskCore{}, err
 	}
 	

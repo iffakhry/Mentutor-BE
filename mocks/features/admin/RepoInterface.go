@@ -194,6 +194,27 @@ func (_m *RepoInterface) GetClass(id uint) (admin.ClassCore, error) {
 	return r0, r1
 }
 
+// GetSingleClass provides a mock function with given fields: id
+func (_m *RepoInterface) GetSingleClass(id uint) (admin.ClassCore, error) {
+	ret := _m.Called(id)
+
+	var r0 admin.ClassCore
+	if rf, ok := ret.Get(0).(func(uint) admin.ClassCore); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(admin.ClassCore)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(uint) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetSingleMentee provides a mock function with given fields: id
 func (_m *RepoInterface) GetSingleMentee(id uint) (admin.UserCore, error) {
 	ret := _m.Called(id)
@@ -279,17 +300,24 @@ func (_m *RepoInterface) InsertMentor(input admin.UserCore) (admin.UserCore, err
 }
 
 // InsertNewClass provides a mock function with given fields: input
-func (_m *RepoInterface) InsertNewClass(input admin.ClassCore) error {
+func (_m *RepoInterface) InsertNewClass(input admin.ClassCore) (admin.ClassCore, error) {
 	ret := _m.Called(input)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(admin.ClassCore) error); ok {
+	var r0 admin.ClassCore
+	if rf, ok := ret.Get(0).(func(admin.ClassCore) admin.ClassCore); ok {
 		r0 = rf(input)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(admin.ClassCore)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(admin.ClassCore) error); ok {
+		r1 = rf(input)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 type mockConstructorTestingTNewRepoInterface interface {

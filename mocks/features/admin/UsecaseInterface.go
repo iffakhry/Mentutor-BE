@@ -14,17 +14,24 @@ type UsecaseInterface struct {
 }
 
 // AddNewClass provides a mock function with given fields: input, role
-func (_m *UsecaseInterface) AddNewClass(input admin.ClassCore, role string) error {
+func (_m *UsecaseInterface) AddNewClass(input admin.ClassCore, role string) (admin.ClassCore, error) {
 	ret := _m.Called(input, role)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(admin.ClassCore, string) error); ok {
+	var r0 admin.ClassCore
+	if rf, ok := ret.Get(0).(func(admin.ClassCore, string) admin.ClassCore); ok {
 		r0 = rf(input, role)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(admin.ClassCore)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(admin.ClassCore, string) error); ok {
+		r1 = rf(input, role)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // AddUser provides a mock function with given fields: input, role

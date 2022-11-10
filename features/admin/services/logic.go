@@ -203,11 +203,6 @@ func (au *adminUsecase) GetAllClass(role string) ([]admin.ClassCore, error) {
 }
 
 func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admin.UserCore, error) {
-
-	if role != "admin" {
-		return admin.UserCore{}, errors.New("user not admin")
-	}
-
 	var user admin.UserCore
 
 	// CEK SEMUA DATA KOSONG
@@ -385,10 +380,6 @@ func (au *adminUsecase) DeleteUser(id uint, role string) error {
 }
 
 func (au *adminUsecase) GetSingleUser(id uint, role string) (admin.UserCore, error) {
-
-	if role != "admin" || role != "mentee" || role != "mentor"{
-		return admin.UserCore{}, errors.New("user not admin")
-	}
 
 	if id < 1000 {
 		res, err := au.adminRepo.GetSingleMentee(id)

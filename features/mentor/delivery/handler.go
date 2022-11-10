@@ -146,6 +146,10 @@ func (md *MentorDelivery) UpdateTask() echo.HandlerFunc {
 		var input UpdateTaskFormat
 		idUser, _, role := middlewares.ExtractToken(c)
 
+		if err := c.Bind(&input); err != nil {
+			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
+		}
+
 		// CEK GAMBAR
 		file, fileheader, err := c.Request().FormFile("images")
 		if err == nil {
@@ -176,7 +180,7 @@ func (md *MentorDelivery) UpdateTask() echo.HandlerFunc {
 
 		res, err := md.mentorUsecase.UpdateTask(ToDomainUpdateTask(input), role)
 		if err != nil {
-			log.Print(err)
+			log.Print(err.Error())
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
 		return c.JSON(http.StatusCreated, helper.SuccessResponse("success get single task", ToResponseAddTask(res)))

@@ -91,6 +91,7 @@ func FromDomainMentor(data mentor.UserCore) Mentor {
 
 func FromDomainTask(data mentor.TaskCore) Task {
 	return Task{
+		Model: gorm.Model{ID: data.ID},
 		IdClass:     data.IdClass,
 		IdMentor:    data.IdMentor,
 		Description: data.Description,
