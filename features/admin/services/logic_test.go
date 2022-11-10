@@ -418,14 +418,8 @@ func TestFailedGetAllUser(t *testing.T) {
 
 func TestSuccessAddNewClass(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
-	class := admin.ClassCore{ClassName: "BackEnd"}
-	t.Run("Success Add New Class", func(t *testing.T) {
-		repo.On("InsertNewClass", mock.Anything, mock.Anything).Return(admin.ClassCore{}, nil).Once()
-		srv := New(repo)
-		_, err := srv.AddNewClass(class, "admin")
-		assert.Nil(t, err)
-		repo.AssertExpectations(t)
-	})
+	class := admin.ClassCore{ClassName: "Front End", Status: "active"}
+
 	t.Run("User not admin", func(t *testing.T) {
 		srv := New(repo)
 		input := admin.ClassCore{ClassName: "backend"}
@@ -438,6 +432,67 @@ func TestSuccessAddNewClass(t *testing.T) {
 		srv := New(repo)
 		_, err := srv.AddNewClass(class, "admin")
 		assert.NotNil(t, err)
+		repo.AssertExpectations(t)
+	})
+	t.Run("input not empty", func(t *testing.T) {
+		repo.On("InsertNewClass", mock.Anything, mock.Anything).Return(admin.ClassCore{}, errors.New("input not valid")).Once()
+		srv := New(repo)
+		res, _ := srv.AddNewClass(class, "admin")
+		assert.Empty(t, res)
+		assert.NotNil(t, res, 0)
+		repo.AssertExpectations(t)
+
+	})
+	t.Run("contain special character", func(t *testing.T) {
+		srv := New(repo)
+		input := admin.ClassCore{ClassName: ""}
+		res, _ := srv.AddNewClass(input, "admin")
+		assert.NotNil(t, res, 0)
+		repo.AssertExpectations(t)
+
+	})
+	t.Run("length name not valid", func(t *testing.T) {
+		repo.On("InsertNewClass", mock.Anything, mock.Anything).Return(admin.ClassCore{}, errors.New("input not valid")).Once()
+
+		srv := New(repo)
+		input := admin.ClassCore{
+			IdClass:      1,
+			Status:       "adctive",
+			ClassName:    "Back End",
+			TotalStudent: 20,
+		}
+		_, err := srv.AddNewClass(input, "admin")
+		// assert.Empty(t, err)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "inpdut not valid")
+		repo.AssertExpectations(t)
+	})
+	t.Run("input not valid", func(t *testing.T) {
+		repo.On("InsertNewClass", mock.Anything, mock.Anything).Return(admin.ClassCore{IdClass: 0}, errors.New("input not valid")).Once()
+
+		srv := New(repo)
+		input := admin.ClassCore{
+			IdClass:      0,
+			Status:       "active",
+			ClassName:    "Back End",
+			TotalStudent: 20,
+		}
+		res, err := srv.AddNewClass(input, "admin")
+		assert.Empty(t, res)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "inpdut not valid")
+		repo.AssertExpectations(t)
+	})
+	t.Run("input not valid", func(t *testing.T) {
+		srv := New(repo)
+		input := admin.ClassCore{
+			IdClass:   0,
+			ClassName: "1",
+		}
+		res, err := srv.AddNewClass(input, "admin")
+		assert.Empty(t, res, err)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "length name not valid")
 		repo.AssertExpectations(t)
 	})
 
@@ -907,13 +962,7 @@ func TestDelete(t *testing.T) {
 
 func TestSingleUser(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
-	t.Run("Not Admin", func(t *testing.T) {
-		srv := New(repo)
-		res, err := srv.GetSingleUser(1, "mentee")
-		assert.NotNil(t, err)
-		assert.Empty(t, res)
-		repo.AssertExpectations(t)
-	})
+
 	t.Run("Success get mentee", func(t *testing.T) {
 		repo.On("GetSingleMentee", mock.Anything).Return(admin.UserCore{IdUser: 1}, nil).Once()
 		srv := New(repo)

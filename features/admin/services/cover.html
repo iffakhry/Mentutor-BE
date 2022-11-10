@@ -1,0 +1,572 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>services: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">be12/mentutor/features/admin/services/logic.go (87.5%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package services
+
+import (
+        "be12/mentutor/features/admin"
+        "errors"
+        "log"
+        "strconv"
+
+        // "log"
+        "strings"
+        "unicode"
+
+        "golang.org/x/crypto/bcrypt"
+)
+
+type adminUsecase struct {
+        adminRepo admin.RepoInterface
+}
+
+func New(data admin.RepoInterface) admin.UsecaseInterface <span class="cov8" title="1">{
+        return &amp;adminUsecase{
+                adminRepo: data,
+        }
+}</span>
+
+func (au *adminUsecase) AddUser(input admin.UserCore, role string) (admin.UserCore, error) <span class="cov8" title="1">{
+
+        // CEK ROLE USE(c)
+        if role != "admin" </span><span class="cov8" title="1">{
+                log.Print("user not admin")
+                return admin.UserCore{}, errors.New("user not admin")
+        }</span>
+
+        // CEK KONDISI EMAIL
+        <span class="cov8" title="1">for _, v := range input.Email </span><span class="cov8" title="1">{
+                if unicode.IsSpace(v) </span><span class="cov8" title="1">{
+                        log.Print("contain space")
+                        return admin.UserCore{}, errors.New("contain space")
+                }</span>
+        }
+        <span class="cov8" title="1">if len(input.Email) &lt; 8 || len(input.Email) &gt; 40 </span><span class="cov8" title="1">{
+                return admin.UserCore{}, errors.New("length email not valid")
+        }</span> else<span class="cov8" title="1"> if strings.Contains(input.Email, "@") == false || strings.Contains(input.Email, ".") == false </span><span class="cov8" title="1">{
+                return admin.UserCore{}, errors.New("not contain (@) and (.)")
+        }</span>
+
+        <span class="cov8" title="1">split := strings.Split(input.Email, "@")
+        if strings.Contains(split[1], ".") == false </span><span class="cov0" title="0">{
+                return admin.UserCore{}, errors.New("not contain (.) after (@)")
+        }</span>
+
+        // String to lower email
+        <span class="cov8" title="1">strEmail := strings.ToLower(input.Email)
+        input.Email = strEmail
+
+        // CEK KONDISI NAMA
+        if len(input.Name) &lt; 5 || len(input.Name) &gt; 50 </span><span class="cov8" title="1">{
+                return admin.UserCore{}, errors.New("length name not valid")
+        }</span>
+        <span class="cov8" title="1">var upper, lower, number, sChar int
+        for _, v := range input.Name </span><span class="cov8" title="1">{
+                if unicode.IsUpper(v) == true </span><span class="cov8" title="1">{
+                        upper += 1
+                }</span> else<span class="cov8" title="1"> if unicode.IsLower(v) == true </span><span class="cov8" title="1">{
+                        lower += 1
+                }</span> else<span class="cov8" title="1"> if unicode.IsNumber(v) == true </span><span class="cov8" title="1">{
+                        number += 1
+                }</span> else<span class="cov8" title="1"> if unicode.IsPunct(v) </span><span class="cov8" title="1">{
+                        sChar += 1
+                }</span>
+        }
+
+        <span class="cov8" title="1">if upper &lt; 1 </span><span class="cov8" title="1">{
+                return admin.UserCore{}, errors.New("Ainput name not valid")
+        }</span> else<span class="cov8" title="1"> if lower &lt; 1 </span><span class="cov8" title="1">{
+                return admin.UserCore{}, errors.New("Binput name not valid")
+        }</span> else<span class="cov8" title="1"> if number &gt; 1 </span><span class="cov8" title="1">{
+                return admin.UserCore{}, errors.New("Cinput name not valid")
+        }</span> else<span class="cov8" title="1"> if sChar &gt; 1 </span><span class="cov8" title="1">{
+                return admin.UserCore{}, errors.New("Dinput name not valid")
+        }</span>
+
+        // CEK KONDISI PASSOWRD
+        <span class="cov8" title="1">var sCharString = "@#$%^&amp;*&lt;&gt;:;'[]{}|`~!"
+        var passUpper, passLower, passNumber, specialChar int
+        for _, v := range input.Password </span><span class="cov8" title="1">{
+                if unicode.IsUpper(v) == true </span><span class="cov8" title="1">{
+                        passUpper += 1
+                }</span> else<span class="cov8" title="1"> if unicode.IsLower(v) == true </span><span class="cov8" title="1">{
+                        passLower += 1
+                }</span> else<span class="cov8" title="1"> if unicode.IsNumber(v) == true </span><span class="cov8" title="1">{
+                        passNumber += 1
+                }</span> else<span class="cov8" title="1"> if unicode.IsPunct(v) == true </span><span class="cov8" title="1">{
+                        specialChar += 1
+                }</span> else<span class="cov8" title="1"> if strings.Contains(sCharString, string(v)) == true </span><span class="cov8" title="1">{
+                        specialChar += 1
+                }</span>
+        }
+        <span class="cov8" title="1">if passUpper &lt; 1 </span><span class="cov8" title="1">{
+                return admin.UserCore{}, errors.New("string not as expected")
+        }</span> else<span class="cov8" title="1"> if passLower &lt; 1 </span><span class="cov8" title="1">{
+                return admin.UserCore{}, errors.New("string not as expected")
+        }</span> else<span class="cov8" title="1"> if passNumber &lt; 1 </span><span class="cov8" title="1">{
+                return admin.UserCore{}, errors.New("string not as expected")
+        }</span>
+        <span class="cov8" title="1">if specialChar == 0 </span><span class="cov8" title="1">{
+                return admin.UserCore{}, errors.New("string not as expected")
+        }</span> else<span class="cov8" title="1"> if len(input.Password) &lt; 8 || len(input.Password) &gt; 30 </span><span class="cov8" title="1">{
+                return admin.UserCore{}, errors.New("string too short or too long")
+        }</span>
+
+        // CEK KELAS TERSEDIA
+        <span class="cov8" title="1">idClass := uint(input.IdClass)
+        _, err := au.adminRepo.GetClass(idClass)
+        if err != nil </span><span class="cov8" title="1">{
+                return admin.UserCore{}, errors.New("input class not valid")
+        }</span>
+
+        // ENKRIPSI PASSWORD
+        <span class="cov8" title="1">generate, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+        input.Password = string(generate)
+
+        if input.Role == "mentee" </span><span class="cov8" title="1">{
+                res, err := au.adminRepo.InsertMentee(input)
+                if err != nil </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("error add user")
+                }</span> else<span class="cov8" title="1"> {
+                        return res, nil
+                }</span>
+        } else<span class="cov8" title="1"> {
+                res, err := au.adminRepo.InsertMentor(input)
+                if err != nil </span><span class="cov8" title="1">{
+                        log.Print("error add mentor")
+                        return admin.UserCore{}, errors.New("error add user")
+                }</span> else<span class="cov8" title="1"> {
+                        return res, nil
+                }</span>
+        }
+}
+
+func (au *adminUsecase) GetAllUser(role string) ([]admin.UserCore, []admin.UserCore, error) <span class="cov8" title="1">{
+
+        if role != "admin" </span><span class="cov8" title="1">{
+                return []admin.UserCore{}, []admin.UserCore{}, errors.New("user not admin")
+        }</span>
+
+        <span class="cov8" title="1">resMentee, resMentor, err := au.adminRepo.GetAllUser()
+        if err != nil </span><span class="cov8" title="1">{
+                return []admin.UserCore{}, []admin.UserCore{}, errors.New("query error")
+        }</span>
+        <span class="cov8" title="1">return resMentee, resMentor, nil</span>
+}
+
+func (au *adminUsecase) AddNewClass(input admin.ClassCore, role string) (admin.ClassCore, error) <span class="cov8" title="1">{
+
+        if role != "admin" </span><span class="cov8" title="1">{
+                return admin.ClassCore{}, errors.New("user not admin")
+        }</span>
+        // CEK KONDISI NAMA KELAS
+        <span class="cov8" title="1">if len(input.ClassName) &lt; 5 || len(input.ClassName) &gt; 30 </span><span class="cov0" title="0">{
+                return admin.ClassCore{}, errors.New("length name not valid")
+        }</span>
+
+        <span class="cov8" title="1">var sChar int
+        for _, v := range input.ClassName </span><span class="cov8" title="1">{
+                if unicode.IsPunct(v) == true </span><span class="cov0" title="0">{
+                        sChar += 1
+                }</span> else<span class="cov8" title="1"> if string(v) == "?" </span><span class="cov0" title="0">{
+                        sChar += 1
+                }</span>
+                <span class="cov8" title="1">_, err := strconv.Atoi(input.ClassName)
+                if err == nil </span><span class="cov0" title="0">{
+                        log.Print(err)
+                        return admin.ClassCore{}, errors.New("class name is number")
+                }</span>
+        }
+
+        <span class="cov8" title="1">if sChar &gt; 1 </span><span class="cov0" title="0">{
+                return admin.ClassCore{}, errors.New("contain special character")
+        }</span>
+
+        <span class="cov8" title="1">res, err := au.adminRepo.InsertNewClass(input)
+        if err != nil </span><span class="cov8" title="1">{
+                return admin.ClassCore{}, errors.New("inpdut not valid")
+        }</span> else<span class="cov0" title="0"> if res.IdClass == 0 </span><span class="cov0" title="0">{
+                return admin.ClassCore{}, errors.New("input not valid")
+        }</span>
+        <span class="cov0" title="0">return res, nil</span>
+}
+
+func (au *adminUsecase) GetAllClass(role string) ([]admin.ClassCore, error) <span class="cov8" title="1">{
+
+        if role != "admin" </span><span class="cov8" title="1">{
+                return []admin.ClassCore{}, errors.New("user not admin")
+        }</span>
+
+        <span class="cov8" title="1">res, err := au.adminRepo.GetAllClass()
+        if err != nil </span><span class="cov8" title="1">{
+                return []admin.ClassCore{}, errors.New("error in database")
+        }</span>
+
+        <span class="cov8" title="1">return res, nil</span>
+}
+
+func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admin.UserCore, error) <span class="cov8" title="1">{
+
+        if role != "admin" </span><span class="cov8" title="1">{
+                return admin.UserCore{}, errors.New("user not admin")
+        }</span>
+
+        <span class="cov8" title="1">var user admin.UserCore
+
+        // CEK SEMUA DATA KOSONG
+        if input.Name == "" &amp;&amp; input.Email == "" &amp;&amp; input.IdClass == 0 &amp;&amp; input.Password == "" &amp;&amp; input.Images == "" </span><span class="cov0" title="0">{
+                return admin.UserCore{}, errors.New("no data input")
+        }</span>
+
+        // AMBIL DATA DARI DATABASE
+        <span class="cov8" title="1">if input.IdUser &lt; 1000 </span><span class="cov8" title="1">{
+                res, err := au.adminRepo.GetSingleMentee(input.IdUser)
+                if err != nil </span><span class="cov0" title="0">{
+                        return admin.UserCore{}, errors.New("user not found")
+                }</span> else<span class="cov8" title="1"> if res.IdUser == 0 </span><span class="cov0" title="0">{
+                        return admin.UserCore{}, errors.New("user not found")
+                }</span>
+                <span class="cov8" title="1">user = res</span>
+        } else<span class="cov8" title="1"> if input.IdUser &gt;= 1000 </span><span class="cov8" title="1">{
+                res, err := au.adminRepo.GetSingleMentor(input.IdUser)
+                if err != nil </span><span class="cov0" title="0">{
+                        return admin.UserCore{}, errors.New("user not found")
+                }</span> else<span class="cov8" title="1"> if res.IdUser == 0 </span><span class="cov0" title="0">{
+                        return admin.UserCore{}, errors.New("user not found")
+                }</span>
+                <span class="cov8" title="1">user = res</span>
+        }
+
+        // CEK KONDISI NAMA
+        <span class="cov8" title="1">if input.Name != "" </span><span class="cov8" title="1">{
+                if len(input.Name) &lt; 5 || len(input.Name) &gt; 50 </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("length name not valid")
+                }</span>
+                <span class="cov8" title="1">var upper, lower, number, sChar, space int
+                for _, v := range input.Name </span><span class="cov8" title="1">{
+                        if unicode.IsUpper(v) == true </span><span class="cov8" title="1">{
+                                upper += 1
+                        }</span> else<span class="cov8" title="1"> if unicode.IsLower(v) == true </span><span class="cov8" title="1">{
+                                lower += 1
+                        }</span> else<span class="cov8" title="1"> if unicode.IsNumber(v) == true </span><span class="cov8" title="1">{
+                                number += 1
+                        }</span> else<span class="cov8" title="1"> if unicode.IsPunct(v) </span><span class="cov8" title="1">{
+                                sChar += 1
+                        }</span> else<span class="cov8" title="1"> if unicode.IsSpace(v) </span><span class="cov8" title="1">{
+                                space += 1
+                        }</span>
+                }
+                <span class="cov8" title="1">if upper &lt; 1 </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("input name not valid")
+                }</span> else<span class="cov8" title="1"> if lower &lt; 1 </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("input name not valid")
+                }</span> else<span class="cov8" title="1"> if number &gt; 0 </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("input name not valid")
+                }</span> else<span class="cov8" title="1"> if sChar &gt; 0 </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("input name not valid")
+                }</span> else<span class="cov8" title="1"> if space &lt; 1 </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("input name not valid")
+                }</span>
+        } else<span class="cov0" title="0"> {
+                input.Name = user.Name
+        }</span>
+
+        // CEK KONDISI EMAIL
+        <span class="cov8" title="1">if input.Email != "" </span><span class="cov8" title="1">{
+                for _, v := range input.Email </span><span class="cov8" title="1">{
+                        if unicode.IsSpace(v) </span><span class="cov8" title="1">{
+                                log.Print("contain space")
+                                return admin.UserCore{}, errors.New("contain space")
+                        }</span>
+                }
+                <span class="cov8" title="1">contain1 := strings.Contains(input.Email, "@")
+                contain2 := strings.Contains(input.Email, ".")
+                if len(input.Email) &lt; 8 || len(input.Email) &gt; 40 </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("length email not valid")
+                }</span> else<span class="cov8" title="1"> if contain1 == false || contain2 == false </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("not contain (@) and (.)")
+                }</span>
+                <span class="cov8" title="1">split := strings.Split(input.Email, "@")
+                if strings.Contains(split[1], ".") == false </span><span class="cov0" title="0">{
+                        return admin.UserCore{}, errors.New("not contain (.) after (@)")
+                }</span>
+                <span class="cov8" title="1">tmp := strings.ToLower(input.Email)
+                input.Email = tmp</span>
+
+        } else<span class="cov0" title="0"> {
+                strings.ToLower(user.Email)
+                input.Email = user.Email
+        }</span>
+
+        // CEK KONDISI PASSWORD
+        <span class="cov8" title="1">if input.Password != "" </span><span class="cov8" title="1">{
+                var sChar = "@#$%^&amp;*&lt;&gt;:;'[]{}|`~!"
+                var passUpper, passLower, passNumber, specialChar int
+                for _, v := range input.Password </span><span class="cov8" title="1">{
+                        if unicode.IsUpper(v) == true </span><span class="cov8" title="1">{
+                                passUpper += 1
+                        }</span> else<span class="cov8" title="1"> if unicode.IsLower(v) == true </span><span class="cov8" title="1">{
+                                passLower += 1
+                        }</span> else<span class="cov8" title="1"> if unicode.IsNumber(v) == true </span><span class="cov8" title="1">{
+                                passNumber += 1
+                        }</span> else<span class="cov8" title="1"> if unicode.IsPunct(v) == true </span><span class="cov8" title="1">{
+                                specialChar += 1
+                        }</span> else<span class="cov8" title="1"> if strings.Contains(sChar, string(v)) == true </span><span class="cov8" title="1">{
+                                specialChar += 1
+                        }</span>
+                }
+                <span class="cov8" title="1">if passUpper &lt; 1 </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("string not as expected")
+                }</span> else<span class="cov8" title="1"> if passLower &lt; 1 </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("string not as expected")
+                }</span> else<span class="cov8" title="1"> if passNumber &lt; 1 </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("string not as expected")
+                }</span>
+                <span class="cov8" title="1">if specialChar == 0 </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("string not as expected")
+                }</span> else<span class="cov8" title="1"> if len(input.Password) &lt; 8 || len(input.Password) &gt; 30 </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("string too short or too long")
+                }</span>
+
+                <span class="cov8" title="1">generate, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+                input.Password = string(generate)</span>
+        }
+
+        // CEK KELAS TERSEDIA]
+        <span class="cov8" title="1">if input.IdClass == 0 </span><span class="cov8" title="1">{
+                input.IdClass = user.IdClass
+        }</span> else<span class="cov8" title="1"> if input.IdClass != 0 </span><span class="cov8" title="1">{
+                idClass := uint(input.IdClass)
+                _, err := au.adminRepo.GetClass(idClass)
+                if err != nil </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("input class not valid")
+                }</span>
+        }
+
+        <span class="cov8" title="1">if input.IdUser &gt;= 1000 </span><span class="cov8" title="1">{
+                res, err := au.adminRepo.EditUserMentor(input)
+                if err != nil </span><span class="cov0" title="0">{
+                        return admin.UserCore{}, errors.New("error in database")
+                }</span>
+
+                <span class="cov8" title="1">return res, nil</span>
+        } else<span class="cov8" title="1"> if input.IdUser &lt; 1000 </span><span class="cov8" title="1">{
+                res, err := au.adminRepo.EditUserMentee(input)
+                if err != nil </span><span class="cov0" title="0">{
+                        input.IdUser = 0
+                        return admin.UserCore{}, errors.New("error in database")
+                }</span> else<span class="cov8" title="1"> {
+                        return res, nil
+                }</span>
+        }
+        <span class="cov0" title="0">return admin.UserCore{}, errors.New("user not found")</span>
+}
+
+func (au *adminUsecase) DeleteUser(id uint, role string) error <span class="cov8" title="1">{
+
+        if role != "admin" </span><span class="cov8" title="1">{
+                return errors.New("user not admin")
+        }</span>
+
+        <span class="cov8" title="1">if id &lt; 1000 </span><span class="cov8" title="1">{
+                err := au.adminRepo.DeleteUserMentee(id)
+                if err != nil </span><span class="cov8" title="1">{
+                        log.Print("eror in database")
+                        return errors.New("error in database")
+                }</span>
+                <span class="cov8" title="1">return nil</span>
+        } else<span class="cov8" title="1"> if id &gt;= 1000 </span><span class="cov8" title="1">{
+                err := au.adminRepo.DeleteUserMentor(id)
+                if err != nil </span><span class="cov8" title="1">{
+                        return errors.New("error in database")
+                }</span>
+                <span class="cov8" title="1">return nil</span>
+        }
+        <span class="cov0" title="0">return errors.New("error in database")</span>
+}
+
+func (au *adminUsecase) GetSingleUser(id uint, role string) (admin.UserCore, error) <span class="cov8" title="1">{
+
+        if id &lt; 1000 </span><span class="cov8" title="1">{
+                res, err := au.adminRepo.GetSingleMentee(id)
+                if err != nil </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("error in database")
+                }</span>
+                <span class="cov8" title="1">if res.IdUser == 0 </span><span class="cov0" title="0">{
+                        return admin.UserCore{}, errors.New("error in database")
+                }</span>
+                <span class="cov8" title="1">return res, nil</span>
+        } else<span class="cov8" title="1"> if id &gt;= 1000 </span><span class="cov8" title="1">{
+                res, err := au.adminRepo.GetSingleMentor(id)
+                if err != nil </span><span class="cov8" title="1">{
+                        return admin.UserCore{}, errors.New("error in database")
+                }</span>
+                <span class="cov8" title="1">if res.IdUser == 0 </span><span class="cov0" title="0">{
+                        return admin.UserCore{}, errors.New("error in database")
+                }</span>
+                <span class="cov8" title="1">return res, nil</span>
+        }
+        <span class="cov0" title="0">return admin.UserCore{}, errors.New("error in database")</span>
+}
+
+func (au *adminUsecase) UpdateClass(input admin.ClassCore, role string) (admin.ClassCore, error) <span class="cov8" title="1">{
+
+        if role != "admin" </span><span class="cov8" title="1">{
+                return admin.ClassCore{}, errors.New("user not admin")
+        }</span>
+
+        // CEK KONDISI NAMA KELAS
+        <span class="cov8" title="1">if len(input.ClassName) &lt; 5 == true || len(input.ClassName) &gt; 30 == true </span><span class="cov0" title="0">{
+                return admin.ClassCore{}, errors.New("length name not valid")
+        }</span>
+
+        <span class="cov8" title="1">var sChar int
+        for _, v := range input.ClassName </span><span class="cov8" title="1">{
+                if unicode.IsPunct(v) == true </span><span class="cov0" title="0">{
+                        sChar += 1
+                }</span> else<span class="cov8" title="1"> if string(v) == "?" </span><span class="cov0" title="0">{
+                        sChar += 1
+                }</span>
+                <span class="cov8" title="1">_, err := strconv.Atoi(input.ClassName)
+                if err == nil </span><span class="cov0" title="0">{
+                        return admin.ClassCore{}, errors.New("class name is number")
+                }</span>
+        }
+
+        <span class="cov8" title="1">if sChar &gt; 1 </span><span class="cov0" title="0">{
+                return admin.ClassCore{}, errors.New("contain special character")
+        }</span>
+
+        // CEK KELAS TERSEDIA
+        <span class="cov8" title="1">dataClass, err := au.adminRepo.GetSingleClass(input.IdClass)
+        if err != nil </span><span class="cov0" title="0">{
+                return admin.ClassCore{}, err
+        }</span>
+
+        <span class="cov8" title="1">if input.Status == "" </span><span class="cov0" title="0">{
+                input.Status = dataClass.Status
+        }</span>
+
+        <span class="cov8" title="1">if input.ClassName == "" </span><span class="cov0" title="0">{
+                input.ClassName = dataClass.ClassName
+        }</span>
+
+        <span class="cov8" title="1">res, err := au.adminRepo.EditClass(input)
+        if err != nil </span><span class="cov8" title="1">{
+                return admin.ClassCore{}, errors.New("error in database")
+        }</span>
+        <span class="cov8" title="1">return res, nil</span>
+}
+
+func (au *adminUsecase) DeleteClass(id uint, role string) error <span class="cov8" title="1">{
+
+        if role != "admin" </span><span class="cov8" title="1">{
+                return errors.New("user not admin")
+        }</span>
+
+        <span class="cov8" title="1">err := au.adminRepo.DeleteClass(id)
+        if err != nil </span><span class="cov8" title="1">{
+                return errors.New("error in databse")
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

@@ -30,7 +30,7 @@ func New(e *echo.Echo, usecase admin.UsecaseInterface) {
 	e.GET("/admin/classes", handler.GetAllClass(), middleware.JWT([]byte(config.SECRET_JWT)))            // GET ALL CLASS
 	e.PUT("/admin/users/:id_user", handler.UpdateUserAdmin(), middleware.JWT([]byte(config.SECRET_JWT))) // UPDATE DATA USER BY ADMIN
 	e.GET("/admin/users/:id_user", handler.GetSingleUser(), middleware.JWT([]byte(config.SECRET_JWT)))   // GET SINGLE PROFILE OTHER USER
-	e.PUT("/admin/classes/:id_class", handler.UpdateClass(), middleware.JWT([]byte(config.SECRET_JWT)))	// UPDATE CLASS
+	e.PUT("/admin/classes/:id_class", handler.UpdateClass(), middleware.JWT([]byte(config.SECRET_JWT)))  // UPDATE CLASS
 	e.DELETE("/admin/classes/:id_class", handler.DeleteClass(), middleware.JWT([]byte(config.SECRET_JWT)))
 	e.DELETE("/admin/users/:id_user", handler.DeleteUser(), middleware.JWT([]byte(config.SECRET_JWT)))
 }
@@ -62,7 +62,6 @@ func (ad *AdminDelivery) GetAllUser() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		_, _, role := middlewares.ExtractToken(c)
 
-
 		resMentee, resMentor, err := ad.adminUsecase.GetAllUser(role)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
@@ -86,7 +85,7 @@ func (ad *AdminDelivery) AddNewClass() echo.HandlerFunc {
 		res, err := ad.adminUsecase.AddNewClass(cnvInput, role)
 		if err != nil {
 			log.Print(err.Error())
-			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
+			return c.JSON(http.StatusBadRequest, helper.FailedResponse(err.Error()))
 		}
 
 		return c.JSON(http.StatusCreated, helper.SuccessResponse("Success created", ToResponseAddClass(res)))
@@ -125,7 +124,7 @@ func (ad *AdminDelivery) UpdateUserAdmin() echo.HandlerFunc {
 				return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 			}
 			input.Images = res
-		} 
+		}
 
 		cnv := ToDomainUpdateUser(input)
 		id := c.Param("id_user")
@@ -133,10 +132,10 @@ func (ad *AdminDelivery) UpdateUserAdmin() echo.HandlerFunc {
 		cnv.IdUser = uint(cnvId)
 
 		res, err := ad.adminUsecase.UpdateUserAdmin(cnv, role)
-		if  err != nil && strings.Contains(err.Error(), "user") == true{
+		if err != nil && strings.Contains(err.Error(), "user") == true {
 			log.Print(err)
 			return c.JSON(http.StatusNotFound, helper.FailedResponse("User Not Found"))
-		}  else if err != nil {
+		} else if err != nil {
 			log.Print(err)
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
@@ -147,7 +146,6 @@ func (ad *AdminDelivery) UpdateUserAdmin() echo.HandlerFunc {
 func (ad *AdminDelivery) DeleteUser() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		_, _, role := middlewares.ExtractToken(c)
-
 
 		id := c.Param("id_user")
 		cnv, _ := strconv.Atoi(id)
@@ -163,7 +161,6 @@ func (ad *AdminDelivery) DeleteUser() echo.HandlerFunc {
 func (ad *AdminDelivery) GetSingleUser() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		_, _, role := middlewares.ExtractToken(c)
-
 
 		id := c.Param("id_user")
 		cnv, _ := strconv.Atoi(id)
@@ -211,6 +208,6 @@ func (ad *AdminDelivery) DeleteClass() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 		}
-			return c.JSON(http.StatusOK, helper.SuccessResponse("Success Delete Class", map[string]int{"id_class": cnv}))
+		return c.JSON(http.StatusOK, helper.SuccessResponse("Success Delete Class", map[string]int{"id_class": cnv}))
 	}
 }

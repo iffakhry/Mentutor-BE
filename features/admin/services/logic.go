@@ -45,7 +45,7 @@ func (au *adminUsecase) AddUser(input admin.UserCore, role string) (admin.UserCo
 	}
 
 	split := strings.Split(input.Email, "@")
-	if  strings.Contains(split[1], ".") ==  false {
+	if strings.Contains(split[1], ".") == false {
 		return admin.UserCore{}, errors.New("not contain (.) after (@)")
 	}
 
@@ -64,9 +64,9 @@ func (au *adminUsecase) AddUser(input admin.UserCore, role string) (admin.UserCo
 		} else if unicode.IsLower(v) == true {
 			lower += 1
 		} else if unicode.IsNumber(v) == true {
-			number+=1
+			number += 1
 		} else if unicode.IsPunct(v) {
-			sChar+=1
+			sChar += 1
 		}
 	}
 
@@ -163,10 +163,10 @@ func (au *adminUsecase) AddNewClass(input admin.ClassCore, role string) (admin.C
 
 	var sChar int
 	for _, v := range input.ClassName {
-		if unicode.IsPunct(v) == true{
-			sChar+=1
+		if unicode.IsPunct(v) == true {
+			sChar += 1
 		} else if string(v) == "?" {
-			sChar+=1
+			sChar += 1
 		}
 		_, err := strconv.Atoi(input.ClassName)
 		if err == nil {
@@ -181,7 +181,7 @@ func (au *adminUsecase) AddNewClass(input admin.ClassCore, role string) (admin.C
 
 	res, err := au.adminRepo.InsertNewClass(input)
 	if err != nil {
-		return admin.ClassCore{}, errors.New("input not valid")
+		return admin.ClassCore{}, errors.New("inpdut not valid")
 	} else if res.IdClass == 0 {
 		return admin.ClassCore{}, errors.New("input not valid")
 	}
@@ -276,15 +276,15 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 				return admin.UserCore{}, errors.New("contain space")
 			}
 		}
-		contain1 := strings.Contains(input.Email, "@") 
-		contain2 := strings.Contains(input.Email, ".") 
+		contain1 := strings.Contains(input.Email, "@")
+		contain2 := strings.Contains(input.Email, ".")
 		if len(input.Email) < 8 || len(input.Email) > 40 {
 			return admin.UserCore{}, errors.New("length email not valid")
 		} else if contain1 == false || contain2 == false {
 			return admin.UserCore{}, errors.New("not contain (@) and (.)")
 		}
 		split := strings.Split(input.Email, "@")
-		if  strings.Contains(split[1], ".") ==  false {
+		if strings.Contains(split[1], ".") == false {
 			return admin.UserCore{}, errors.New("not contain (.) after (@)")
 		}
 		tmp := strings.ToLower(input.Email)
@@ -294,8 +294,6 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 		strings.ToLower(user.Email)
 		input.Email = user.Email
 	}
-
-	
 
 	// CEK KONDISI PASSWORD
 	if input.Password != "" {
@@ -386,10 +384,6 @@ func (au *adminUsecase) DeleteUser(id uint, role string) error {
 
 func (au *adminUsecase) GetSingleUser(id uint, role string) (admin.UserCore, error) {
 
-	if role != "admin" || role != "mentee" || role != "mentor"{
-		return admin.UserCore{}, errors.New("user not admin")
-	}
-
 	if id < 1000 {
 		res, err := au.adminRepo.GetSingleMentee(id)
 		if err != nil {
@@ -425,10 +419,10 @@ func (au *adminUsecase) UpdateClass(input admin.ClassCore, role string) (admin.C
 
 	var sChar int
 	for _, v := range input.ClassName {
-		if unicode.IsPunct(v) == true{
-			sChar+=1
+		if unicode.IsPunct(v) == true {
+			sChar += 1
 		} else if string(v) == "?" {
-			sChar+=1
+			sChar += 1
 		}
 		_, err := strconv.Atoi(input.ClassName)
 		if err == nil {
