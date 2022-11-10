@@ -53,7 +53,10 @@ func (mu *MenteeUsecase) Insert(data mentee.CommentsCore) (mentee.CommentsCore, 
 		return mentee.CommentsCore{}, errors.New("failed add your comment check charancter len")
 	}
 	data, err := mu.menteeData.AddComment(data)
-	return data, err
+	if err != nil {
+		return mentee.CommentsCore{}, errors.New("error add comment")
+	}
+	return data, nil
 }
 
 func (mu *MenteeUsecase) InsertSub(data mentee.Submission) (mentee.Submission, error) {

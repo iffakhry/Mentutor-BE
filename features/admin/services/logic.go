@@ -384,23 +384,23 @@ func (au *adminUsecase) GetSingleUser(id uint, role string) (admin.UserCore, err
 	if id < 1000 {
 		res, err := au.adminRepo.GetSingleMentee(id)
 		if err != nil {
-			return admin.UserCore{}, errors.New("error in database")
+			return admin.UserCore{}, errors.New("error in database mentee")
 		}
 		if res.IdUser == 0 {
-			return admin.UserCore{}, errors.New("error in database")
+			return admin.UserCore{}, errors.New("error in database mentee")
 		}
 		return res, nil
 	} else if id >= 1000 {
 		res, err := au.adminRepo.GetSingleMentor(id)
 		if err != nil {
-			return admin.UserCore{}, errors.New("error in database")
+			return admin.UserCore{}, errors.New("error in database mentor")
 		}
 		if res.IdUser == 0 {
-			return admin.UserCore{}, errors.New("error in database")
+			return admin.UserCore{}, errors.New("error in database mentor")
 		}
 		return res, nil
 	}
-	return admin.UserCore{}, errors.New("error in database")
+	return admin.UserCore{}, errors.New("error in databases")
 }
 
 func (au *adminUsecase) UpdateClass(input admin.ClassCore, role string) (admin.ClassCore, error) {
