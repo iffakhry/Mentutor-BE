@@ -3,7 +3,6 @@ package services
 import (
 	"be12/mentutor/features/mentor"
 	"errors"
-	"log"
 	"strconv"
 	"strings"
 	"unicode"
@@ -29,6 +28,11 @@ func roleCheck(role string) bool {
 }
 
 func (mu *mentorUsecase) UpdateProfile(input mentor.UserCore, role string) (mentor.UserCore, error) {
+
+	// CEK SEMUA DATA KOSONG
+	if input.Name == "" && input.Email == "" && input.IdClass == 0 && input.Password == "" && input.Images == "" {
+		return mentor.UserCore{}, errors.New("no data input")
+	}
 
 	var user mentor.UserCore
 	if input.IdUser < 1000 {
@@ -190,8 +194,6 @@ func (mu *mentorUsecase) UpdateTask(input mentor.TaskCore, role string) (mentor.
 	if err := roleCheck(role); err != true {
 		return mentor.TaskCore{}, errors.New("user not mentor")
 	}
-
-	log.Print(input.ID)
 
 	data, err := mu.mentorRepo.GetSingleTask(input.ID)
 	if err != nil {

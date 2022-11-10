@@ -29,7 +29,7 @@ type UpdateTaskFormat struct {
 	IdTask      uint
 	IdMentor    uint
 	Title       string `form:"title"`
-	Description string `form:"title"`
+	Description string `form:"description"`
 	File        string `form:"file"`
 	Images      string `form:"images"`
 	DueDate     string `form:"due_date"`

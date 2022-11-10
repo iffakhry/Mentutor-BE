@@ -13,20 +13,157 @@ type UsecaseInterface struct {
 	mock.Mock
 }
 
-// UpdateProfile provides a mock function with given fields: input, id, role
-func (_m *UsecaseInterface) UpdateProfile(input mentor.UserCore, id uint, role string) (mentor.UserCore, error) {
-	ret := _m.Called(input, id, role)
+// AddScore provides a mock function with given fields: input, role
+func (_m *UsecaseInterface) AddScore(input mentor.SubmissionCore, role string) (mentor.SubmissionCore, error) {
+	ret := _m.Called(input, role)
+
+	var r0 mentor.SubmissionCore
+	if rf, ok := ret.Get(0).(func(mentor.SubmissionCore, string) mentor.SubmissionCore); ok {
+		r0 = rf(input, role)
+	} else {
+		r0 = ret.Get(0).(mentor.SubmissionCore)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(mentor.SubmissionCore, string) error); ok {
+		r1 = rf(input, role)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// AddTask provides a mock function with given fields: input, role
+func (_m *UsecaseInterface) AddTask(input mentor.TaskCore, role string) (mentor.TaskCore, error) {
+	ret := _m.Called(input, role)
+
+	var r0 mentor.TaskCore
+	if rf, ok := ret.Get(0).(func(mentor.TaskCore, string) mentor.TaskCore); ok {
+		r0 = rf(input, role)
+	} else {
+		r0 = ret.Get(0).(mentor.TaskCore)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(mentor.TaskCore, string) error); ok {
+		r1 = rf(input, role)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// DeleteTask provides a mock function with given fields: idTask, idClass, role
+func (_m *UsecaseInterface) DeleteTask(idTask uint, idClass uint, role string) (mentor.TaskCore, error) {
+	ret := _m.Called(idTask, idClass, role)
+
+	var r0 mentor.TaskCore
+	if rf, ok := ret.Get(0).(func(uint, uint, string) mentor.TaskCore); ok {
+		r0 = rf(idTask, idClass, role)
+	} else {
+		r0 = ret.Get(0).(mentor.TaskCore)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(uint, uint, string) error); ok {
+		r1 = rf(idTask, idClass, role)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetAllTask provides a mock function with given fields: role
+func (_m *UsecaseInterface) GetAllTask(role string) ([]mentor.TaskCore, error) {
+	ret := _m.Called(role)
+
+	var r0 []mentor.TaskCore
+	if rf, ok := ret.Get(0).(func(string) []mentor.TaskCore); ok {
+		r0 = rf(role)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]mentor.TaskCore)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(role)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetTaskSub provides a mock function with given fields: id, role
+func (_m *UsecaseInterface) GetTaskSub(id uint, role string) (mentor.TaskCore, []mentor.SubmissionCore, error) {
+	ret := _m.Called(id, role)
+
+	var r0 mentor.TaskCore
+	if rf, ok := ret.Get(0).(func(uint, string) mentor.TaskCore); ok {
+		r0 = rf(id, role)
+	} else {
+		r0 = ret.Get(0).(mentor.TaskCore)
+	}
+
+	var r1 []mentor.SubmissionCore
+	if rf, ok := ret.Get(1).(func(uint, string) []mentor.SubmissionCore); ok {
+		r1 = rf(id, role)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).([]mentor.SubmissionCore)
+		}
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(uint, string) error); ok {
+		r2 = rf(id, role)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
+// UpdateProfile provides a mock function with given fields: input, role
+func (_m *UsecaseInterface) UpdateProfile(input mentor.UserCore, role string) (mentor.UserCore, error) {
+	ret := _m.Called(input, role)
 
 	var r0 mentor.UserCore
-	if rf, ok := ret.Get(0).(func(mentor.UserCore, uint, string) mentor.UserCore); ok {
-		r0 = rf(input, id, role)
+	if rf, ok := ret.Get(0).(func(mentor.UserCore, string) mentor.UserCore); ok {
+		r0 = rf(input, role)
 	} else {
 		r0 = ret.Get(0).(mentor.UserCore)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(mentor.UserCore, uint, string) error); ok {
-		r1 = rf(input, id, role)
+	if rf, ok := ret.Get(1).(func(mentor.UserCore, string) error); ok {
+		r1 = rf(input, role)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateTask provides a mock function with given fields: input, role
+func (_m *UsecaseInterface) UpdateTask(input mentor.TaskCore, role string) (mentor.TaskCore, error) {
+	ret := _m.Called(input, role)
+
+	var r0 mentor.TaskCore
+	if rf, ok := ret.Get(0).(func(mentor.TaskCore, string) mentor.TaskCore); ok {
+		r0 = rf(input, role)
+	} else {
+		r0 = ret.Get(0).(mentor.TaskCore)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(mentor.TaskCore, string) error); ok {
+		r1 = rf(input, role)
 	} else {
 		r1 = ret.Error(1)
 	}
