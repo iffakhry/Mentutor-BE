@@ -44,6 +44,11 @@ func (au *adminUsecase) AddUser(input admin.UserCore, role string) (admin.UserCo
 		return admin.UserCore{}, errors.New("not contain (@) and (.)")
 	}
 
+	split := strings.Split(input.Email, "@")
+	if  strings.Contains(split[1], ".") ==  false {
+		return admin.UserCore{}, errors.New("not contain (.) after (@)")
+	}
+
 	// String to lower email
 	strEmail := strings.ToLower(input.Email)
 	input.Email = strEmail
@@ -277,6 +282,10 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, role string) (admi
 			return admin.UserCore{}, errors.New("length email not valid")
 		} else if contain1 == false || contain2 == false {
 			return admin.UserCore{}, errors.New("not contain (@) and (.)")
+		}
+		split := strings.Split(input.Email, "@")
+		if  strings.Contains(split[1], ".") ==  false {
+			return admin.UserCore{}, errors.New("not contain (.) after (@)")
 		}
 		tmp := strings.ToLower(input.Email)
 		input.Email = tmp
