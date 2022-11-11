@@ -39,18 +39,18 @@ func (h *AuthDelivery) Login() echo.HandlerFunc {
 			if strings.Contains(err.Error(), "email not found") == true {
 				errx := errors.New("user not found")
 				return c.JSON(http.StatusNotFound, helper.FailedResponse(errx.Error()))
-			} else {
-				if res.ID < 1000 {
-					url, err = helper.GetUrl()
-					if err != nil {
-						log.Print(url)
-						return c.JSON(http.StatusBadRequest, helper.FailedResponse("Failed get url Oauth"))
-					}
-				}		
+			} else {	
 				errx := errors.New("Invalid Input From Client")
 				return c.JSON(http.StatusBadRequest, helper.FailedResponse(errx.Error()))
 			}
 		}
+		if res.ID < 1000 {
+			url, err = helper.GetUrl()
+			// log.Print(url)
+			if err != nil {
+				return c.JSON(http.StatusBadRequest, helper.FailedResponse("Failed get url Oauth"))
+			}
+		}	
 		res.Token = token
 		return c.JSON(http.StatusOK, helper.SuccessResponse("login successful", ToResponse(res, "login", url)))
 	}
