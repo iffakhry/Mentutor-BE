@@ -74,6 +74,7 @@ type Comment struct {
 }
 
 type GoogleToken struct {
+	gorm.Model
 	Code         string
 	AccessToken  string
 	TokenType    string
