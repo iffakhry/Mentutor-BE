@@ -26,6 +26,7 @@ func New(e *echo.Echo, usecase login.UsecaseInterface) {
 
 func (h *AuthDelivery) Login() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		var url string
 		var input LoginFormat
 		if err := c.Bind(&input); err != nil {
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
@@ -39,22 +40,18 @@ func (h *AuthDelivery) Login() echo.HandlerFunc {
 				errx := errors.New("user not found")
 				return c.JSON(http.StatusNotFound, helper.FailedResponse(errx.Error()))
 			} else {
+				if res.ID < 1000 {
+					url, err = helper.GetUrl()
+					if err != nil {
+						log.Print(url)
+						return c.JSON(http.StatusBadRequest, helper.FailedResponse("Failed get url Oauth"))
+					}
+				}		
 				errx := errors.New("Invalid Input From Client")
 				return c.JSON(http.StatusBadRequest, helper.FailedResponse(errx.Error()))
 			}
 		}
-		url, err := helper.GetUrl()
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Failed get token Oauth"))
-		}
-
-		log.Print(url)
-		err  = c.Redirect(http.StatusMovedPermanently, url)
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Failed get token Oauth"))
-		}
-
 		res.Token = token
-		return c.JSON(http.StatusOK, helper.SuccessResponse("login successful", ToResponse(res, "login")))
+		return c.JSON(http.StatusOK, helper.SuccessResponse("login successful", ToResponse(res, "login", url)))
 	}
 }
