@@ -78,3 +78,11 @@ func (mu *MenteeUsecase) InsertSub(data mentee.Submission) (mentee.Submission, e
 	}
 	return data, nil
 }
+
+func (mu *MenteeUsecase) AddToken(data mentee.Token) (mentee.Token, error) {
+	res, err := mu.menteeData.InsertToken(data)
+	if err != nil {
+		return mentee.Token{}, err
+	}
+	return res, nil
+}

@@ -1,6 +1,11 @@
 package delivery
 
-import "be12/mentutor/features/mentee"
+import (
+	"be12/mentutor/features/mentee"
+	"time"
+
+	"golang.org/x/oauth2"
+)
 
 type UpdateFormat struct {
 	IdUser   uint
@@ -15,11 +20,23 @@ type Request struct {
 	Caption string `json:"caption" form:"caption"`
 	Images  string `json:"images" form:"images"`
 }
+type CommentFormat struct {
+	IdStatus uint
+	ID_User  uint
+	Caption  string `json:"caption" form:"caption"`
+}
+type SubFormat struct {
+	ID_Tasks  uint
+	ID_Mentee uint
+	File      string `json:"file" form:"file"`
+}
 
-type GmailFormat struct {
-	AccessToken  string `json:"access_token"`
-	Scope        string `json:"scope"`
-	RefreshToken string `json:"refresh_token"`
+type Token struct {
+	IdMente      uint
+	AccessToken  string    `json:"access_token"`
+	TokenType    string    `json:"token_type,omitempty"`
+	RefreshToken string    `json:"refresh_token,omitempty"`
+	Expiry       time.Time `json:"expiry,omitempty"`
 }
 
 func ToDomain(data Request) mentee.Status {
@@ -39,18 +56,17 @@ func ToEntity(data UpdateFormat) mentee.MenteeCore {
 	}
 }
 
-// comments
+func ToDomainToken(code string, data *oauth2.Token) mentee.Token {
+	return mentee.Token{
+		Code:         code,
+		AccessToken:  data.AccessToken,
+		TokenType:    data.TokenType,
+		RefreshToken: data.RefreshToken,
+		Expiry:       data.Expiry,
+	}
+}
 
-type CommentFormat struct {
-	IdStatus uint
-	ID_User  uint
-	Caption  string `json:"caption" form:"caption"`
-}
-type SubFormat struct {
-	ID_Tasks  uint
-	ID_Mentee uint
-	File      string `json:"file" form:"file"`
-}
+// comments
 
 func ToDomainComments(i CommentFormat) mentee.CommentsCore {
 	return mentee.CommentsCore{

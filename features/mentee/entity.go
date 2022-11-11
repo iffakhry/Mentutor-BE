@@ -1,6 +1,9 @@
 package mentee
 
-import "time"
+import (
+	"time"
+
+)
 
 type MenteeCore struct {
 	IdUser   uint
@@ -59,12 +62,22 @@ type Task struct {
 	Submissions []Submission `gorm:"foreignKey:IdTask"`
 	Status      string
 }
+
+type Token struct {
+	Code         string
+	AccessToken  string    
+	TokenType    string    
+	RefreshToken string   
+	Expiry       time.Time
+}
+
 type UseCaseInterface interface {
 	InsertStatus(data Status, token int) (Status, error)
 	GetAll() (data []Status, comen []CommentsCore, comenmentor []CommentsCore, err error)
 	Insert(data CommentsCore) (CommentsCore, error)
 	InsertSub(data Submission) (Submission, error)
 	GetTask(idClass uint, role string) (data []Task, err error)
+	AddToken(token Token) (Token, error)
 }
 
 type RepoInterface interface {
@@ -74,4 +87,5 @@ type RepoInterface interface {
 	AddSub(data Submission) (Submission, error)
 	GetAllTask(idClass uint) (data []Task, err error)
 	GetSingleTask(idTask uint) (Task, error)
+	InsertToken(token Token) (Token, error)
 }
