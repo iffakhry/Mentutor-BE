@@ -36,6 +36,115 @@ func TestFailedUpdateUser(t *testing.T) {
 		assert.Empty(t, res)
 		repo.AssertExpectations(t)
 	})
+	t.Run("no data input", func(t *testing.T) {
+		repo.On("GetSingleMentee", mock.Anything).
+			Return(mentor.UserCore{
+				IdUser:  1,
+				Name:    "Nur Fatchurohman",
+				Email:   "nur.faturohman28@gmail.com",
+				IdClass: 1,
+				Role:    "mentee",
+			})
+		input := mentor.UserCore{
+			IdUser:  1,
+			Name:    "",
+			Email:   "",
+			IdClass: 0,
+			Role:    "",
+		}
+		srv := New(repo)
+		res, err := srv.UpdateProfile(input, "mentor")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("password condition number", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).
+			Return(mentor.UserCore{
+				IdUser:  1000,
+				Name:    "Nur Fatchurohman",
+				Email:   "nur.faturohman28@gmail.com",
+				IdClass: 1,
+				Role:    "mentee",
+			}, errors.New("password condition number"))
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "Nur Fatchurohmann",
+			Email:    "fatur@gmail.com",
+			IdClass:  7,
+			Password: "FaturRohman",
+			Role:     "mentee",
+		}
+		res, err := srv.UpdateProfile(input, "mentor")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("password condition upper", func(t *testing.T) {
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1001,
+			Name:     "Nur Fatchurohmann",
+			Email:    "fatur@gmail.com",
+			IdClass:  7,
+			Password: "faturrohman",
+			Role:     "mentee",
+		}
+		res, err := srv.UpdateProfile(input, "mentor")
+		assert.Empty(t, res)
+		assert.NotNil(t, err)
+		repo.AssertExpectations(t)
+	})
+	t.Run("User not admin", func(t *testing.T) { //USER NOT ADMIN LOGIC LINE 31
+		repo.On("GetSingleMentor", mock.Anything).
+			Return(mentor.UserCore{
+				IdUser:  1000,
+				Name:    "Nur Fatchurohman",
+				Email:   "nur.faturohman28@gmail.com",
+				IdClass: 1,
+				Role:    "mentee",
+			}, errors.New("User not admin"))
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1002,
+			Name:     "Nur Fatchurohman",
+			Email:    "fatur@gmail.com",
+			IdClass:  7,
+			Password: "Fatur123$",
+			Role:     "mentee",
+		}
+		res, err := srv.UpdateProfile(input, "mentee")
+		assert.Empty(t, res)
+		assert.NotNil(t, err)
+		repo.AssertExpectations(t)
+	})
+
+	t.Run("Length email", func(t *testing.T) {
+		// repo.On("GetSingleMentor", mock.Anything).
+		// 	Return(mentor.UserCore{
+		// 		IdUser:  1000,
+		// 		Name:    "Nur Fatchurohman",
+		// 		Email:   "nur.faturohman28@gmail.com",
+		// 		IdClass: 1,
+		// 		Role:    "mentee",
+		// 	}, errors.New("length name not valid")).Once()
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "Nur Fatchurohman",
+			Email:    "fam",
+			IdClass:  7,
+			Password: "Fatur123$",
+			Role:     "mentee",
+		}
+		res, err := srv.UpdateProfile(input, "admin")
+		assert.Empty(t, res)
+		assert.NotNil(t, err)
+		assert.ErrorContains(t, err, "user not found")
+		repo.AssertExpectations(t)
+	})
+
 }
 func TestSuccessUpdateUser(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
@@ -131,6 +240,35 @@ func TestSuccessUpdateUser(t *testing.T) {
 		res, err := srv.UpdateProfile(input, "mentor")
 		assert.NotNil(t, err)
 		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+}
+
+func TestDeleteTask(t *testing.T) {
+	repo := mocks.NewRepoInterface(t)
+	t.Run("Not mentor", func(t *testing.T) {
+		srv := New(repo)
+		_, err := srv.DeleteTask(1, 1, "mentee")
+		assert.NotNil(t, err)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Success delete class", func(t *testing.T) {
+		repo.On("GetTaskSub", mock.Anything).Return(mentor.TaskCore{}, []mentor.SubmissionCore{}, nil).Once()
+		srv := New(repo)
+		res, err := srv.DeleteTask(1, 1, "mentor")
+		assert.Nil(t, nil)
+		repo.AssertExpectations(t)
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+
+	})
+	t.Run("Failed delete task", func(t *testing.T) {
+		repo.On("GetTaskSub", mock.Anything).Return(mentor.TaskCore{}, []mentor.SubmissionCore{}, errors.New("error delete task")).Once()
+		srv := New(repo)
+		res, err := srv.DeleteTask(1, 1, "mentor")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		assert.ErrorContains(t, err, "error delete task")
 		repo.AssertExpectations(t)
 	})
 }
