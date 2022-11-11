@@ -51,21 +51,21 @@ func (mu *mentorUsecase) UpdateProfile(input mentor.UserCore, role string) (ment
 
 	// CEK KONDISI NAMA
 	if input.Name != "" {
-		if len(input.Name) < 5 == true || len(input.Name) > 50 == true{
+		if len(input.Name) < 5 == true || len(input.Name) > 50 == true {
 			return mentor.UserCore{}, errors.New("length name not valid")
 		}
 		var upper, lower, number, sChar, space int
 		for _, v := range input.Name {
 			if unicode.IsUpper(v) == true {
-				upper+=1
-			} else if unicode.IsLower(v) ==  true {
+				upper += 1
+			} else if unicode.IsLower(v) == true {
 				lower += 1
 			} else if unicode.IsNumber(v) == true {
-				number+=1
-			} else if unicode.IsPunct(v){
-				sChar+=1
-			} else if unicode.IsSpace(v){
-				space+=1
+				number += 1
+			} else if unicode.IsPunct(v) {
+				sChar += 1
+			} else if unicode.IsSpace(v) {
+				space += 1
 			}
 		}
 		if upper < 1 {
@@ -90,17 +90,17 @@ func (mu *mentorUsecase) UpdateProfile(input mentor.UserCore, role string) (ment
 				return mentor.UserCore{}, errors.New("contain space")
 			}
 		}
-		if len(input.Email) < 8 || len(input.Email) > 40  {
+		if len(input.Email) < 8 || len(input.Email) > 40 {
 			return mentor.UserCore{}, errors.New("length email not valid")
 		} else if strings.Contains(input.Email, "@") == false && strings.Contains(input.Email, ".") == false {
 			return mentor.UserCore{}, errors.New("not contain (@) and (.)")
-		} 
+		}
 	} else {
 		input.Email = user.Email
 	}
 
 	// CEK KONDISI PASSWORD
-	if input.Password != ""{
+	if input.Password != "" {
 		var sChar = "@#$%^&*<>:;'[]{}|`~!"
 		var passUpper, passLower, passNumber, specialChar int
 		for _, v := range input.Password {
@@ -122,18 +122,18 @@ func (mu *mentorUsecase) UpdateProfile(input mentor.UserCore, role string) (ment
 			return mentor.UserCore{}, errors.New("string not as expected")
 		} else if passNumber < 1 {
 			return mentor.UserCore{}, errors.New("string not as expected")
-		} 
+		}
 		if specialChar == 0 {
 			return mentor.UserCore{}, errors.New("string not as expected")
 		} else if len(input.Password) < 8 || len(input.Password) > 30 {
 			return mentor.UserCore{}, errors.New("string too short or too long")
 		}
 
-		generate , _:= bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+		generate, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 		input.Password = string(generate)
 	}
 
-	// CEK GAMBAR 
+	// CEK GAMBAR
 	if input.Images == "" {
 		input.Images = user.Images
 	}
@@ -208,7 +208,7 @@ func (mu *mentorUsecase) UpdateTask(input mentor.TaskCore, role string) (mentor.
 		input.Description = data.Description
 	}
 	date := input.DueDate
-	if date.IsZero() == true{
+	if date.IsZero() == true {
 		input.DueDate = data.DueDate
 	}
 	if input.File == "" {
@@ -224,13 +224,13 @@ func (mu *mentorUsecase) UpdateTask(input mentor.TaskCore, role string) (mentor.
 	}
 	return res, nil
 }
-	
+
 func (mu *mentorUsecase) DeleteTask(idTask uint, idClass uint, role string) (mentor.TaskCore, error) {
 	if err := roleCheck(role); err != true {
 		return mentor.TaskCore{}, errors.New("user not mentor")
 	}
 
-	task,_ ,err := mu.mentorRepo.GetTaskSub(idTask)
+	task, _, err := mu.mentorRepo.GetTaskSub(idTask)
 	if task.ID == 0 {
 		return mentor.TaskCore{}, errors.New("error delete task")
 	}
@@ -242,29 +242,29 @@ func (mu *mentorUsecase) DeleteTask(idTask uint, idClass uint, role string) (men
 	return res, nil
 }
 
-func (mu *mentorUsecase) AddScore(input mentor.SubmissionCore, role string) (mentor.SubmissionCore, error ) {
+func (mu *mentorUsecase) AddScore(input mentor.SubmissionCore, role string) (mentor.SubmissionCore, error) {
 	if err := roleCheck(role); err != true {
 		return mentor.SubmissionCore{}, errors.New("user not mentor")
 	}
-	
+
 	// CEK KETENTUAN SCORE
 	count := 0
 	cek := input.Score
 	for cek > 0 {
-		cek = cek/10
+		cek = cek / 10
 		count++
 	}
 	isNumber := 0
 	cnv := strconv.Itoa(input.Score)
-	for _, v := range cnv{
+	for _, v := range cnv {
 		if unicode.IsNumber(v) != true {
 			isNumber += 1
 		}
 	}
-	
+
 	if input.Score == 0 {
 		return mentor.SubmissionCore{}, errors.New("input score empty")
-	} 
+	}
 	if count > 3 {
 		return mentor.SubmissionCore{}, errors.New("score length not valid")
 	}

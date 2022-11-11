@@ -44,7 +44,7 @@ func TestAddUser(t *testing.T) {
 		assert.Nil(t, err)
 		repo.AssertExpectations(t)
 	})
-	t.Run("User not admin", func(t *testing.T) {
+	t.Run("User not admin", func(t *testing.T) { //USER NOT ADMIN LOGIC LINE 31
 		srv := New(repo)
 		input := admin.UserCore{
 			Name:     "Nur Fatchurohman",
