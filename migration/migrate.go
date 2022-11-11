@@ -82,7 +82,7 @@ type GoogleToken struct {
 }
 
 func InitMigrate(db *gorm.DB) {
-	// db.AutoMigrate(&userModel.Mentor{})
+	db.AutoMigrate(&GoogleToken{})
 	db.AutoMigrate((&Mentor{}))
 	db.AutoMigrate((&Mentee{}))
 	db.AutoMigrate((&Class{}))
