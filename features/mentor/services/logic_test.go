@@ -121,14 +121,6 @@ func TestFailedUpdateUser(t *testing.T) {
 	})
 
 	t.Run("Length email", func(t *testing.T) {
-		// repo.On("GetSingleMentor", mock.Anything).
-		// 	Return(mentor.UserCore{
-		// 		IdUser:  1000,
-		// 		Name:    "Nur Fatchurohman",
-		// 		Email:   "nur.faturohman28@gmail.com",
-		// 		IdClass: 1,
-		// 		Role:    "mentee",
-		// 	}, errors.New("length name not valid")).Once()
 		srv := New(repo)
 		input := mentor.UserCore{
 			IdUser:   1000,
@@ -145,6 +137,40 @@ func TestFailedUpdateUser(t *testing.T) {
 		repo.AssertExpectations(t)
 	})
 
+}
+
+func TestAddTask(t *testing.T) {
+	repo := mocks.NewRepoInterface(t)
+	task := mentor.TaskCore{
+		ID:          1,
+		IdClass:     1,
+		IdMentor:    1000,
+		Title:       "Persamaan",
+		Description: "samain a dan xxx",
+		File:        "file.pdf",
+		Images:      "image.jpg",
+	}
+	t.Run("Success Add Task", func(t *testing.T) {
+		repo.On("InsertTask", mock.Anything, mock.Anything).Return(task, nil).Once()
+		srv := New(repo)
+		res, err := srv.AddTask(task, "mentor")
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Failed Add Task", func(t *testing.T) {
+		srv := New(repo)
+		_, err := srv.AddTask(task, "mentee")
+		assert.NotNil(t, err)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Failed Add Task", func(t *testing.T) {
+		repo.On("InsertTask", mock.Anything, mock.Anything).Return(task, errors.New("error insert task")).Once()
+		srv := New(repo)
+		_, err := srv.AddTask(task, "mentor")
+		assert.NotNil(t, err)
+		repo.AssertExpectations(t)
+	})
 }
 func TestSuccessUpdateUser(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
