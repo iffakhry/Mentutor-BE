@@ -1,14 +1,18 @@
 package helper
 
-import "golang.org/x/oauth2"
-import "golang.org/x/oauth2/google"
-import "google.golang.org/api/gmail/v1"
-import "fmt"
-import "log"
-import "encoding/base64"
-import "io/ioutil"
+import (
+	"encoding/base64"
+	"fmt"
+	"io/ioutil"
+	"log"
 
-func GetToken() (string, error){
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/api/gmail/v1"
+)
+
+// Get link for acceess code
+func GetUrl() (string, error){
 	// Reads in our credentials
 	secret, err := ioutil.ReadFile("client_secret_web.json")
 	if err != nil {
@@ -30,7 +34,8 @@ func GetToken() (string, error){
 	return url, nil
 }
 
-func SendGmail () {
+// Get token from access code
+func GetToken(code string) (*oauth2.Token, error) {
 
 	// Reads in our credentials
 	secret, err := ioutil.ReadFile("client_secret_web.json")
@@ -46,7 +51,6 @@ func SendGmail () {
 	}
 
 	// Grabs the authorization code you paste into the terminal
-	var code string
 	_, err = fmt.Scan(&code)
 	if err != nil {
 		log.Printf("Error: %v", err)
@@ -54,6 +58,24 @@ func SendGmail () {
 
 	// Exchange the auth code for an access token
 	tok, err := conf.Exchange(oauth2.NoContext, code)
+	if err != nil {
+		log.Printf("Error: %v", err)
+	}
+	return tok, nil
+}
+
+// Send gmail message
+func BuildMessage(tok *oauth2.Token) (error) {
+
+	// Reads in our credentials
+	secret, err := ioutil.ReadFile("client_secret_web.json")
+	if err != nil {
+		log.Printf("Error: %v", err)
+	}
+
+	// Creates a oauth2.Config using the secret
+	// The second parameter is the scope, in this case we only want to send email
+	conf, err := google.ConfigFromJSON(secret, gmail.MailGoogleComScope)
 	if err != nil {
 		log.Printf("Error: %v", err)
 	}
@@ -72,8 +94,8 @@ func SendGmail () {
 
 	// Compose the message
 	messageStr := []byte(
-		"From: youremail@gmail.com\r\n" +
-			"To: recipient@gmail.com\r\n" +
+		"From: mentutor@gmail.com\r\n" +
+			"To: nur.faturohman28@gmail.com\r\n" +
 			"Subject: My first Gmail API message\r\n\r\n" +
 			"Message body goes here!")
 
@@ -84,7 +106,9 @@ func SendGmail () {
 	_, err = gmailService.Users.Messages.Send("me", &message).Do()
 	if err != nil {
 		log.Printf("Error: %v", err)
+		return err
 	} else {
 		fmt.Println("Message sent!")
+		return nil
 	}
 }

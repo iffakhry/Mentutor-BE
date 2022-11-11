@@ -62,6 +62,25 @@ type Task struct {
 	File        string `gorm:"type:varchar(255);not null"`
 }
 
+type GoogleToken struct {
+	gorm.Model
+	Code         string
+	AccessToken  string
+	TokenType    string
+	RefreshToken string
+	Expiry       time.Time
+}
+
+// TOKEN	
+func FromEntityToken(data mentee.Token) GoogleToken {
+	return GoogleToken{
+		Code: data.Code,
+		AccessToken: data.AccessToken,
+		TokenType: data.TokenType,
+		RefreshToken: data.RefreshToken,
+	}
+}
+
 // MENTEE
 func FromEntity(data mentee.MenteeCore) Mentee {
 	return Mentee{

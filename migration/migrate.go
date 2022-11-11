@@ -10,12 +10,12 @@ import (
 
 type Mentee struct {
 	gorm.Model
-	Name        string `gorm:"type:varchar(255);not null"`
-	Email       string `gorm:"type:varchar(255);not null;unique"`
-	Password    string `gorm:"type:varchar(255);not null"`
-	Images      string `gorm:"type:varchar(255)"`
-	Role        string `gorm:"type:enum('mentee');not null"`
-	IdClass     uint
+	Name     string `gorm:"type:varchar(255);not null"`
+	Email    string `gorm:"type:varchar(255);not null;unique"`
+	Password string `gorm:"type:varchar(255);not null"`
+	Images   string `gorm:"type:varchar(255)"`
+	Role     string `gorm:"type:enum('mentee');not null"`
+	IdClass  uint
 }
 
 type Mentor struct {
@@ -42,20 +42,20 @@ type Task struct {
 	gorm.Model
 	IdClass     uint
 	IdMentor    uint
-	Title       string       `gorm:"type:varchar(255);not null"`
-	Description string       `gorm:"type:varchar(255);not null"`
-	File        string       `gorm:"type:varchar(255);not null"`
-	Images      string       `gorm:"type:varchar(255);not null"`
-	DueDate     *time.Time   `gorm:"not null"`
+	Title       string     `gorm:"type:varchar(255);not null"`
+	Description string     `gorm:"type:varchar(255);not null"`
+	File        string     `gorm:"type:varchar(255);not null"`
+	Images      string     `gorm:"type:varchar(255);not null"`
+	DueDate     *time.Time `gorm:"not null"`
 }
 
 type Submission struct {
 	gorm.Model
 	IdMentee uint
 	IdTask   uint
-	File   string `gorm:"type:varchar(255);not null"`
-	Score  int    `gorm:"type:int(3);not null"`
-	Status string `gorm:"type:enum('done');not null"`
+	File     string `gorm:"type:varchar(255);not null"`
+	Score    int    `gorm:"type:int(3);not null"`
+	Status   string `gorm:"type:enum('done');not null"`
 }
 
 type Status struct {
@@ -71,6 +71,14 @@ type Comment struct {
 	IdUser   uint
 	IdStatus uint
 	Caption  string `gorm:"type:varchar(255);not null"`
+}
+
+type GoogleToken struct {
+	Code         string
+	AccessToken  string
+	TokenType    string
+	RefreshToken string
+	Expiry       time.Time
 }
 
 func InitMigrate(db *gorm.DB) {

@@ -167,13 +167,6 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
 		}
 
-		// GET TOKEN UNTUK AUTH GMAIL
-		token , err := helper.GetToken()
-		if err != nil {
-			log.Print(err.Error())
-			return c.JSON(http.StatusInternalServerError, FailedResponse("Failed get token gmail"))
-		}
-		res.Token = token
 		return c.JSON(http.StatusCreated, SuccessResponse("success insert submission", ToResponseSub(res)))
 
 	}
@@ -181,12 +174,20 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 
 func (md *MenteeDelivery) GmailRequest() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var data GmailFormat
 		
-		c.Bind(&data)
+		code := c.QueryParam("code")
+		token, err := helper.GetToken(code)
+		if err != nil {
+			return nil
+		}
 
-		log.Print(data)
-		helper.SendGmail()
-		return nil
+		cnv := ToDomainToken(code, token)
+		_, err = md.MenteeUsecase.AddToken(cnv)
+		if err != nil {
+			return nil
+		}
+
+		url := "https://ecommerce-alta.online"
+		return c.Redirect(http.StatusMethodNotAllowed, url)
 	}
 }

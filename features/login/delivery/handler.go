@@ -43,6 +43,16 @@ func (h *AuthDelivery) Login() echo.HandlerFunc {
 				return c.JSON(http.StatusBadRequest, helper.FailedResponse(errx.Error()))
 			}
 		}
+		url, err := helper.GetUrl()
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Failed get token Oauth"))
+		}
+
+		log.Print(url)
+		err  = c.Redirect(http.StatusMovedPermanently, url)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Failed get token Oauth"))
+		}
 
 		res.Token = token
 		return c.JSON(http.StatusOK, helper.SuccessResponse("login successful", ToResponse(res, "login")))

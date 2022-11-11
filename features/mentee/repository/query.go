@@ -126,5 +126,13 @@ func (md *menteeData) GetSingleTask(idTask uint) (mentee.Task, error) {
 
 	cnv := mentee.Task{ID: res.ID, DueDate: *res.DueDate}
 	return cnv, nil
+}
 
+func (md *menteeData) InsertToken(data mentee.Token) (mentee.Token, error) {
+	token := FromEntityToken(data)
+
+	if err := md.db.Create(&token).Error; err != nil {
+		return mentee.Token{}, err
+	}
+	return data, nil
 }
