@@ -247,6 +247,15 @@ func (mu *mentorUsecase) AddScore(input mentor.SubmissionCore, role string) (men
 		return mentor.SubmissionCore{}, errors.New("user not mentor")
 	}
 
+
+	if input.ID == 0 {
+		return mentor.SubmissionCore{}, errors.New("submission not found")
+	}
+	err := mu.mentorRepo.GetSubmission(input.ID)
+	if err != nil {
+		return mentor.SubmissionCore{}, errors.New("submission not found")
+	}
+
 	// CEK KETENTUAN SCORE
 	count := 0
 	cek := input.Score

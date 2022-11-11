@@ -156,3 +156,12 @@ func (mr *mentorRepo) AddScore(input mentor.SubmissionCore) (mentor.SubmissionCo
 	cnv := ToDomainSubmission(data)
 	return cnv, nil 
 }
+
+func (mr *mentorRepo) GetSubmission(id uint) error {
+
+	if err := mr.db.Model(&Submission{}).Where("id = ?", id).Error; err != nil {
+		log.Print("error")
+		return err
+	}
+	return nil
+}
