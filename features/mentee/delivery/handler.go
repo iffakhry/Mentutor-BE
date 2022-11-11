@@ -180,8 +180,9 @@ func (md *MenteeDelivery) GmailRequest() echo.HandlerFunc {
 		if err != nil {
 			return nil
 		}
-
+		log.Print("INI LOG CODE : " + code)
 		cnv := ToDomainToken(code, token)
+		log.Print("INI LOG TOKEN : ", cnv)
 		_, err = md.MenteeUsecase.AddToken(cnv)
 		if err != nil {
 			return nil

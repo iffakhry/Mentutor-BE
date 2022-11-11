@@ -129,6 +129,7 @@ func (md *menteeData) GetSingleTask(idTask uint) (mentee.Task, error) {
 }
 
 func (md *menteeData) InsertToken(data mentee.Token) (mentee.Token, error) {
+	log.Print(data)
 	token := FromEntityToken(data)
 
 	if err := md.db.Create(&token).Error; err != nil {
