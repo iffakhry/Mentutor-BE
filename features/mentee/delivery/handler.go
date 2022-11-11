@@ -160,7 +160,7 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 		}
 		res, err1 := md.MenteeUsecase.InsertSub(data)
 		if err1 != nil {
-			log.Print(err1)
+			log.Print(err1.Error())
 			if strings.Contains(err1.Error(), "due date") {
 				return c.JSON(http.StatusBadRequest, FailedResponse("Submit melewati due date"))
 			}

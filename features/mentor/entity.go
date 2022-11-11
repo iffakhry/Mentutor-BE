@@ -69,4 +69,5 @@ type RepoInterface interface {
 	GetSingleTask(id uint) (TaskCore, error)
 	DeleteTask(idTask uint, idClass uint) (TaskCore, error)
 	AddScore(input SubmissionCore) (SubmissionCore, error)
+	GetSubmission(id uint) (error)
 }
