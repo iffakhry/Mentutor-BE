@@ -2,7 +2,6 @@ package delivery
 
 import (
 	"be12/mentutor/features/mentee"
-	"log"
 )
 
 type UpdateResponse struct {
@@ -40,7 +39,6 @@ type SubResponse struct {
 	ID    uint   `json:"id_submission"`
 	Title string `json:"title"`
 	File  string `json:"file"`
-	Token string `json:"token"`
 }
 type TaskResponse struct {
 	ID          uint   `json:"id_task"`
@@ -87,13 +85,11 @@ func ToResponseComments(data mentee.CommentsCore) CommentPostResponse {
 }
 
 func ToResponseSub(data mentee.Submission) SubResponse {
-	log.Print(data.ID, " INI ID RESPONSE")
 	return SubResponse{
 
 		ID:    data.ID,
 		Title: data.Title,
 		File:  data.File,
-		Token: data.Token,
 	}
 }
 

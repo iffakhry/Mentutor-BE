@@ -28,7 +28,7 @@ type Mentee struct {
 	ClassName string
 }
 
-type GmailToken struct {
+type GoogleToken struct {
 	gorm.Model
 	IdMentee     uint
 	Code         string

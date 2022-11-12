@@ -101,7 +101,7 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 
 func (au *authUsecase) GetToken(id uint) error {
 	
-	err := au.GetToken(id)
+	err := au.authData.GetToken(id)
 	if err != nil {
 		return err
 	}
@@ -109,7 +109,7 @@ func (au *authUsecase) GetToken(id uint) error {
 }
 
 func(au *authUsecase) InsertToken(idMentee uint) error {
-	err := au.InsertToken(idMentee)
+	err := au.authData.InsertToken(idMentee)
 	if err != nil {
 		return err
 	}
