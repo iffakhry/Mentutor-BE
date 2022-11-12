@@ -142,10 +142,9 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 		if err == nil {
 			res, err := helper.UploadFileSubmission(file, fileheader)
 			if err != nil {
-				log.Print(err)
+				log.Print(err.Error())
 				return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 			}
-			log.Print(res)
 			submission.File = res
 		}
 
@@ -158,8 +157,6 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 		if role != "mentee" {
 			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
 		}
-
-		
 
 		res, err1 := md.MenteeUsecase.InsertSub(data)
 		if err1 != nil {

@@ -41,15 +41,15 @@ func (repo *authData) Login(input login.Core) (login.Core, error) {
 }
 
 func (ad *authData) GetToken(id uint) error {
-
-	if err := ad.db.Where("id_mentee = ?", id).First(&GmailToken{}).Error; err != nil {
+	var res GoogleToken
+	if err := ad.db.Where("id_mentee = ?", id).First(&res).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
 func (ad *authData) InsertToken(idMentee uint) error {
-	var token GmailToken
+	var token GoogleToken
 
 	token.IdMentee = idMentee
 
