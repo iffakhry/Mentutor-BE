@@ -172,6 +172,218 @@ func TestAddTask(t *testing.T) {
 		repo.AssertExpectations(t)
 	})
 }
+
+func TestGetAllTask(t *testing.T) {
+	repo := mocks.NewRepoInterface(t)
+	task := []mentor.TaskCore{{
+		ID:          1,
+		IdClass:     1,
+		IdMentor:    2,
+		Title:       "Persamaan",
+		Description: "A ketemu B tentukan bilangan z ?",
+		File:        "file.pdf",
+		Images:      "image.jpg",
+	}}
+	t.Run("Success Get All Task", func(t *testing.T) {
+		repo.On("GetAllTask", mock.Anything).Return(task, nil).Once()
+
+		srv := New(repo)
+		res, err := srv.GetAllTask("mentor")
+		assert.NoError(t, err)
+		assert.Equal(t, res, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Failed Get All Task", func(t *testing.T) {
+		repo.On("GetAllTask", mock.Anything).Return([]mentor.TaskCore{}, errors.New("error get all task")).Once()
+		srv := New(repo)
+		res, err := srv.GetAllTask("mentor")
+		assert.Error(t, err)
+		assert.Equal(t, res, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Failed Get All Task", func(t *testing.T) {
+		srv := New(repo)
+		_, err := srv.GetAllTask("admin")
+		assert.Error(t, err)
+		assert.NotNil(t, err)
+		repo.AssertExpectations(t)
+	})
+}
+func TestAddScore(t *testing.T) {
+	repo := mocks.NewRepoInterface(t)
+	sub := mentor.SubmissionCore{
+		ID:         1,
+		NameMentee: "Hery Budiyana",
+		Title:      "Persamaan",
+		IdMentee:   1,
+		IdTask:     1,
+		File:       "file.pdf",
+		Score:      80,
+	}
+	task := mentor.TaskCore{
+		ID:          1,
+		IdClass:     1,
+		IdMentor:    2,
+		Title:       "Persamaan",
+		Description: "A ketemu B tentukan bilangan z ?",
+		File:        "file.pdf",
+		Images:      "image.jpg",
+	}
+	t.Run("Success Add Score", func(t *testing.T) {
+		repo.On("GetSubmission", mock.Anything, mock.Anything).Return(nil).Once()
+		repo.On("GetSingleTask", mock.Anything, mock.Anything).Return(task, nil).Once()
+		repo.On("AddScore", mock.Anything, mock.Anything).Return(sub, nil).Once()
+		srv := New(repo)
+		res, err := srv.AddScore(sub, "mentor")
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("input score empty", func(t *testing.T) {
+		// repo.On("AddScore", mock.Anything, mock.Anything).Return(mentor.SubmissionCore{}, errors.New("input score empty")).Once()
+		input := mentor.SubmissionCore{Score: 0}
+		srv := New(repo)
+		_, err := srv.AddScore(input, "mentor")
+		assert.Nil(t, nil)
+		assert.NotEmpty(t, err)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Failed Add Score", func(t *testing.T) {
+		repo.On("GetSubmission", mock.Anything, mock.Anything).Return(errors.New("failed get submission")).Once()
+		srv := New(repo)
+		_, err := srv.AddScore(sub, "mentor")
+		assert.NotNil(t, err)
+		repo.AssertExpectations(t)
+	})
+	t.Run("user not mentor", func(t *testing.T) {
+		srv := New(repo)
+		_, err := srv.AddScore(sub, "mentee")
+		assert.NotNil(t, err)
+		repo.AssertExpectations(t)
+	})
+
+}
+func TestGetTaskSub(t *testing.T) {
+	repo := mocks.NewRepoInterface(t)
+	task := mentor.TaskCore{
+		ID:          1,
+		IdClass:     1,
+		IdMentor:    2,
+		Title:       "Persamaan",
+		Description: "A ketemu B tentukan bilangan z ?",
+		File:        "file.pdf",
+		Images:      "image.jpg",
+	}
+	sub := []mentor.SubmissionCore{{
+		ID:         1,
+		NameMentee: "Hery Budiyana",
+		Title:      "Persamaan",
+		IdMentee:   1,
+		IdTask:     1,
+		File:       "persamaaan.pdf",
+		Score:      99,
+	}}
+	t.Run("Success Get Task Submission", func(t *testing.T) {
+		repo.On("GetTaskSub", mock.Anything, mock.Anything).Return(task, sub, nil).Once()
+		srv := New(repo)
+		res, _, err := srv.GetTaskSub(1, "mentor")
+		assert.NoError(t, err)
+		assert.Equal(t, res, res)
+		repo.AssertExpectations(t)
+
+	})
+	t.Run("Failed Get Task Submission", func(t *testing.T) {
+		repo.On("GetTaskSub", mock.Anything, mock.Anything).Return(mentor.TaskCore{}, []mentor.SubmissionCore{}, errors.New("error get detail task")).Once()
+		srv := New(repo)
+		res, _, err := srv.GetTaskSub(1, "mentor")
+		assert.Error(t, err)
+		assert.Equal(t, res, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("User Not Mentor", func(t *testing.T) {
+		// repo.On("GetTaskSub", mock.Anything, mock.Anything).Return(mentor.TaskCore{}, []mentor.SubmissionCore{}, errors.New("user not mentor")).Once()
+		srv := New(repo)
+		res, _, err := srv.GetTaskSub(1, "mentee")
+		assert.Error(t, err)
+		assert.Equal(t, res, res)
+		repo.AssertExpectations(t)
+	})
+}
+
+func TestUpdateTask(t *testing.T) {
+	repo := mocks.NewRepoInterface(t)
+	task := mentor.TaskCore{
+		ID:          1,
+		IdClass:     1,
+		IdMentor:    1,
+		Title:       "persamaan",
+		Description: "jika x dan y adalah genap maka tentukan bilangan asd",
+		File:        "persamaan.pdf",
+		Images:      "image.jpg",
+	}
+	t.Run("success update task", func(t *testing.T) {
+		repo.On("GetSingleTask", mock.Anything).Return(task, nil).Once()
+		repo.On("EditTask", mock.Anything).Return(task, nil).Once()
+
+		srv := New(repo)
+		res, err := srv.UpdateTask(task, "mentor")
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res)
+		repo.AssertExpectations(t)
+
+	})
+	t.Run("Failed Update task", func(t *testing.T) {
+		repo.On("GetSingleTask", mock.Anything).Return(task, nil).Once()
+		repo.On("EditTask", mock.Anything).Return(mentor.TaskCore{}, errors.New("error update task")).Once()
+		srv := New(repo)
+		_, err := srv.UpdateTask(task, "mentor")
+		assert.NotNil(t, err)
+		repo.AssertExpectations(t)
+
+	})
+	t.Run("user not mentor", func(t *testing.T) {
+
+		srv := New(repo)
+		_, err := srv.UpdateTask(task, "mentee")
+		assert.NotNil(t, err)
+		repo.AssertExpectations(t)
+
+	})
+	t.Run("success update task", func(t *testing.T) {
+		repo.On("GetSingleTask", mock.Anything).Return(task, nil).Once()
+		repo.On("EditTask", mock.Anything).Return(task, nil).Once()
+
+		srv := New(repo)
+		input := mentor.TaskCore{
+			ID:       1,
+			IdClass:  1,
+			IdMentor: 1,
+			Title:    "",
+		}
+		res, err := srv.UpdateTask(input, "mentor")
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res)
+		repo.AssertExpectations(t)
+
+	})
+	t.Run("success update task", func(t *testing.T) {
+		repo.On("GetSingleTask", mock.Anything).Return(mentor.TaskCore{}, errors.New("task not found")).Once()
+		// repo.On("EditTask", mock.Anything).Return(task, nil).Once()
+
+		srv := New(repo)
+		input := mentor.TaskCore{
+			ID:       1,
+			IdClass:  1,
+			IdMentor: 1,
+			Title:    "",
+		}
+		_, err := srv.UpdateTask(input, "mentor")
+		assert.NotNil(t, err)
+		repo.AssertExpectations(t)
+
+	})
+
+}
 func TestSuccessUpdateUser(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
 	t.Run("Success update user mentee", func(t *testing.T) {
@@ -272,16 +484,31 @@ func TestSuccessUpdateUser(t *testing.T) {
 
 func TestDeleteTask(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
+
 	t.Run("Not mentor", func(t *testing.T) {
 		srv := New(repo)
 		_, err := srv.DeleteTask(1, 1, "mentee")
 		assert.NotNil(t, err)
 		repo.AssertExpectations(t)
 	})
-	t.Run("Success delete class", func(t *testing.T) {
+	t.Run("Success delete task", func(t *testing.T) {
 		repo.On("GetTaskSub", mock.Anything).Return(mentor.TaskCore{}, []mentor.SubmissionCore{}, nil).Once()
 		srv := New(repo)
 		res, err := srv.DeleteTask(1, 1, "mentor")
+		assert.Nil(t, nil)
+		repo.AssertExpectations(t)
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+
+	})
+	t.Run("Success delete task", func(t *testing.T) {
+		repo.On("GetTaskSub", mock.Anything).Return(mentor.TaskCore{}, []mentor.SubmissionCore{}, nil).Once()
+		input := mentor.TaskCore{
+			ID:      1,
+			IdClass: 1,
+		}
+		srv := New(repo)
+		res, err := srv.DeleteTask(input.ID, input.IdClass, "mentor")
 		assert.Nil(t, nil)
 		repo.AssertExpectations(t)
 		assert.NotNil(t, err)
