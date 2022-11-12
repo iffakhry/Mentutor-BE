@@ -75,11 +75,11 @@ type Comment struct {
 
 type GoogleToken struct {
 	gorm.Model
+	IdMentee     uint
 	Code         string
 	AccessToken  string
 	TokenType    string
 	RefreshToken string
-	Expiry       time.Time
 }
 
 func InitMigrate(db *gorm.DB) {

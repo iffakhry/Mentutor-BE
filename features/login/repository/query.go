@@ -38,5 +38,23 @@ func (repo *authData) Login(input login.Core) (login.Core, error) {
 	repo.db.Model(&Class{}).Where("id = ?", cnv.IdClass).Select("classes.class_name").Scan(&cnv)
 	input = ToDomainMentor(cnv)
 	return input, nil
+}
 
+func (ad *authData) GetToken(id uint) error {
+
+	if err := ad.db.Where("id_mentee = ?", id).First(&GmailToken{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ad *authData) InsertToken(idMentee uint) error {
+	var token GmailToken
+
+	token.IdMentee = idMentee
+
+	if err := ad.db.Create(&token).Error; err != nil {
+		return err
+	}
+	return nil
 }

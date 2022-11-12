@@ -251,3 +251,4 @@ func (ar *adminRepo)GetSingleClass(id uint) (admin.ClassCore, error) {
 	cnv := ToDomainClass(class)
 	return cnv, nil
 }
+

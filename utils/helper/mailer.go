@@ -11,7 +11,7 @@ import (
 	"google.golang.org/api/gmail/v1"
 )
 
-// Get link for acceess code
+// Get link for auth code
 func GetUrl() (string, error){
 	// Reads in our credentials
 	secret, err := ioutil.ReadFile("client_secret_web.json")
@@ -50,18 +50,18 @@ func GetToken(code string) (*oauth2.Token, error) {
 		log.Printf("Error: %v", err)
 	}
 
-	// Grabs the authorization code you paste into the terminal
-	_, err = fmt.Scan(&code)
-	if err != nil {
-		log.Printf("Error: %v", err)
-	}
-
 	// Exchange the auth code for an access token
 	tok, err := conf.Exchange(oauth2.NoContext, code)
 	if err != nil {
 		log.Printf("Error: %v", err)
 	}
-	return tok, nil
+
+	staticTok := oauth2.StaticTokenSource(tok)
+	token , err := staticTok.Token()
+	if err != nil {
+		log.Printf("Error: %v", err)
+	}
+	return token, nil
 }
 
 // Send gmail message

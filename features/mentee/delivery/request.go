@@ -2,7 +2,6 @@ package delivery
 
 import (
 	"be12/mentutor/features/mentee"
-	"time"
 
 	"golang.org/x/oauth2"
 )
@@ -31,14 +30,6 @@ type SubFormat struct {
 	File      string `json:"file" form:"file"`
 }
 
-type Token struct {
-	IdMente      uint
-	AccessToken  string    `json:"access_token"`
-	TokenType    string    `json:"token_type,omitempty"`
-	RefreshToken string    `json:"refresh_token,omitempty"`
-	Expiry       time.Time `json:"expiry,omitempty"`
-}
-
 func ToDomain(data Request) mentee.Status {
 	return mentee.Status{
 		Caption: data.Caption,
@@ -62,7 +53,6 @@ func ToDomainToken(code string, data *oauth2.Token) mentee.Token {
 		AccessToken:  data.AccessToken,
 		TokenType:    data.TokenType,
 		RefreshToken: data.RefreshToken,
-		Expiry:       data.Expiry,
 	}
 }
 

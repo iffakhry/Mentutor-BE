@@ -86,3 +86,12 @@ func (mu *MenteeUsecase) AddToken(data mentee.Token) (mentee.Token, error) {
 	}
 	return res, nil
 }
+
+func (mu *MenteeUsecase) GetTokenMentee(idMentee uint) (mentee.Token, error) {
+
+	res, err := mu.menteeData.GetTokenMentee(idMentee)
+	if err != nil {
+		return mentee.Token{}, errors.New("error get token")
+	}
+	return res, nil
+}
