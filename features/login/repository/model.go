@@ -28,6 +28,15 @@ type Mentee struct {
 	ClassName string
 }
 
+type GmailToken struct {
+	gorm.Model
+	IdMentee     uint
+	Code         string
+	AccessToken  string
+	TokenType    string
+	RefreshToken string
+}
+
 type Class struct {
 	ClassName string
 }

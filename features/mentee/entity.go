@@ -2,7 +2,6 @@ package mentee
 
 import (
 	"time"
-
 )
 
 type MenteeCore struct {
@@ -64,11 +63,12 @@ type Task struct {
 }
 
 type Token struct {
+	Id           uint
+	IdMentee     uint
 	Code         string
-	AccessToken  string    
-	TokenType    string    
-	RefreshToken string   
-	Expiry       time.Time
+	AccessToken  string
+	TokenType    string
+	RefreshToken string
 }
 
 type UseCaseInterface interface {
@@ -78,6 +78,7 @@ type UseCaseInterface interface {
 	InsertSub(data Submission) (Submission, error)
 	GetTask(idClass uint, role string) (data []Task, err error)
 	AddToken(token Token) (Token, error)
+	GetTokenMentee(idMentee uint) (Token, error)
 }
 
 type RepoInterface interface {
@@ -88,4 +89,5 @@ type RepoInterface interface {
 	GetAllTask(idClass uint) (data []Task, err error)
 	GetSingleTask(idTask uint) (Task, error)
 	InsertToken(token Token) (Token, error)
+	GetTokenMentee(idMentee uint) (Token, error)
 }

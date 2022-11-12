@@ -98,3 +98,20 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 
 	return res, token, err
 }
+
+func (au *authUsecase) GetToken(id uint) error {
+	
+	err := au.GetToken(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func(au *authUsecase) InsertToken(idMentee uint) error {
+	err := au.InsertToken(idMentee)
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -158,6 +158,9 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 		if role != "mentee" {
 			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
 		}
+
+		
+
 		res, err1 := md.MenteeUsecase.InsertSub(data)
 		if err1 != nil {
 			log.Print(err1.Error())
@@ -180,6 +183,7 @@ func (md *MenteeDelivery) GmailRequest() echo.HandlerFunc {
 		if err != nil {
 			return nil
 		}
+
 		log.Print("INI LOG CODE : " + code)
 		cnv := ToDomainToken(code, token)
 		log.Print("INI LOG TOKEN : ", cnv)
@@ -188,7 +192,6 @@ func (md *MenteeDelivery) GmailRequest() echo.HandlerFunc {
 			return nil
 		}
 
-		url := "https://ecommerce-alta.online"
-		return c.Redirect(http.StatusMethodNotAllowed, url)
+		return c.JSON(http.StatusOK, "successs")
 	}
 }

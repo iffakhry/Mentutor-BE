@@ -132,8 +132,19 @@ func (md *menteeData) InsertToken(data mentee.Token) (mentee.Token, error) {
 	log.Print(data)
 	token := FromEntityToken(data)
 
-	if err := md.db.Create(&token).Error; err != nil {
+	if err := md.db.Order("created_at desc").First(&GoogleToken{}).Updates(&token).Error; err != nil {
 		return mentee.Token{}, err
 	}
 	return data, nil
+}
+
+func (md *menteeData) GetTokenMentee(idMentee uint) (mentee.Token ,error) {
+	var token GoogleToken
+
+	if err := md.db.Where("id_mentee = ?", idMentee).First(&token).Error; err != nil {
+		return mentee.Token{}, err
+	}
+
+	cnv := ToEntityToken(token)
+	return cnv, nil
 }

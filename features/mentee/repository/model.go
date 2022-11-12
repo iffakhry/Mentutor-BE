@@ -68,7 +68,6 @@ type GoogleToken struct {
 	AccessToken  string
 	TokenType    string
 	RefreshToken string
-	Expiry       time.Time
 }
 
 // TOKEN	
@@ -78,6 +77,12 @@ func FromEntityToken(data mentee.Token) GoogleToken {
 		AccessToken: data.AccessToken,
 		TokenType: data.TokenType,
 		RefreshToken: data.RefreshToken,
+	}
+}
+
+func ToEntityToken(data GoogleToken) mentee.Token {
+	return mentee.Token{
+		
 	}
 }
 
