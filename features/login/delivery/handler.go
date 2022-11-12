@@ -48,13 +48,18 @@ func (h *AuthDelivery) Login() echo.HandlerFunc {
 		if res.ID < 1000 {
 			err := h.authUsecase.GetToken(res.ID)
 			if err != nil {
-			url, err = helper.GetUrl()
-			// log.Print(url)
+				url, err = helper.GetUrl()
+				// log.Print(url)
 				if err != nil {
+					log.Print(err)
 					return c.JSON(http.StatusBadRequest, helper.FailedResponse("Failed get url Oauth"))
 				}
+				err = h.authUsecase.InsertToken(res.ID)
+				if err != nil {
+					log.Print(err)
+					return c.JSON(http.StatusBadRequest, helper.FailedResponse("Failed insert to db"))
+				}
 			}
-			err = h.authUsecase.InsertToken(res.ID)
 		}	
 		res.Token = token
 		return c.JSON(http.StatusOK, helper.SuccessResponse("login successful", ToResponse(res, "login", url)))
