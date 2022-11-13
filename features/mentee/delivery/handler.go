@@ -152,6 +152,13 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 		idCnv, _ := strconv.Atoi(idtasks)
 		submission.ID_Tasks = uint(idCnv)
 		submission.ID_Mentee = uint(idUser)
+
+		// Cek sudah pernah submit atau belum
+		count, _ := md.MenteeUsecase.GetSub(uint(idUser), uint(idCnv))
+		if count > 0 {
+			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
+		}
+
 		data := ToDomainSub(submission)
 
 		if role != "mentee" {
@@ -166,6 +173,8 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 			}
 			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
 		}
+
+		res.File = fileheader.Filename
 
 		// Get token google
 		resTok, err := md.MenteeUsecase.GetTokenMentee(uint(idUser))
@@ -187,6 +196,7 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 		//Call gmail sender
 		cnvTok := ToOauth(resTok)
 		err = helper.BuildMessage(&cnvTok, resMentee, resMentor, resTask)
+
 		return c.JSON(http.StatusCreated, SuccessResponse("success insert submission", ToResponseSub(res)))
 	}
 }
@@ -211,6 +221,6 @@ func (md *MenteeDelivery) GmailRequest() echo.HandlerFunc {
 			return nil
 		}
 
-		return c.Redirect(http.StatusMovedPermanently, "https://mentutor.vercel.app")
+		return c.JSON(http.StatusOK, "successs")
 	}
 }

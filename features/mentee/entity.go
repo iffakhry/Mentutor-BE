@@ -90,6 +90,7 @@ type UseCaseInterface interface {
 	GetSingleTask(idTask uint) (Task, error)
 	GetMentee(idUser uint) (MenteeCore, error)
 	GetMentor(idUser uint) (MentorCore, error)
+	GetSub(idUser uint, idTask uint) (int, error)
 }
 
 type RepoInterface interface {
@@ -103,4 +104,5 @@ type RepoInterface interface {
 	GetTokenMentee(idMentee uint) (Token, error)
 	GetMentee(idUser uint) (MenteeCore, error)
 	GetMentor(idUser uint) (MentorCore, error)
+	GetSub(idUser uint, idTask uint) (int, error)
 }
