@@ -73,3 +73,11 @@ func ToDomainSub(i SubFormat) mentee.Submission {
 		File:      i.File,
 	}
 }
+
+func ToOauth(data mentee.Token) oauth2.Token {
+	return oauth2.Token{
+		AccessToken: data.AccessToken,
+		TokenType: data.TokenType,
+		RefreshToken: data.RefreshToken,
+	}
+}

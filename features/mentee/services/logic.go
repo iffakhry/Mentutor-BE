@@ -95,3 +95,27 @@ func (mu *MenteeUsecase) GetTokenMentee(idMentee uint) (mentee.Token, error) {
 	}
 	return res, nil
 }
+
+func (mu * MenteeUsecase) GetSingleTask(idTask uint) (mentee.Task, error) {
+	res, err := mu.menteeData.GetSingleTask(idTask)
+	if err != nil {
+		return mentee.Task{}, errors.New("task not found")
+	}
+	return res, nil
+}
+
+func (mu *MenteeUsecase) GetMentee(idUser uint) (mentee.MenteeCore, error) {
+	res, err := mu.menteeData.GetMentee(idUser)
+	if err != nil {
+		return mentee.MenteeCore{}, err
+	}
+	return res, nil
+}
+
+func (mu *MenteeUsecase) GetMentor(idUser uint) (mentee.MentorCore, error) {
+	res, err := mu.menteeData.GetMentor(idUser)
+	if err != nil {
+		return mentee.MentorCore{}, err
+	}
+	return res, nil
+}
