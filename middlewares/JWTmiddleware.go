@@ -25,7 +25,7 @@ func CreateToken(userId int, IdClass int, role string) (string, error) {
 	claims["userId"] = userId
 	claims["role"] = role
 	claims["IdClass"] = IdClass
-	claims["exp"] = time.Now().Add(time.Minute * 5).Unix()
+	claims["exp"] = time.Now().Add(time.Hour * 2).Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(config.SECRET_JWT))

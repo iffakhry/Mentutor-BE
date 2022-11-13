@@ -116,14 +116,16 @@ func (md *MenteeDelivery) AddComment() echo.HandlerFunc {
 		comment.IdStatus = idStatus
 		comment.ID_User = uint(idUser)
 		data := ToDomainComments(comment)
-		log.Print(data)
 		if role == "admin" {
 			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
 		}
 		res, err1 := md.MenteeUsecase.Insert(data)
 		if err1 != nil {
 			log.Print(err1)
-			return c.JSON(http.StatusInternalServerError, errors.New("error from server"))
+			if strings.Contains(err1.Error(), "not found") {
+				return c.JSON(http.StatusBadRequest, FailedResponse("Not Found"))
+			} 
+			return c.JSON(http.StatusBadRequest, FailedResponse("Not Found"))
 		}
 		return c.JSON(http.StatusCreated, SuccessResponse("success insert comment", ToResponseComments(res)))
 	}

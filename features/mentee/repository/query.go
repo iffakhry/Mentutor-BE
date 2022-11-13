@@ -172,6 +172,14 @@ func (md *menteeData) GetMentor(idUser uint) (mentee.MentorCore, error) {
 	return cnv, nil
 }
 
+func (md *menteeData) GetSingleStatus(idStatus uint) error {
+	var res Status
+	if err := md.db.Model(&Status{}).Where("id = ?", idStatus).Find(&res).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func (md *menteeData) GetSub(idUser uint, idTask uint) (int, error) {
 	var sub Submission
 	var count int64
