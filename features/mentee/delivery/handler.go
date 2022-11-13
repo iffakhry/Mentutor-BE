@@ -174,8 +174,6 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
 		}
 
-		res.File = fileheader.Filename
-
 		// Get token google
 		resTok, err := md.MenteeUsecase.GetTokenMentee(uint(idUser))
 		if err != nil {
