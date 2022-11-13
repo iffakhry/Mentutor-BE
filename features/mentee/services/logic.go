@@ -52,7 +52,13 @@ func (mu *MenteeUsecase) Insert(data mentee.CommentsCore) (mentee.CommentsCore, 
 	if len(data.Caption) < 5 || len(data.Caption) > 120 {
 		return mentee.CommentsCore{}, errors.New("failed add your comment check charancter len")
 	}
-	data, err := mu.menteeData.AddComment(data)
+
+	err := mu.menteeData.GetSingleStatus(data.IdStatus)
+	if err != nil {
+		return mentee.CommentsCore{}, errors.New("status not found")
+	}
+
+	data, err = mu.menteeData.AddComment(data)
 	if err != nil {
 		return mentee.CommentsCore{}, errors.New("error add comment")
 	}

@@ -97,7 +97,6 @@ func (md *MentorDelivery) AddTask() echo.HandlerFunc {
 				log.Print(err)
 				return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))
 			}
-			log.Print(res)
 			input.File = res
 		}
 

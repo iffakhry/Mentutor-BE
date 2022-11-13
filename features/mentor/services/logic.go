@@ -90,11 +90,19 @@ func (mu *mentorUsecase) UpdateProfile(input mentor.UserCore, role string) (ment
 				return mentor.UserCore{}, errors.New("contain space")
 			}
 		}
+		contain1 := strings.Contains(input.Email, "@")
+		contain2 := strings.Contains(input.Email, ".")
 		if len(input.Email) < 8 || len(input.Email) > 40 {
 			return mentor.UserCore{}, errors.New("length email not valid")
-		} else if strings.Contains(input.Email, "@") == false && strings.Contains(input.Email, ".") == false {
+		} else if contain1 == false || contain2 == false {
 			return mentor.UserCore{}, errors.New("not contain (@) and (.)")
 		}
+		split := strings.Split(input.Email, "@")
+		if strings.Contains(split[1], ".") == false {
+			return mentor.UserCore{}, errors.New("not contain (.) after (@)")
+		}
+		tmp := strings.ToLower(input.Email)
+		input.Email = tmp
 	} else {
 		input.Email = user.Email
 	}
@@ -157,6 +165,22 @@ func (mu *mentorUsecase) UpdateProfile(input mentor.UserCore, role string) (ment
 func (mu *mentorUsecase) AddTask(input mentor.TaskCore, role string) (mentor.TaskCore, error) {
 	if err := roleCheck(role); err != true {
 		return mentor.TaskCore{}, errors.New("user not mentor")
+	}
+
+	// Cek Title 
+	if input.Title == "" {
+		return mentor.TaskCore{}, errors.New("title empty")
+	}
+	
+	// Cek Description
+	if input.Description == "" {
+		return mentor.TaskCore{}, errors.New("description empty")
+	}
+
+	// Cek Due Date
+	duedate := input.DueDate
+	if duedate.IsZero() == true {
+		return mentor.TaskCore{}, errors.New("due date empty")
 	}
 
 	res, err := mu.mentorRepo.InsertTask(input)

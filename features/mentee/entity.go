@@ -105,4 +105,5 @@ type RepoInterface interface {
 	GetMentee(idUser uint) (MenteeCore, error)
 	GetMentor(idUser uint) (MentorCore, error)
 	GetSub(idUser uint, idTask uint) (int, error)
+	GetSingleStatus(idStatus uint) error
 }
