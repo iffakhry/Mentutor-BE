@@ -171,3 +171,12 @@ func (md *menteeData) GetMentor(idUser uint) (mentee.MentorCore, error) {
 	cnv := ToEntityUserMentor(res)
 	return cnv, nil
 }
+
+func (md *menteeData) GetSub(idUser uint, idTask uint) (int, error) {
+	var sub Submission
+	var count int64
+	if err := md.db.Where("id_mentee = ? AND id_task = ?", idUser, idTask).Find(&sub).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return int(count) ,nil
+}

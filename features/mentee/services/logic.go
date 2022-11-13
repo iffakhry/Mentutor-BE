@@ -119,3 +119,11 @@ func (mu *MenteeUsecase) GetMentor(idUser uint) (mentee.MentorCore, error) {
 	}
 	return res, nil
 }
+
+func (mu *MenteeUsecase) GetSub(idUser uint, idTask uint) (int, error) {
+	count, err := mu.menteeData.GetSub(idUser, idTask)
+	if err != nil {
+		return 0, errors.New("submission has been, submited")
+	}
+	return count, nil
+}
