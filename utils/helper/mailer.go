@@ -46,7 +46,7 @@ func GetToken(code string) (*oauth2.Token, error) {
 
 	// Creates a oauth2.Config using the secret
 	// The second parameter is the scope, in this case we only want to send email
-	conf, err := google.ConfigFromJSON(secret, gmail.GmailSendScope)
+	conf, err := google.ConfigFromJSON(secret, gmail.GmailSettingsBasicScope)
 	if err != nil {
 		log.Printf("Error: %v", err)
 	}
@@ -57,7 +57,7 @@ func GetToken(code string) (*oauth2.Token, error) {
 		log.Printf("Error: %v", err)
 	}
 
-	staticTok := oauth2.StaticTokenSource(tok)
+	staticTok := conf.TokenSource(oauth2.NoContext, tok)
 	token , err := staticTok.Token()
 	if err != nil {
 		log.Printf("Error: %v", err)

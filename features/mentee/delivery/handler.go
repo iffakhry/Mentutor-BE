@@ -221,6 +221,6 @@ func (md *MenteeDelivery) GmailRequest() echo.HandlerFunc {
 			return nil
 		}
 
-		return c.JSON(http.StatusOK, "successs")
+		return c.Redirect(http.StatusMovedPermanently, "https://mentutor.vercel.app/homementee")
 	}
 }
