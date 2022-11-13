@@ -124,14 +124,15 @@ func (md *menteeData) GetSingleTask(idTask uint) (mentee.Task, error) {
 		return mentee.Task{}, err
 	}
 
-	cnv := mentee.Task{ID: res.ID, DueDate: *res.DueDate}
+	// cnv := mentee.Task{ID: res.ID, DueDate: *res.DueDate}
+	cnv := ToEntitySingleTask(res)
 	return cnv, nil
 }
 
 func (md *menteeData) InsertToken(data mentee.Token) (mentee.Token, error) {
 	log.Print(data)
 	token := FromEntityToken(data)
-
+	log.Print(token)
 	if err := md.db.Order("created_at desc").First(&GoogleToken{}).Updates(&token).Error; err != nil {
 		return mentee.Token{}, err
 	}
@@ -146,5 +147,27 @@ func (md *menteeData) GetTokenMentee(idMentee uint) (mentee.Token ,error) {
 	}
 
 	cnv := ToEntityToken(token)
+	return cnv, nil
+}
+
+func (md *menteeData) GetMentee(idUser uint) (mentee.MenteeCore, error) {
+	var res Mentee
+
+	if err := md.db.Where("id = ?", idUser).First(&res).Error; err != nil {
+		return mentee.MenteeCore{}, err
+	}
+
+	cnv := ToEntityUserMentee(res)
+	return cnv, nil
+}
+
+func (md *menteeData) GetMentor(idUser uint) (mentee.MentorCore, error) {
+	var res Mentor
+
+	if err := md.db.Where("id = ?", idUser).First(&res).Error; err != nil {
+		return mentee.MentorCore{}, err
+	}
+
+	cnv := ToEntityUserMentor(res)
 	return cnv, nil
 }

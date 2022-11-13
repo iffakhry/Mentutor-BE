@@ -12,6 +12,14 @@ type MenteeCore struct {
 	Images   string
 }
 
+type MentorCore struct {
+	Name     string 
+	Images   string 
+	Email    string 
+	Password string 
+	Role     string
+}
+
 // FITUR STATUS
 type Status struct {
 	ID        uint
@@ -79,6 +87,9 @@ type UseCaseInterface interface {
 	GetTask(idClass uint, role string) (data []Task, err error)
 	AddToken(token Token) (Token, error)
 	GetTokenMentee(idMentee uint) (Token, error)
+	GetSingleTask(idTask uint) (Task, error)
+	GetMentee(idUser uint) (MenteeCore, error)
+	GetMentor(idUser uint) (MentorCore, error)
 }
 
 type RepoInterface interface {
@@ -90,4 +101,6 @@ type RepoInterface interface {
 	GetSingleTask(idTask uint) (Task, error)
 	InsertToken(token Token) (Token, error)
 	GetTokenMentee(idMentee uint) (Token, error)
+	GetMentee(idUser uint) (MenteeCore, error)
+	GetMentor(idUser uint) (MentorCore, error)
 }

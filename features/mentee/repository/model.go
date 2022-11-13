@@ -18,6 +18,15 @@ type Mentee struct {
 	IdClass  uint
 }
 
+type Mentor struct {
+	gorm.Model
+	Name     string 
+	Images   string 
+	Email    string 
+	Password string 
+	Role     string
+}
+
 // MODEL STATUS
 type Status struct {
 	gorm.Model
@@ -64,6 +73,7 @@ type Task struct {
 
 type GoogleToken struct {
 	gorm.Model
+	IdMentee uint
 	Code         string
 	AccessToken  string
 	TokenType    string
@@ -82,7 +92,12 @@ func FromEntityToken(data mentee.Token) GoogleToken {
 
 func ToEntityToken(data GoogleToken) mentee.Token {
 	return mentee.Token{
-		
+		Id: data.ID,
+		IdMentee: data.IdMentee,
+		Code: data.Code,
+		AccessToken: data.AccessToken,
+		RefreshToken: data.RefreshToken,
+		TokenType: data.TokenType,
 	}
 }
 
@@ -111,6 +126,24 @@ func ToEntityMentee(data mentee.Status) Status {
 		IdMentee: data.IdMentee,
 		Caption:  data.Caption,
 		Images:   data.Images,
+	}
+}
+
+func ToEntityUserMentee(data Mentee) mentee.MenteeCore {
+	return mentee.MenteeCore{
+		IdUser: data.ID,
+		Name: data.Name,
+		Email: data.Email,
+		Images: data.Images,
+	}
+}
+
+func ToEntityUserMentor(data Mentor) mentee.MentorCore {
+	return mentee.MentorCore{
+		Name: data.Name,
+		Email: data.Email,
+		Images: data.Images,
+		Role: data.Role,
 	}
 }
 
@@ -245,4 +278,15 @@ func ToCoreArrayTask(task []Task) []mentee.Task {
 		})
 	}
 	return res
+}
+
+func ToEntitySingleTask(data Task) mentee.Task {
+	return mentee.Task{
+		ID: data.ID,
+		IdClass: data.IdClass,
+		IdMentor: data.IdMentor,
+		Title: data.Title,
+		Description: data.Description,
+		DueDate: *data.DueDate,
+	}
 }

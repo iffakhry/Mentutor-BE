@@ -96,8 +96,6 @@ func (ad *AdminDelivery) GetAllClass() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		_, _, role := middlewares.ExtractToken(c)
 
-		log.Print("INI DI HANDLER")
-
 		res, err := ad.adminUsecase.GetAllClass(role)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.FailedResponse("Invalid Input From Client"))

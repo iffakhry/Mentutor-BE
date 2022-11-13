@@ -167,8 +167,27 @@ func (md *MenteeDelivery) AddSub() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, FailedResponse("Invalid Input From Client"))
 		}
 
-		return c.JSON(http.StatusCreated, SuccessResponse("success insert submission", ToResponseSub(res)))
+		// Get token google
+		resTok, err := md.MenteeUsecase.GetTokenMentee(uint(idUser))
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, FailedResponse("Google Token Not Found"))
+		}
 
+		// Get task by id
+		resTask, _ := md.MenteeUsecase.GetSingleTask(uint(idCnv))
+
+		//	Get data mentee
+		resMentee, _ := md.MenteeUsecase.GetMentee(uint(idUser))
+
+		// Get data mentor
+		resMentor, _:= md.MenteeUsecase.GetMentor(resTask.IdMentor)
+		log.Println(resMentee.Email)
+		log.Println(resMentor.Email)
+
+		//Call gmail sender
+		cnvTok := ToOauth(resTok)
+		err = helper.BuildMessage(&cnvTok, resMentee, resMentor, resTask)
+		return c.JSON(http.StatusCreated, SuccessResponse("success insert submission", ToResponseSub(res)))
 	}
 }
 
@@ -183,7 +202,10 @@ func (md *MenteeDelivery) GmailRequest() echo.HandlerFunc {
 
 		log.Print("INI LOG CODE : " + code)
 		cnv := ToDomainToken(code, token)
-		log.Print("INI LOG TOKEN : ", cnv)
+		log.Print(cnv)
+		log.Println("INI LOG REFRESH TOKEN : ", cnv.RefreshToken)
+		log.Println("INI LOG ACCESS TOKEN : ", cnv.AccessToken)
+		log.Println("INI LOG TOKEN TYPE : ", cnv.TokenType)
 		_, err = md.MenteeUsecase.AddToken(cnv)
 		if err != nil {
 			return nil
