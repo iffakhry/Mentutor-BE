@@ -58,82 +58,302 @@ func TestFailedUpdateUser(t *testing.T) {
 		assert.Empty(t, res)
 		repo.AssertExpectations(t)
 	})
+
 	t.Run("password condition number", func(t *testing.T) {
 		repo.On("GetSingleMentor", mock.Anything).
-			Return(mentor.UserCore{
-				IdUser:  1000,
-				Name:    "Nur Fatchurohman",
-				Email:   "nur.faturohman28@gmail.com",
-				IdClass: 1,
-				Role:    "mentee",
-			}, errors.New("password condition number"))
+			Return(mentor.UserCore{}, errors.New("password condition number")).Once()
 		srv := New(repo)
 		input := mentor.UserCore{
 			IdUser:   1000,
-			Name:     "Nur Fatchurohmann",
-			Email:    "fatur@gmail.com",
+			Name:     "as",
+			Email:    "as",
 			IdClass:  7,
-			Password: "FaturRohman",
+			Password: "as",
 			Role:     "mentee",
 		}
 		res, err := srv.UpdateProfile(input, "mentor")
 		assert.NotNil(t, err)
 		assert.Empty(t, res)
-		repo.AssertExpectations(t)
-	})
-	t.Run("password condition upper", func(t *testing.T) {
-		srv := New(repo)
-		input := mentor.UserCore{
-			IdUser:   1001,
-			Name:     "Nur Fatchurohmann",
-			Email:    "fatur@gmail.com",
-			IdClass:  7,
-			Password: "faturrohman",
-			Role:     "mentee",
-		}
-		res, err := srv.UpdateProfile(input, "mentor")
-		assert.Empty(t, res)
-		assert.NotNil(t, err)
-		repo.AssertExpectations(t)
-	})
-	t.Run("User not admin", func(t *testing.T) { //USER NOT ADMIN LOGIC LINE 31
-		repo.On("GetSingleMentor", mock.Anything).
-			Return(mentor.UserCore{
-				IdUser:  1000,
-				Name:    "Nur Fatchurohman",
-				Email:   "nur.faturohman28@gmail.com",
-				IdClass: 1,
-				Role:    "mentee",
-			}, errors.New("User not admin"))
-		srv := New(repo)
-		input := mentor.UserCore{
-			IdUser:   1002,
-			Name:     "Nur Fatchurohman",
-			Email:    "fatur@gmail.com",
-			IdClass:  7,
-			Password: "Fatur123$",
-			Role:     "mentee",
-		}
-		res, err := srv.UpdateProfile(input, "mentee")
-		assert.Empty(t, res)
-		assert.NotNil(t, err)
 		repo.AssertExpectations(t)
 	})
 
-	t.Run("Length email", func(t *testing.T) {
+}
+
+func TestFailedUpdateUsers(t *testing.T) {
+	repo := mocks.NewRepoInterface(t)
+	mentors := mentor.UserCore{
+		IdUser:  1000,
+		Name:    "Hery Budiyana",
+		Email:   "heribudiyana@gmail.com",
+		IdClass: 1,
+		Class:   "Back End",
+		Role:    "mentor",
+		Images:  "image.jpg",
+	}
+	mentee := mentor.UserCore{
+		IdUser:  1,
+		Name:    "Heri Budiyana",
+		Email:   "heri.mentee@gmail.com",
+		IdClass: 1,
+		Class:   "Back_End",
+		Role:    "mentee",
+		Images:  "image.jpg",
+	}
+	t.Run("Failed Update Profile", func(t *testing.T) {
+		// repo.On("GetSingleMentee", mock.Anything).Return(mentee, nil).Once()
+		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
+		repo.On("EditProfileMentor", mock.Anything).Return(mentors, nil).Once()
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "Mentee Admin",
+			Email:    "fatu@gmail.com",
+			Password: "MEentee123$",
+			IdClass:  7,
+		}
+		srv := New(repo)
+		res, err := srv.UpdateProfile(input, "mentor")
+		assert.NotNil(t, res)
+		assert.Empty(t, err)
+		repo.AssertExpectations(t)
+	})
+	repo.On("GetSingleMentee", mock.Anything).Return(mentee, nil).Once()
+	repo.On("EditProfileMentee", mock.Anything).Return(mentee, nil).Once()
+	input := mentor.UserCore{
+		IdUser:   12,
+		Name:     "Hery Mentee",
+		Email:    "hery.mentee@mail.com",
+		Password: "Asdf123$",
+		IdClass:  7,
+	}
+	srv := New(repo)
+	res, err := srv.UpdateProfile(input, "mentor")
+	assert.NotNil(t, res)
+	assert.Empty(t, err)
+	repo.AssertExpectations(t)
+	t.Run("Length Name", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
+
 		srv := New(repo)
 		input := mentor.UserCore{
 			IdUser:   1000,
-			Name:     "Nur Fatchurohman",
-			Email:    "fam",
+			Name:     "ft r",
+			Email:    "fatu@gmail.com",
+			Password: "MEentee123$",
 			IdClass:  7,
-			Password: "Fatur123$",
-			Role:     "mentee",
 		}
 		res, err := srv.UpdateProfile(input, "admin")
-		assert.Empty(t, res)
 		assert.NotNil(t, err)
-		assert.ErrorContains(t, err, "user not found")
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Char Name", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
+
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "FATUR ROHMAN",
+			Email:    "fatu@gmail.com",
+			Password: "MEentee123$",
+			IdClass:  7,
+		}
+		res, err := srv.UpdateProfile(input, "admin")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Upper Char Name", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
+
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "fatur rohman",
+			Email:    "fatu@gmail.com",
+			Password: "MEentee123$",
+			IdClass:  7,
+		}
+		res, err := srv.UpdateProfile(input, "admin")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Number Char Name", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
+
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "Fatur 1324",
+			Email:    "fatu@gmail.com",
+			Password: "MEentee123$",
+			IdClass:  7,
+		}
+		res, err := srv.UpdateProfile(input, "admin")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Special Char Name", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
+
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "Fatur ##$",
+			Email:    "fatu@gmail.com",
+			Password: "MEentee123$",
+			IdClass:  7,
+		}
+		res, err := srv.UpdateProfile(input, "admin")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Space Char Name", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
+
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "FaturRohman",
+			Email:    "fatu@gmail.com",
+			Password: "MEentee123$",
+			IdClass:  7,
+		}
+		res, err := srv.UpdateProfile(input, "admin")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Space error email", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
+
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "Fatur Rohman",
+			Email:    "fatu @gmail.com",
+			Password: "MEentee123$",
+			IdClass:  7,
+		}
+		res, err := srv.UpdateProfile(input, "admin")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Length error email", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
+
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "Fatur Rohman",
+			Email:    "fat@.co",
+			Password: "Mentee123$",
+			IdClass:  7,
+		}
+		res, err := srv.UpdateProfile(input, "admin")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Length error email", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
+
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "Fatur Rohman",
+			Email:    "faturrohman",
+			Password: "Mentee123$",
+			IdClass:  7,
+		}
+		res, err := srv.UpdateProfile(input, "admin")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Char error password", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
+
+		srv := New(repo)
+
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "Fatur Rohman",
+			Email:    "fatur@gmail.com",
+			Password: "menteementutor$",
+			IdClass:  7,
+		}
+		res, err := srv.UpdateProfile(input, "admin")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Char error password", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
+
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "Fatur Rohman",
+			Email:    "fatur@gmail.com",
+			Password: "FATURROHMAN$",
+			IdClass:  7,
+		}
+		res, err := srv.UpdateProfile(input, "admin")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Char error password", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
+
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "Fatur Rohman",
+			Email:    "fatur@gmail.com",
+			Password: "FaturRohman$",
+			IdClass:  7,
+		}
+		res, err := srv.UpdateProfile(input, "admin")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Char error password", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
+
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "Fatur Rohman",
+			Email:    "fatur@gmail.com",
+			Password: "FaturRohman123",
+			IdClass:  7,
+		}
+		res, err := srv.UpdateProfile(input, "admin")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Class avail check", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
+		repo.On("EditProfileMentor", mock.Anything).Return(mentors, nil).Once()
+		srv := New(repo)
+		input := mentor.UserCore{
+			IdUser:   1000,
+			Name:     "Mentee Admin",
+			Email:    "fatu@gmail.com",
+			Password: "Mentee123$?",
+			IdClass:  0,
+		}
+		_, err := srv.UpdateProfile(input, "admin")
+
+		assert.Empty(t, err)
+		assert.Nil(t, nil)
 		repo.AssertExpectations(t)
 	})
 

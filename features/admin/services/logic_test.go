@@ -562,7 +562,6 @@ func TestUpdateUser(t *testing.T) {
 		Role:     "mentor",
 		Images:   "Hery.jpg"}
 	t.Run("Not admin", func(t *testing.T) {
-		// DONE
 		repo.On("GetSingleMentor", mock.Anything).Return(mentor, nil).Once()
 		repo.On("GetClass", mock.Anything).Return(class, nil).Once()
 		repo.On("EditUserMentor", mock.Anything).Return(mentor, nil).Once()
@@ -584,16 +583,13 @@ func TestUpdateUser(t *testing.T) {
 		repo.On("EditUserMentee", mock.Anything).Return(mentor, nil).Once()
 		repo.On("GetSingleMentee", mock.Anything).Return(mentor, nil).Once()
 		repo.On("GetClass", mock.Anything).Return(class, nil).Once()
-
 		srv := New(repo)
-
 		res, err := srv.UpdateUserAdmin(mentor, "admin")
 		assert.Nil(t, err)
 		assert.NotEmpty(t, res)
 		repo.AssertExpectations(t)
 
 	})
-
 	t.Run("Length Name", func(t *testing.T) {
 		repo.On("GetSingleMentor", mock.Anything).Return(mentor, nil).Once()
 
@@ -805,7 +801,6 @@ func TestUpdateUser(t *testing.T) {
 	})
 	t.Run("Char error password", func(t *testing.T) {
 		repo.On("GetSingleMentor", mock.Anything).Return(mentor, nil).Once()
-
 		srv := New(repo)
 		input := admin.UserCore{
 			IdUser:   1000,
@@ -819,7 +814,6 @@ func TestUpdateUser(t *testing.T) {
 		assert.Empty(t, res)
 		repo.AssertExpectations(t)
 	})
-	//	DARI SINI
 	t.Run("Class avail check", func(t *testing.T) {
 		// repo.On("GetClass", mock.Anything).Return(admin.ClassCore{}, errors.New("class not found")).Once()
 		repo.On("GetSingleMentor", mock.Anything).Return(mentor, nil).Once()
@@ -840,7 +834,6 @@ func TestUpdateUser(t *testing.T) {
 		repo.AssertExpectations(t)
 	})
 	t.Run("Failed edit mentor", func(t *testing.T) {
-		// repo.On("EditUserMentor", mock.Anything).Return(admin.UserCore{}, errors.New("error edit mentor")).Once()
 		repo.On("GetSingleMentor", mock.Anything).Return(mentor, nil).Once()
 		repo.On("GetClass", mock.Anything).Return(class, errors.New("class not found")).Once()
 
@@ -916,6 +909,59 @@ func TestUpdateUser(t *testing.T) {
 		assert.Empty(t, res)
 		repo.AssertExpectations(t)
 	})
+	t.Run("user not found", func(t *testing.T) {
+		repo.On("GetSingleMentee", mock.Anything).Return(admin.UserCore{}, errors.New("user not found")).Once()
+		input := admin.UserCore{
+			IdUser:  1,
+			Name:    "58hgdghdghhdG",
+			Email:   "nur.faturohman28@gmail.com",
+			IdClass: 1,
+			Role:    "mentee",
+		}
+		srv := New(repo)
+		res, err := srv.UpdateUserAdmin(input, "admin")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("user not found", func(t *testing.T) {
+		repo.On("GetSingleMentor", mock.Anything).Return(admin.UserCore{}, errors.New("user not found")).Once()
+		input := admin.UserCore{
+			IdUser:  1002,
+			Name:    "58hgdghdghhdG",
+			Email:   "nur.faturohman28@gmail.com",
+			IdClass: 1,
+			Role:    "mentee",
+		}
+		srv := New(repo)
+		res, err := srv.UpdateUserAdmin(input, "admin")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("No Data Input", func(t *testing.T) {
+		repo.On("GetSingleMentee", mock.Anything).
+			Return(admin.UserCore{
+				IdUser:  1,
+				Name:    "Nur Fatchurohman",
+				Email:   "nur.faturohman28@gmail.com",
+				IdClass: 1,
+				Role:    "mentee",
+			})
+		input := admin.UserCore{
+			IdUser:  1,
+			Name:    "",
+			Email:   "",
+			IdClass: 0,
+			Role:    "",
+		}
+		srv := New(repo)
+		res, err := srv.UpdateUserAdmin(input, "mentor")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+	})
+
 }
 
 func TestDelete(t *testing.T) {
@@ -1002,7 +1048,12 @@ func TestSingleUser(t *testing.T) {
 
 func TestUpdateClass(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
-	class := admin.ClassCore{IdClass: 1, ClassName: "Front End", Status: "active", TotalStudent: 20}
+	class := admin.ClassCore{
+		IdClass:      1,
+		ClassName:    "Front End",
+		Status:       "active",
+		TotalStudent: 20,
+	}
 	t.Run("Success Update class", func(t *testing.T) {
 		srv := New(repo)
 		repo.On("GetSingleClass", mock.Anything).Return(class, nil).Once()
@@ -1033,6 +1084,34 @@ func TestUpdateClass(t *testing.T) {
 		assert.Empty(t, res)
 		repo.AssertExpectations(t)
 	})
+	t.Run("success update class", func(t *testing.T) {
+		srv := New(repo)
+		input := admin.ClassCore{
+			IdClass:   1,
+			ClassName: "",
+			Status:    "nonactive",
+		}
+		res, err := srv.UpdateClass(input, "admin")
+		assert.NotNil(t, err)
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+
+	})
+	t.Run("success update class", func(t *testing.T) {
+		// repo.On("GetSingleClass", mock.Anything).Return(class, nil).Once()
+		// repo.On("EditClass", mock.Anything).Return(admin.ClassCore{}, nil).Once()
+		srv := New(repo)
+		input := admin.ClassCore{
+			IdClass:   1,
+			ClassName: "",
+			Status:    "",
+		}
+		res, _ := srv.UpdateClass(input, "admin")
+		assert.Empty(t, res)
+		repo.AssertExpectations(t)
+
+	})
+
 }
 
 func TestDeleteClass(t *testing.T) {

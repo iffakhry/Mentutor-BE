@@ -1,5 +1,5 @@
 #  MENTUTOR 
-<img src="MENTUTOR.png">
+<img src="logo.jpeg">
 
 
 # 🗺️ About The Project 🗺️
