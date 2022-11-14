@@ -1,6 +1,6 @@
 #  MENTUTOR 
 <div align="center">
-<img src="logo.jpeg">
+<img src="Logo.png">
 
 ![issue](https://img.shields.io/github/issues/{username}/{repo-name}.svg)
 
