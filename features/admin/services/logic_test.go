@@ -590,6 +590,7 @@ func TestUpdateUser(t *testing.T) {
 		repo.AssertExpectations(t)
 
 	})
+
 	t.Run("Length Name", func(t *testing.T) {
 		repo.On("GetSingleMentor", mock.Anything).Return(mentor, nil).Once()
 

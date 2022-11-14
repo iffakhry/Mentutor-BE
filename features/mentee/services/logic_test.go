@@ -58,52 +58,60 @@ func TestPostForum(t *testing.T) {
 // DONE
 func TestAddComment(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
-	comment := mentee.CommentsCore{
-		Caption: "pake cara ini juga bisa",
-	}
 	t.Run("success add comments", func(t *testing.T) {
-		repo.On("AddComment", mock.Anything).Return(comment, nil).Once()
+		repo.On("GetSingleStatus", mock.Anything).Return(nil, nil).Once()
+		repo.On("AddComment", mock.Anything).Return(mentee.CommentsCore{}, nil).Once()
 		srv := New(repo)
-		input := mentee.CommentsCore{Caption: "Aku bingung ini kenapa"}
+		input := mentee.CommentsCore{IdStatus: 1, Caption: "Aku bingung ini kenapa"}
 		res, err := srv.Insert(input)
-		assert.NotEmpty(t, res)
+		assert.Empty(t, res)
 		assert.Nil(t, err)
 		repo.AssertExpectations(t)
 	})
-	t.Run("failed add comments", func(t *testing.T) {
+	t.Run("failed add status", func(t *testing.T) {
+		repo.On("GetSingleStatus", mock.Anything).Return(nil, nil).Once()
 		repo.On("AddComment", mock.Anything).Return(mentee.CommentsCore{}, errors.New("Error")).Once()
-
-		usecase := New(repo)
-
-		result, err := usecase.Insert(comment)
+		input := mentee.CommentsCore{
+			IdStatus: 1,
+			Caption:  "asasas",
+		}
+		srv := New(repo)
+		_, err := srv.Insert(input)
 		assert.Error(t, err)
-		assert.Equal(t, result, result)
+		assert.NotNil(t, err)
 		repo.AssertExpectations(t)
 	})
+	t.Run("failed add status", func(t *testing.T) {
+		repo.On("GetSingleStatus", mock.Anything).Return(errors.New("failed get status"), errors.New("failed get status")).Once()
+		input := mentee.CommentsCore{
 
-	t.Run("failed add your comment check charancter len", func(t *testing.T) {
+			Caption: "asasas",
+		}
 		srv := New(repo)
-		input := mentee.CommentsCore{Caption: "as"}
+		res, err := srv.Insert(input)
+		assert.Error(t, err)
+		assert.NotNil(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Failed length not valid", func(t *testing.T) {
+		srv := New(repo)
+		input := mentee.CommentsCore{
+			IdStatus: 1,
+			Caption:  "as",
+		}
 		res, err := srv.Insert(input)
 		assert.Empty(t, res)
 		assert.NotNil(t, err)
 		assert.ErrorContains(t, err, "failed add your comment check charancter len")
 		repo.AssertExpectations(t)
 	})
+
 }
 
-// DONE
+// // DONE
 func TestInsertSub(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
-	// submission := mentee.Submission{
-	// 	ID:        1,
-	// 	ID_Mentee: 1,
-	// 	ID_Tasks:  1,
-	// 	File:      "file.pdf",
-	// 	Score:     0,
-	// 	Title:     "persamaan",
-	// 	Status:    "active",
-	// }
+
 	tasks := mentee.Task{
 		ID:          1,
 		IdClass:     2,
@@ -159,7 +167,7 @@ func TestAddStatus(t *testing.T) {
 	})
 }
 
-// Done
+// // Done
 func TestGetStatus(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
 	status := []mentee.Status{{
@@ -191,7 +199,7 @@ func TestGetStatus(t *testing.T) {
 	})
 }
 
-// DONE
+// // DONE
 func TestGetTask(t *testing.T) {
 	repo := mocks.NewRepoInterface(t)
 	task := []mentee.Task{{
@@ -214,7 +222,7 @@ func TestGetTask(t *testing.T) {
 		assert.Equal(t, result, result)
 		repo.AssertExpectations(t)
 	})
-	t.Run("failed get status", func(t *testing.T) {
+	t.Run("failed get task", func(t *testing.T) {
 		repo.On("GetAllTask", mock.Anything, mock.Anything).Return([]mentee.Task{}, errors.New("user not mentee")).Once()
 
 		usecase := New(repo)
@@ -222,6 +230,183 @@ func TestGetTask(t *testing.T) {
 		result, err := usecase.GetTask(uint(token), "mentee")
 		assert.Error(t, err)
 		assert.Equal(t, result, result)
+		repo.AssertExpectations(t)
+	})
+	t.Run("failed user not mentee", func(t *testing.T) {
+
+		usecase := New(repo)
+
+		result, err := usecase.GetTask(uint(token), "admin")
+		assert.Error(t, err)
+		assert.Equal(t, result, result)
+		repo.AssertExpectations(t)
+	})
+}
+func TestGetTokenMentee(t *testing.T) {
+	repo := mocks.NewRepoInterface(t)
+	token := mentee.Token{
+		Id:           1,
+		IdMentee:     1,
+		Code:         "asasasasa",
+		AccessToken:  "sasasasasa",
+		TokenType:    "Credential",
+		RefreshToken: "Refreshing",
+	}
+	idToken := 1
+	t.Run("Success Get Token Mentee", func(t *testing.T) {
+		repo.On("GetTokenMentee", mock.Anything).Return(token, nil).Once()
+
+		usecase := New(repo)
+		result, err := usecase.GetTokenMentee(uint(idToken))
+		assert.NoError(t, err)
+		assert.Equal(t, result, result)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Failed Get Token Mentee", func(t *testing.T) {
+		repo.On("GetTokenMentee", mock.Anything).Return(mentee.Token{}, errors.New("failed Get token mentee")).Once()
+
+		usecase := New(repo)
+		result, err := usecase.GetTokenMentee(uint(idToken))
+		assert.Error(t, err)
+		assert.NotNil(t, result)
+		repo.AssertExpectations(t)
+	})
+}
+
+func TestAddToken(t *testing.T) {
+	repo := mocks.NewRepoInterface(t)
+	token := mentee.Token{
+		Id:           1,
+		IdMentee:     1,
+		Code:         "asdasdasdasdasdasdasd",
+		AccessToken:  "dsadsadasdsadsa",
+		TokenType:    "string",
+		RefreshToken: "refreshing",
+	}
+	t.Run("success add token", func(t *testing.T) {
+		repo.On("InsertToken", mock.Anything).Return(mentee.Token{}, nil).Once()
+		srv := New(repo)
+		res, err := srv.AddToken(token)
+		assert.Empty(t, err)
+		assert.NotNil(t, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Failed Insert Token", func(t *testing.T) {
+		repo.On("InsertToken", mock.Anything).Return(mentee.Token{}, errors.New("failed insert token")).Once()
+		srv := New(repo)
+		res, err := srv.AddToken(token)
+		assert.NotEmpty(t, err)
+		assert.NotNil(t, res)
+		repo.AssertExpectations(t)
+	})
+}
+
+func TestGetSingleTask(t *testing.T) {
+	repo := mocks.NewRepoInterface(t)
+	task := mentee.Task{
+		ID:          1,
+		IdClass:     1,
+		IdMentor:    1,
+		Title:       "Persamaan",
+		Description: "tugas akhir semester genap",
+		File:        "persamaan.pdf",
+		Images:      "file.pdf",
+		Score:       89,
+	}
+	t.Run("success get single task", func(t *testing.T) {
+		repo.On("GetSingleTask", mock.Anything).Return(task, nil).Once()
+
+		srv := New(repo)
+		res, err := srv.GetSingleTask(1)
+		assert.NoError(t, err)
+		assert.Equal(t, res, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("failed get singletask", func(t *testing.T) {
+		repo.On("GetSingleTask", mock.Anything).Return(mentee.Task{}, errors.New("failed get single task")).Once()
+
+		srv := New(repo)
+		res, err := srv.GetSingleTask(1)
+		assert.Error(t, err)
+		assert.Equal(t, res, res)
+		repo.AssertExpectations(t)
+	})
+}
+
+func TestGetMentee(t *testing.T) {
+	repo := mocks.NewRepoInterface(t)
+	mentees := mentee.MenteeCore{
+		IdUser: 1,
+		Name:   "Heri Budiyana",
+		Email:  "heribudiyana@gmail.com",
+		Images: "hery.jpg",
+	}
+	t.Run("success get mentee", func(t *testing.T) {
+		repo.On("GetMentee", mock.Anything).Return(mentees, nil).Once()
+
+		srv := New(repo)
+		res, err := srv.GetMentee(1)
+		assert.NoError(t, err)
+		assert.Equal(t, res, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Failed get mentee", func(t *testing.T) {
+		repo.On("GetMentee", mock.Anything).Return(mentee.MenteeCore{}, errors.New("failed get mentee")).Once()
+
+		srv := New(repo)
+		res, err := srv.GetMentee(1)
+		assert.Error(t, err)
+		assert.Equal(t, res, res)
+		repo.AssertExpectations(t)
+	})
+}
+
+func TestGetMentor(t *testing.T) {
+	repo := mocks.NewRepoInterface(t)
+	mentors := mentee.MentorCore{
+		Role:   "mentor",
+		Name:   "Heri Budiyana",
+		Email:  "heribudiyana@gmail.com",
+		Images: "hery.jpg",
+	}
+	t.Run("success get mentor", func(t *testing.T) {
+		repo.On("GetMentor", mock.Anything).Return(mentors, nil).Once()
+
+		srv := New(repo)
+		res, err := srv.GetMentor(1)
+		assert.NoError(t, err)
+		assert.Equal(t, res, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("success get mentor", func(t *testing.T) {
+		repo.On("GetMentor", mock.Anything).Return(mentee.MentorCore{}, errors.New("failed get mentor")).Once()
+
+		srv := New(repo)
+		res, err := srv.GetMentor(1)
+		assert.Error(t, err)
+		assert.Equal(t, res, res)
+		repo.AssertExpectations(t)
+	})
+
+}
+
+func TestGetSub(t *testing.T) {
+	repo := mocks.NewRepoInterface(t)
+	t.Run("success get submission", func(t *testing.T) {
+		repo.On("GetSub", mock.Anything, mock.Anything).Return(1, nil)
+
+		srv := New(repo)
+		res, err := srv.GetSub(1, 1)
+		assert.NoError(t, err)
+		assert.Equal(t, res, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("failed get submission", func(t *testing.T) {
+		repo.On("GetSub", mock.Anything, mock.Anything).Return(-1, errors.New("failed get submission"))
+
+		srv := New(repo)
+		res, _ := srv.GetSub(1, 1)
+		assert.Equal(t, res, res)
 		repo.AssertExpectations(t)
 	})
 }
