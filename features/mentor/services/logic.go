@@ -271,7 +271,6 @@ func (mu *mentorUsecase) AddScore(input mentor.SubmissionCore, role string) (men
 		return mentor.SubmissionCore{}, errors.New("user not mentor")
 	}
 
-
 	if input.ID == 0 {
 		return mentor.SubmissionCore{}, errors.New("submission not found")
 	}
