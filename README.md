@@ -1,5 +1,17 @@
 #  MENTUTOR 
-<img src="logo.jpeg">
+<div align="center">
+<img src="src\assets\LogoMentutor.png"alt="Logo">
+
+![issue](https://img.shields.io/github/issues/{username}/{repo-name}.svg)
+
+ <p align="center">
+    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
+    ·
+    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
+  </p>
+</div>
 
 
 # 🗺️ About The Project 🗺️
