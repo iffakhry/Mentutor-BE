@@ -75,6 +75,90 @@ func (_m *UseCaseInterface) GetAll() ([]mentee.Status, []mentee.CommentsCore, []
 	return r0, r1, r2, r3
 }
 
+// GetMentee provides a mock function with given fields: idUser
+func (_m *UseCaseInterface) GetMentee(idUser uint) (mentee.MenteeCore, error) {
+	ret := _m.Called(idUser)
+
+	var r0 mentee.MenteeCore
+	if rf, ok := ret.Get(0).(func(uint) mentee.MenteeCore); ok {
+		r0 = rf(idUser)
+	} else {
+		r0 = ret.Get(0).(mentee.MenteeCore)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(uint) error); ok {
+		r1 = rf(idUser)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetMentor provides a mock function with given fields: idUser
+func (_m *UseCaseInterface) GetMentor(idUser uint) (mentee.MentorCore, error) {
+	ret := _m.Called(idUser)
+
+	var r0 mentee.MentorCore
+	if rf, ok := ret.Get(0).(func(uint) mentee.MentorCore); ok {
+		r0 = rf(idUser)
+	} else {
+		r0 = ret.Get(0).(mentee.MentorCore)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(uint) error); ok {
+		r1 = rf(idUser)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetSingleTask provides a mock function with given fields: idTask
+func (_m *UseCaseInterface) GetSingleTask(idTask uint) (mentee.Task, error) {
+	ret := _m.Called(idTask)
+
+	var r0 mentee.Task
+	if rf, ok := ret.Get(0).(func(uint) mentee.Task); ok {
+		r0 = rf(idTask)
+	} else {
+		r0 = ret.Get(0).(mentee.Task)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(uint) error); ok {
+		r1 = rf(idTask)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetSub provides a mock function with given fields: idUser, idTask
+func (_m *UseCaseInterface) GetSub(idUser uint, idTask uint) (int, error) {
+	ret := _m.Called(idUser, idTask)
+
+	var r0 int
+	if rf, ok := ret.Get(0).(func(uint, uint) int); ok {
+		r0 = rf(idUser, idTask)
+	} else {
+		r0 = ret.Get(0).(int)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(uint, uint) error); ok {
+		r1 = rf(idUser, idTask)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetTask provides a mock function with given fields: idClass, role
 func (_m *UseCaseInterface) GetTask(idClass uint, role string) ([]mentee.Task, error) {
 	ret := _m.Called(idClass, role)
@@ -91,6 +175,27 @@ func (_m *UseCaseInterface) GetTask(idClass uint, role string) ([]mentee.Task, e
 	var r1 error
 	if rf, ok := ret.Get(1).(func(uint, string) error); ok {
 		r1 = rf(idClass, role)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetTokenMentee provides a mock function with given fields: idMentee
+func (_m *UseCaseInterface) GetTokenMentee(idMentee uint) (mentee.Token, error) {
+	ret := _m.Called(idMentee)
+
+	var r0 mentee.Token
+	if rf, ok := ret.Get(0).(func(uint) mentee.Token); ok {
+		r0 = rf(idMentee)
+	} else {
+		r0 = ret.Get(0).(mentee.Token)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(uint) error); ok {
+		r1 = rf(idMentee)
 	} else {
 		r1 = ret.Error(1)
 	}

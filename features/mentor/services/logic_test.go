@@ -99,23 +99,7 @@ func TestFailedUpdateUsers(t *testing.T) {
 		Role:    "mentee",
 		Images:  "image.jpg",
 	}
-	t.Run("Failed Update Profile", func(t *testing.T) {
-		// repo.On("GetSingleMentee", mock.Anything).Return(mentee, nil).Once()
-		repo.On("GetSingleMentor", mock.Anything).Return(mentors, nil).Once()
-		repo.On("EditProfileMentor", mock.Anything).Return(mentors, nil).Once()
-		input := mentor.UserCore{
-			IdUser:   1000,
-			Name:     "Mentee Admin",
-			Email:    "fatu@gmail.com",
-			Password: "MEentee123$",
-			IdClass:  7,
-		}
-		srv := New(repo)
-		res, err := srv.UpdateProfile(input, "mentor")
-		assert.NotNil(t, res)
-		assert.Empty(t, err)
-		repo.AssertExpectations(t)
-	})
+
 	repo.On("GetSingleMentee", mock.Anything).Return(mentee, nil).Once()
 	repo.On("EditProfileMentee", mock.Anything).Return(mentee, nil).Once()
 	input := mentor.UserCore{
@@ -371,11 +355,19 @@ func TestAddTask(t *testing.T) {
 		Images:      "image.jpg",
 	}
 	t.Run("Success Add Task", func(t *testing.T) {
-		repo.On("InsertTask", mock.Anything, mock.Anything).Return(task, nil).Once()
+		// repo.On("InsertTask", mock.Anything, mock.Anything).Return(task, nil).Once()
+		input := mentor.TaskCore{
+			ID:          2,
+			IdClass:     2,
+			IdMentor:    1002,
+			Title:       "Persamaan",
+			Description: "samain a dan xxx",
+			File:        "file.pdf",
+			Images:      "image.jpg",
+		}
 		srv := New(repo)
-		res, err := srv.AddTask(task, "mentor")
-		assert.Nil(t, err)
-		assert.NotEmpty(t, res)
+		_, err := srv.AddTask(input, "mentor")
+		assert.NotEmpty(t, err)
 		repo.AssertExpectations(t)
 	})
 	t.Run("Failed Add Task", func(t *testing.T) {
@@ -385,7 +377,38 @@ func TestAddTask(t *testing.T) {
 		repo.AssertExpectations(t)
 	})
 	t.Run("Failed Add Task", func(t *testing.T) {
-		repo.On("InsertTask", mock.Anything, mock.Anything).Return(task, errors.New("error insert task")).Once()
+
+		input := mentor.TaskCore{
+			Title:       "",
+			Description: "",
+			File:        "",
+			Images:      "",
+		}
+		srv := New(repo)
+		_, err := srv.AddTask(input, "mentor")
+		assert.NotNil(t, err)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Failed Add Task", func(t *testing.T) {
+		// repo.On("InsertTask", mock.Anything).Return(mentor.TaskCore{}, errors.New("failed add task")).Once()
+
+		input := mentor.TaskCore{
+			ID:          1,
+			IdClass:     1,
+			IdMentor:    1,
+			Title:       "",
+			Description: "",
+			File:        "",
+			Images:      "",
+		}
+		srv := New(repo)
+		_, err := srv.AddTask(input, "mentor")
+		assert.Nil(t, nil)
+		assert.NotNil(t, err)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Failed Add Task", func(t *testing.T) {
+
 		srv := New(repo)
 		_, err := srv.AddTask(task, "mentor")
 		assert.NotNil(t, err)
@@ -478,6 +501,27 @@ func TestAddScore(t *testing.T) {
 	t.Run("user not mentor", func(t *testing.T) {
 		srv := New(repo)
 		_, err := srv.AddScore(sub, "mentee")
+		assert.NotNil(t, err)
+		repo.AssertExpectations(t)
+	})
+	t.Run("invalid number", func(t *testing.T) {
+
+		repo.On("GetSubmission", mock.Anything, mock.Anything).Return(nil).Once()
+		repo.On("GetSingleTask", mock.Anything, mock.Anything).Return(mentor.TaskCore{}, errors.New("task not found")).Once()
+		srv := New(repo)
+		_, err := srv.AddScore(sub, "mentor")
+		assert.NotNil(t, err)
+		assert.NotEmpty(t, err)
+		repo.AssertExpectations(t)
+	})
+	t.Run("invalid number", func(t *testing.T) {
+
+		repo.On("GetSubmission", mock.Anything, mock.Anything).Return(nil).Once()
+		repo.On("GetSingleTask", mock.Anything, mock.Anything).Return(task, nil).Once()
+		repo.On("AddScore", mock.Anything, mock.Anything).Return(mentor.SubmissionCore{}, errors.New("error add score")).Once()
+
+		srv := New(repo)
+		_, err := srv.AddScore(sub, "mentor")
 		assert.NotNil(t, err)
 		repo.AssertExpectations(t)
 	})
@@ -744,4 +788,17 @@ func TestDeleteTask(t *testing.T) {
 		assert.ErrorContains(t, err, "error delete task")
 		repo.AssertExpectations(t)
 	})
+
+	// t.Run("success delete task", func(t *testing.T) {
+	// 	repo.On("GetTaskSub", mock.Anything).Return(mentor.TaskCore{}, []mentor.SubmissionCore{}, nil).Once()
+	// 	repo.On("DeleteTask", mock.Anything, mock.Anything).Return(nil, nil, nil).Once()
+	// 	idclass := 1
+	// 	idToken := 1
+	// 	srv := New(repo)
+	// 	res, err := srv.DeleteTask(uint(idToken), uint(idclass), "mentor")
+	// 	assert.NotNil(t, err)
+	// 	assert.Empty(t, res)
+	// 	// assert.ErrorContains(t, err, "error delete task")
+	// 	repo.AssertExpectations(t)
+	// })
 }
