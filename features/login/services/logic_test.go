@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"testing"
 
 	"be12/mentutor/features/login"
@@ -121,6 +122,48 @@ func TestLogin(t *testing.T) {
 		assert.Empty(t, res)
 		assert.NotNil(t, err)
 		assert.ErrorContains(t, err, "wrong email or password")
+		repo.AssertExpectations(t)
+	})
+}
+
+func TestGetToken(t *testing.T) {
+	repo := mocks.NewDataInterface(t)
+
+	t.Run("Success Get Token", func(t *testing.T) {
+		repo.On("GetToken", mock.Anything).Return(nil).Once()
+		srv := New(repo)
+		res := srv.GetToken(1)
+		assert.NoError(t, res)
+		assert.Equal(t, res, res)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Failed Get Token", func(t *testing.T) {
+		repo.On("GetToken", mock.Anything).Return(errors.New("failed get token")).Once()
+		srv := New(repo)
+		err := srv.GetToken(1)
+		assert.Error(t, err)
+		assert.Equal(t, err, err)
+		repo.AssertExpectations(t)
+	})
+
+}
+func TestInsertToken(t *testing.T) {
+	repo := mocks.NewDataInterface(t)
+
+	t.Run("Success Insert Token", func(t *testing.T) {
+		repo.On("InsertToken", mock.Anything).Return(nil).Once()
+		srv := New(repo)
+		err := srv.InsertToken(1)
+		assert.NoError(t, err)
+		assert.Equal(t, err, err)
+		repo.AssertExpectations(t)
+	})
+	t.Run("Failed Insert Token", func(t *testing.T) {
+		repo.On("InsertToken", mock.Anything).Return(errors.New("failed insert token")).Once()
+		srv := New(repo)
+		err := srv.InsertToken(1)
+		assert.Error(t, err)
+		assert.Equal(t, err, err)
 		repo.AssertExpectations(t)
 	})
 }
