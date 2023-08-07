@@ -58,6 +58,24 @@ This application is made to make work easier and save time
 - Nur Fatchurohman  :  [![GitHub](https://img.shields.io/badge/nur-fatchurohman-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/FaturFawkes)
 
 
+## ENV
+```bash
+export SERVER_PORT=
+export DB_DRIVER=
+export DB_HOST=
+export DB_NAME=
+export DB_USERNAME=
+export DB_PASSWORD=
+export DB_PORT=
+export AWS_KEY=
+export AWS_SECRET=
+export AWS_SECRET=
+
+export GCP_PROJECT_ID=
+export GCP_BUCKET_NAME=
+
+```
+
 ## Run Locally
 Clone the project
 
